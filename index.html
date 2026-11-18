@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MAD LAB</title>
+<style>
+:root{color-scheme:dark;--bg:#07060d;--pn:#120f1f;--ln:#2a2344;--tx:#e8e4ff;--dim:#8c85b3;--n1:#39ff9c;--n2:#ff3df0;--n3:#3dd5ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 "Trebuchet MS",system-ui,sans-serif;touch-action:manipulation}
+body{max-width:720px;margin:0 auto;padding:8px}
+h1{margin:0;font:900 22px/1 Impact,"Arial Black",sans-serif;letter-spacing:3px;color:var(--n1);text-shadow:0 0 12px var(--n1),0 0 28px var(--n2)}
+header{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.xp{flex:1;max-width:240px;font-size:12px;color:var(--dim)}
+.bar{height:8px;background:var(--ln);border-radius:4px;overflow:hidden;margin-top:3px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--n1),var(--n3));width:0}
+nav{display:flex;gap:6px;margin:8px 0}
+nav button{flex:1;padding:12px 2px;font-size:13px}
+button,select{background:var(--pn);color:var(--tx);border:1px solid var(--ln);border-radius:10px;font:inherit;padding:12px 10px;min-height:44px}
+button.on{border-color:var(--n1);box-shadow:0 0 10px #39ff9c66;color:var(--n1)}
+button.go{background:var(--n1);color:#021;border:0;font-weight:700}
+.sec{display:none}.sec.on{display:block}#lab.on{display:flex;flex-direction:column;height:calc(100vh - 130px);height:calc(100dvh - 130px)}#lab .grid{flex:1;min-height:0;max-height:none}#lab .row{margin:5px 0}#lab #msg{min-height:38px;padding:6px 10px;font-size:14px}#lab button,#lab select{min-height:40px;padding:8px}
+canvas{width:100%;height:28vh;height:28dvh;min-height:170px;max-height:300px;border:1px solid var(--ln);border-radius:14px;display:block;touch-action:none}
+.row{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}.row>*{flex:1}
+#msg{min-height:44px;padding:8px 10px;background:var(--pn);border-radius:10px;border-left:3px solid var(--n2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px;max-height:34vh;overflow:auto}
+.cell{background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:6px 2px;text-align:center;font-size:11px;min-height:64px;cursor:pointer}
+.cell b{display:block;font-size:24px;font-weight:400}
+.cell:active{transform:scale(.94);border-color:var(--n3)}
+.cell.lock{opacity:.35}
+.card{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px;margin:6px 0}
+.mice{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mc{background:var(--pn);border:2px solid var(--ln);border-radius:14px;padding:8px;text-align:center;position:relative;overflow:hidden;min-height:150px}
+.mc.sel{border-color:var(--n2)}
+.mc small{display:block;color:var(--dim)}
+.mo{font-size:54px;display:inline-block;transition:all .6s;animation:wob 2.4s ease-in-out infinite}
+@keyframes wob{0%,100%{transform:translateX(-8px) rotate(-4deg)}50%{transform:translateX(8px) rotate(4deg)}}
+@media (prefers-reduced-motion:reduce){.mo{animation:none}}
+.ok{color:var(--n1)}.mut{color:var(--dim)}
+.cell{overflow:hidden;overflow-wrap:anywhere;line-height:1.15;font-size:10px;padding:6px 3px}
+#msg,#mlog,.mut,.card{overflow-wrap:anywhere}
+select{width:100%;min-width:0;text-overflow:ellipsis}
+.row>*{min-width:0}
+nav button{font-size:12px;padding:12px 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc{min-height:190px;overflow:hidden}.mc b,.mc small{overflow-wrap:anywhere}
+.mw{height:100px;display:flex;align-items:center;justify-content:center;transition:transform .6s}
+#pop{position:fixed;top:0;right:0;bottom:0;left:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:9;padding:16px}
+#pop.on{display:flex}
+.pb{background:var(--pn);border:2px solid var(--n2);box-shadow:0 0 24px #ff3df066;border-radius:18px;padding:18px;max-width:340px;width:100%;max-height:90vh;max-height:90dvh;overflow:auto;text-align:center;overflow-wrap:anywhere}
+@keyframes pp{from{transform:scale(.2) rotate(-120deg);opacity:0}to{transform:none;opacity:1}}
+#gate{position:fixed;top:0;right:0;bottom:0;left:0;z-index:20;background:repeating-linear-gradient(45deg,#1a0000,#1a0000 18px,#2a0a00 18px,#2a0a00 36px);display:flex;align-items:center;justify-content:center;padding:16px}
+.sign{background:#0c0a12;border:4px solid #ff2a2a;box-shadow:0 0 30px #ff2a2a,inset 0 0 20px #ff2a2a55;border-radius:14px;padding:22px 16px;text-align:center;max-width:340px;width:100%;overflow-wrap:anywhere}
+.sign .no{font-size:72px;line-height:1}
+.sign h2{margin:10px 0;font:900 26px/1.15 Impact,"Arial Black",sans-serif;color:#ff4a4a;text-shadow:0 0 12px #ff2a2a;letter-spacing:1px}
+.sign p{color:var(--dim);margin:0 0 14px}
+.xr{position:relative;background:#031a0c;border:1px solid #39ff9c;box-shadow:0 0 18px #39ff9c55 inset;border-radius:12px;padding:10px;overflow:hidden}
+.scan{position:absolute;left:0;right:0;height:6px;background:#39ff9caa;box-shadow:0 0 12px #39ff9c;animation:sc 1.6s linear infinite}
+@keyframes sc{from{top:-8px}to{top:100%}}
+@media (prefers-reduced-motion:reduce){.scan{animation:none}}
+.df{text-align:left;margin:8px 0;font-size:14px}
+.mw{position:relative}
+.stm{position:absolute;left:50%;top:14px;width:0;height:0;pointer-events:none}
+.stm i{position:absolute;left:-9px;top:0;width:18px;height:18px;border-radius:50%;background:#e8f0ffcc;filter:blur(4px);animation:stm 2s ease-out infinite}
+@keyframes stm{from{transform:translateY(8px) scale(.5);opacity:.9}to{transform:translateY(-46px) scale(1.7);opacity:0}}
+@media (prefers-reduced-motion:reduce){.stm i{animation:none;opacity:.5}}
+.mc.dead{opacity:.8}.mc.dead::after{content:"R.I.P";position:absolute;right:8px;top:6px;color:var(--dim);font-weight:700}
+.cell svg{width:1.3em;height:.85em}
+input[type=range]{width:100%}
+</style></head><body>
+<div id="err" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:99;background:#a00;color:#fff;padding:8px;font:12px monospace"></div>
+<script>window.onerror=function(m,u,l){var e=document.getElementById("err");if(e){e.style.display="block";e.textContent="Ошибка: "+m+" (строка "+l+")"}}</script>
+<header><h1>MAD LAB</h1><div class="xp"><span id="lv"></span><div class="bar"><i id="xb"></i></div></div></header>
+<nav><button data-t="lab" class="on">Лаборатория</button><button data-t="mice">Мыши</button><button data-t="enc">Книга</button><button data-t="chl">Задания</button></nav>
+
+<section id="lab" class="sec on">
+
+<canvas id="cv"></canvas>
+<div id="msg">Нажимайте на вещества, чтобы налить их в колбу, затем встряхните.</div>
+<div class="row"><button class="go" id="shake">Встряхнуть</button><button id="pour">Слить</button><button id="savem">Сохранить</button></div>
+<div class="grid" id="inv"></div>
+</section>
+
+<section id="mice" class="sec">
+<button class="go" id="deliv" style="display:none;width:100%;margin-bottom:8px">📦 Новая поставка мышей</button>
+<div class="mice" id="mlist"></div>
+<div class="card">
+<div class="row"><select id="msub"></select></div>
+<div>Непредсказуемость: <b id="ul">2</b><input type="range" id="un" min="1" max="3" value="2"></div>
+<div class="row"><button class="go" id="test">Эксперимент</button><button id="xray">☢ Рентген</button></div>
+<div class="row"><button id="phcam">📷 Сфоткать</button><button id="phgal">🖼 Из галереи</button></div><input type="file" id="phf" accept="image/*" style="display:none">
+<div id="mlog" class="mut">Выберите мышь и вещество. Всё это безобидная мультяшная симуляция.</div>
+</div></section>
+
+<section id="enc" class="sec"><div id="encl"></div></section>
+<div id="pop"><div class="pb" id="pb"></div></div>
+<div id="gate"><div class="sign"><div class="no">⛔</div><h2>МИЛАНЕ ЗАПРЕЩЁН ВХОД</h2><p>Лаборатория закрыта для Миланы. Даже Guiding Light не поможет.</p><button class="go" id="gok" onclick="gateOpen()">Я не Милана, войти</button></div></div>
+<script>function gateOpen(){try{[0,160,320].forEach(function(d){setTimeout(function(){try{beep(90,.1,"square",.4)}catch(e){}},d)})}catch(e){}var g=document.getElementById("gate");if(g)g.parentNode.removeChild(g)}</script>
+<section id="chl" class="sec"><div id="chll"></div>
+<div class="card"><div>Звук <input type="range" id="vs" min="0" max="1" step=".05"></div><div>Музыка <input type="range" id="vm" min="0" max="1" step=".05"></div>
+<button id="reset">Сбросить прогресс</button></div></section>
+
+<script>
+const S="Кофе|☕|#4b2e1a;Энергетик|⚡|#c6ff00;Искусственная кровь|🩸|#b3122b;Жидкий азот|🧊|#bfefff;Светящаяся зелень|🧪|#39ff14;Пурпурная сыворотка|🔮|#9b30ff;Синий кристальный р-р|💎|#2a6bff;Золотая жидкость|🏆|#ffc83a;Чёрные чернила|🖋️|#15121c;Уксус|🍶|#e8e2b0;Мыльный раствор|🧼|#bfe8ff;Радужная жидкость|🌈|#ff66cc;Магнитная жидкость|🧲|#667;Электроплазма|🔌|#ff4df0;Токсичная слизь|☣️|#7cff00;Лечебная сыворотка|💚|#66ffaa;Сонное зелье|😴|#5b5bd6;Зелье скорости|💨|#ff8c00;Сыворотка роста|🔺|#ff5555;Сыворотка уменьшения|🔹|#55ddff;Невидимая жидкость|👻|#ccddee;Светящаяся жидкость|💡|#fff7a0;Жидкий металл|🪙|#b0b8c0;Фэнтези-кислота|🧫|#aaff00;Замороженная жидкость|❄️|#9fe0ff;Лава|🌋|#ff4500;Экстракт дыма|🌫️|#888;Вода|💧|#3a8dde;Солевой раствор|🧂|#d8f0ff;Сахарный раствор|🍬|#fff0c8;Масло|🛢️|#e6c200;Молоко|🥛|#f8f8f0;Газировка|🥤|#ffb347;Зелёная слизь|🟢|#4cd137;Кристальный порошок|✨|#e0b0ff;Тайный порошок|🟤|#a0522d;Тёмная материя|🕳️|#2a0050;ДНК пришельца|🧬|#00ffd5;Катализатор|⚗️|#ff00aa;Вещество X|❓|#ff2bd6;Пар|♨️|#dde;Кристалл|🔷|#7fd;Мутаген|🦠|#9f3;Пена|🫧|#fff;Фейерверк|🎆|#f84;Эликсир|🍷|#f6a;Левитация|🎈|#8cf;Небула|🌌|#74f;Плазма-гель|🔥|#f5d;Нано-слизь|🤖|#6fa;Хроно-сыворотка|⏳|#fc6;Огненная ртуть|🌡️|#f64;Звёздная пыль|⭐|#fe8;Радужный кристалл|🔶|#f9f;Квинтэссенция|👑|#fff".split(";").map(s=>{const a=s.split("|");return{n:a[0],e:a[1],c:a[2]}});
+const hx=(h,s,l)=>{s/=100;l/=100;const k=n=>(n+h/30)%12,a=s*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,9-k(n),1));return"#"+[f(0),f(8),f(4)].map(v=>Math.round(v*255).toString(16).padStart(2,"0")).join("")};
+const EL="H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og".split(" "),RN="Водород,Гелий,Литий,Бериллий,Бор,Углерод,Азот,Кислород,Фтор,Неон,Натрий,Магний,Алюминий,Кремний,Фосфор,Сера,Хлор,Аргон,Калий,Кальций,Скандий,Титан,Ванадий,Хром,Марганец,Железо,Кобальт,Никель,Медь,Цинк,Галлий,Германий,Мышьяк,Селен,Бром,Криптон,Рубидий,Стронций,Иттрий,Цирконий,Ниобий,Молибден,Технеций,Рутений,Родий,Палладий,Серебро,Кадмий,Индий,Олово,Сурьма,Теллур,Иод,Ксенон,Цезий,Барий,Лантан,Церий,Празеодим,Неодим,Прометий,Самарий,Европий,Гадолиний,Тербий,Диспрозий,Гольмий,Эрбий,Тулий,Иттербий,Лютеций,Гафний,Тантал,Вольфрам,Рений,Осмий,Иридий,Платина,Золото,Ртуть,Таллий,Свинец,Висмут,Полоний,Астат,Радон,Франций,Радий,Актиний,Торий,Протактиний,Уран,Нептуний,Плутоний,Америций,Кюрий,Берклий,Калифорний,Эйнштейний,Фермий,Менделевий,Нобелий,Лоуренсий,Резерфордий,Дубний,Сиборгий,Борий,Хассий,Мейтнерий,Дармштадтий,Рентгений,Коперниций,Нихоний,Флеровий,Московий,Ливерморий,Теннессин,Оганесон".split(",");
+const TK=S.length;S.push({n:"Сталиниум",e:"🛡️",c:"#5a6b2e",tank:1});
+EL.forEach((s,i)=>S.push({n:RN[i]||s,e:s,c:hx((i*37)%360,55,50),el:1}));
+[["Соляная кислота","🧪","#c8ff5a","растворилась в соляной кислоте"],["Серная кислота","🟡","#e8d84a","обуглилась в серной кислоте"],["Азотная кислота","🟠","#ff9a3c","растаяла в азотной кислоте"],["Плавиковая кислота","🟣","#b66bff","шипя исчезла в плавиковой кислоте"],["Лимонная кислота","🍋","#fff36b","стала очень-очень кислой и сдалась"],["Царская водка","🔱","#ffb300","превратилась в лужицу в царской водке"]].forEach(a=>S.push({n:a[0],e:a[1],c:a[2],acid:1,d:a[3]}));S[23].acid=1;
+const ORD=()=>{const o=S.map((x,i)=>i);return o.filter(i=>!S[i].el).concat(o.filter(i=>S[i].el))};
+const Z=s=>S.findIndex(x=>x.e==s&&x.el);
+const EFX=[[[Z("Na"),27],"boom"],[[Z("K"),27],"boom"],[[Z("Fr"),27],"boom"],[[Z("Li"),27],"foam"],[[Z("Na"),Z("Cl")],"crystal"],[[Z("U")],"glow"],[[Z("Ra")],"glow"],[[Z("H"),Z("O")],"boom"],[[Z("Fe"),Z("O")],"color"],[[Z("Hg"),Z("Au")],"mutate"]];
+const R=[[[27,25],40],[[9,32],43],[[3,27],24],[[28,6],41],[[13,22],51],[[38,35],42],[[36,37],54],[[11,12],53],[[2,15],45],[[1,17],46],[[14,33],49],[[36,38],47],[[7,34],52],[[17,16],50],[[13,12],48],[[40,24],44]];
+const FX=["smoke","glow","foam","freeze","expand","boom","crystal","mutate","color","calm"];
+const FM={smoke:"Из колбы валит густой дым!",glow:"Смесь вспыхнула неоновым светом.",foam:"Поднялась пена и пузыри!",freeze:"Всё мгновенно замёрзло.",expand:"Смесь раздулась и полезла вверх!",boom:"БАБАХ! Маленький мультяшный взрыв!",crystal:"В колбе вырастают кристаллы.",mutate:"Смесь мутирует и меняет цвет!",color:"Цвет смеси переливается.",calm:"Ничего не произошло... пока."};
+const MICE=[["Раш","Вечно мчится",0],["Сик","Следит глазами",90],["Тимоти","Прячется в ящиках",200],["Джефф","Торгует в углу",300]];
+Object.assign(FM,{smoke:"Густой дым, как в коридоре отеля. Seek, ты где?",glow:"Вспышка! Guiding Light одобряет.",foam:"Пена! Скользко, как перед Ambush.",freeze:"Всё замёрзло. Halt бы одобрил.",expand:"Смесь раздувается, как Rush в коридоре!",boom:"БАБАХ! Прямо как Ambush: ААА!",crystal:"Выросли кристаллы — как бонус из Hotel+.",mutate:"Мутация! Выглядит как Glitch.",color:"Цвет переливается, как Figure на свету.",calm:"Тишина... слишком тихая. Где-то рядом Rush?"});
+const DN=["Найди 3 вещества, как ключи в отеле","Собери 10 веществ: дверь 50 близко","Вызови взрыв громче Ambush","Вырасти кристалл и найди Crucifix","Проведи 3 эксперимента: Джефф ждёт отчёт","Сделай 15 смесей и не попадись Seek","Получи Квинтэссенцию: дверь 100"];
+const CH=[["Открой 3 вещества",d=>Object.keys(d.disc).length>=3],["Открой 10 веществ",d=>Object.keys(d.disc).length>=10],["Вызови взрыв",d=>d.st.boom>0],["Вырасти кристалл",d=>d.st.crystal>0],["Проведи 3 эксперимента",d=>d.st.tests>=3],["Сделай 15 смесей",d=>d.st.mix>=15],["Получи Квинтэссенцию",d=>d.disc[54]]];
+const def=()=>({xp:0,disc:{},seen:{},mixes:[],potions:[],hist:[],done:{},st:{boom:0,tests:0,mix:0,crystal:0},mode:"sandbox",mice:MICE.map(m=>({n:m[0],p:m[1],h:m[2],s:1,g:0,f:0,e:"🐭",t:"Здорова"})),vs:.6,vm:.25});
+let D;try{D=Object.assign(def(),JSON.parse(localStorage.getItem("madlab1")||"{}"))}catch(e){D=def()}
+const save=()=>{try{localStorage.setItem("madlab1",JSON.stringify(D))}catch(e){}};
+const $=s=>document.querySelector(s),lvl=()=>1+Math.floor(D.xp/100),cap=()=>Math.min(6,2+lvl());
+let mix=[],col="#222",sel=0,P=[],fxT=0,fxK="",shk=0,flash=0,tkT=0;
+const hash=s=>{let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h};
+const rgb=h=>{h=h.length==4?"#"+[...h.slice(1)].map(c=>c+c).join(""):h;return[1,3,5].map(i=>parseInt(h.substr(i,2),16))};
+const hex=a=>"#"+a.map(v=>Math.max(0,Math.min(255,v|0)).toString(16).padStart(2,"0")).join("");
+function avail(i){if(D.disc[i])return 1;if(i>=55)return 1;if(i>=40)return 0;if(D.mode=="sandbox")return 1;return i<12+(lvl()-1)*2}
+/* sound */
+let AC,mus;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=="suspended")AC.resume();if(AC&&!mus){mus=AC.createOscillator();const g=AC.createGain();g.gain.value=0;mus.type="sine";mus.frequency.value=55;mus.connect(g);g.connect(AC.destination);mus.start();mus.g=g}if(mus)mus.g.gain.value=D.vm*.06;return AC}
+function beep(f,d,t,v,s){const a=ac();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.type=t||"sine";o.frequency.setValueAtTime(f,a.currentTime);if(s)o.frequency.exponentialRampToValueAtTime(s,a.currentTime+d);g.gain.setValueAtTime((v||.3)*D.vs,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d)}
+const snd={pour:()=>{for(let i=0;i<5;i++)setTimeout(()=>beep(300+Math.random()*300,.08,"sine",.2),i*60)},shake:()=>{for(let i=0;i<6;i++)setTimeout(()=>beep(120+Math.random()*80,.07,"square",.15),i*70)},boom:()=>beep(160,.5,"sawtooth",.5,30),glow:()=>beep(500,.5,"triangle",.3,1200),disc:()=>[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.25,"triangle",.3),i*90)),bub:()=>beep(400,.15,"sine",.2,900)};
+/* particles */
+function spawn(k,n,x,y,c){for(let i=0;i<n;i++){const a=Math.random()*6.28,v=k=="boom"?2+Math.random()*6:.5+Math.random()*1.5;P.push({x:x+(Math.random()-.5)*50,y,vx:k=="boom"?Math.cos(a)*v:(Math.random()-.5),vy:k=="boom"?Math.sin(a)*v:-v-1,l:60+Math.random()*40,r:k=="foam"?6+Math.random()*8:k=="smoke"?10+Math.random()*10:2+Math.random()*4,c,k})}}
+/* flask objects */
+const OBJ=[];
+function drawObjs(t,bw,bh,lh){cx.textAlign="center";cx.textBaseline="middle";const bx=W/2,by=H*.88,fs=30*Math.min(1.2,bw/110);
+for(let i=OBJ.length-1;i>=0;i--){const o=OBJ[i],surf=-lh,floor=-16-(i%3)*4;o.t++;
+if(!o.landed){o.vy+=.5;o.y+=o.vy;o.rot+=.08;if(o.y>=(lh?surf:floor)){o.landed=1;o.vy=0}}
+else if(!lh){o.y+=(floor-o.y)*.2}
+else if(o.k=="float"||o.k=="freeze"){o.y=surf+5+(o.k=="float"?Math.sin(t/400+i)*3:0);if(o.k=="float")o.x+=Math.sin(t/900+i)*.2;o.rot*=.95}
+else{o.y+=(floor-o.y)*.035;o.rot*=.97;if(o.k=="melt"||o.k=="burn"){o.s-=.006;if(o.t%5==0)P.push({x:bx+o.x,y:by+o.y,vx:(Math.random()-.5),vy:-1.2,l:35,r:2+Math.random()*3,c:o.k=="burn"?"#ff9a3c":"#cfff5a",k:"x"});if(o.s<=0){OBJ.splice(i,1);continue}}}
+const hw=(o.y<=-bh*.7?.28*bw:.28*bw+.22*bw*((o.y+bh*.7)/(bh*.7)))-14;o.x=Math.max(-hw,Math.min(hw,o.x));
+cx.save();cx.translate(o.x,o.y);cx.rotate(o.rot);cx.scale(o.s,o.s);cx.font=fs+"px sans-serif";
+if(o.k=="burn"){cx.shadowColor="#f60";cx.shadowBlur=12}cx.fillText(o.e,0,0);cx.shadowBlur=0;
+if(o.k=="freeze"){cx.fillStyle="#bfefffaa";cx.beginPath();cx.arc(0,0,fs*.6,0,6.28);cx.fill()}cx.restore()}}
+/* canvas */
+const cv=$("#cv"),cx=cv.getContext("2d");let W=0,H=0;
+function rs(){const r=devicePixelRatio||1;W=cv.clientWidth;H=cv.clientHeight;cv.width=W*r;cv.height=H*r;cx.setTransform(r,0,0,r,0,0)}
+addEventListener("resize",rs);
+function draw(t){requestAnimationFrame(draw);if(!W)rs();
+const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,"#0c0820");g.addColorStop(1,"#1a0f33");cx.fillStyle=g;cx.fillRect(0,0,W,H);
+cx.strokeStyle="#39ff9c";cx.shadowColor="#39ff9c";cx.shadowBlur=10;cx.lineWidth=2;cx.beginPath();cx.moveTo(10,H*.25);cx.lineTo(W-10,H*.25);cx.stroke();
+cx.shadowColor="#ff3df0";cx.strokeStyle="#ff3df0";cx.beginPath();cx.moveTo(10,H*.9);cx.lineTo(W-10,H*.9);cx.stroke();cx.shadowBlur=0;
+const full=mix.length?mix.length/cap():0,bw=Math.min(W*.4,170),bh=H*.62,bx=W/2,by=H*.88;
+let sx=0,sy=0;if(shk>0){shk--;sx=(Math.random()-.5)*10;sy=(Math.random()-.5)*6}
+let sc=1;if(fxK=="expand"&&fxT>0)sc=1+Math.sin(fxT/40*3.14)*.12;
+cx.save();cx.translate(bx+sx,by+sy);cx.scale(sc,sc);
+const lh=bh*(.15+.75*full)*(mix.length?1:0);
+if(mix.length){cx.fillStyle=col;cx.globalAlpha=.85;if(fxK=="glow"&&fxT>0){cx.shadowColor=col;cx.shadowBlur=30}
+const fp=()=>{cx.beginPath();cx.moveTo(-bw*.28,-bh);cx.lineTo(-bw*.28,-bh*.7);cx.lineTo(-bw*.5,0);cx.lineTo(bw*.5,0);cx.lineTo(bw*.28,-bh*.7);cx.lineTo(bw*.28,-bh)};cx.save();fp();cx.closePath();cx.clip();cx.beginPath();cx.moveTo(-bw,-lh);for(let x=-bw;x<=bw;x+=10)cx.lineTo(x,-lh+Math.sin(t/300+x/20)*(2+shk*.35));cx.lineTo(bw,0);cx.lineTo(-bw,0);cx.closePath();cx.fill();cx.restore();cx.globalAlpha=1;cx.shadowBlur=0;
+for(let i=0;i<4;i++){const px=Math.sin(t/700+i*2)*bw*.2,py=-((t/12+i*40)%Math.max(lh,10));cx.fillStyle="#ffffff55";cx.beginPath();cx.arc(px,py,3+i%2*2,0,6.28);cx.fill()}
+if(fxK=="freeze"&&fxT>0){cx.save();fp();cx.closePath();cx.clip();cx.fillStyle="#ffffff88";cx.fillRect(-bw,-lh,bw*2,lh);cx.restore()}}
+cx.strokeStyle="#9ef3ffcc";cx.lineWidth=3;cx.shadowColor="#3dd5ff";cx.shadowBlur=8;cx.beginPath();cx.moveTo(-bw*.28,-bh);cx.lineTo(-bw*.28,-bh*.7);cx.lineTo(-bw*.5,0);cx.lineTo(bw*.5,0);cx.lineTo(bw*.28,-bh*.7);cx.lineTo(bw*.28,-bh);cx.stroke();cx.shadowBlur=0;
+cx.strokeStyle="#ffffff44";cx.lineWidth=2;cx.beginPath();cx.moveTo(-bw*.2,-bh*.6);cx.lineTo(-bw*.3,-bh*.1);cx.stroke();if(mix.includes(TK))drawTank(0,-bh*.28,bw/110);drawObjs(t,bw,bh,lh);cx.restore();
+if(fxT>0)fxT--;
+for(let i=P.length-1;i>=0;i--){const p=P[i];p.x+=p.vx;p.y+=p.vy;p.l--;if(p.k=="boom")p.vy+=.15;if(p.k=="smoke"||p.k=="foam"){p.r+=.15}
+if(p.l<=0){P.splice(i,1);continue}cx.globalAlpha=Math.min(1,p.l/40)*(p.k=="smoke"?.5:.9);cx.fillStyle=p.k=="boom"?(i%2?"#ffb000":"#ff4500"):p.k=="smoke"?"#999":p.c;
+if(p.k=="crystal"){cx.beginPath();cx.moveTo(p.x,p.y-p.r*2);cx.lineTo(p.x+p.r,p.y);cx.lineTo(p.x,p.y+p.r*2);cx.lineTo(p.x-p.r,p.y);cx.fill()}else{cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);cx.fill()}}cx.globalAlpha=1;
+if(tkT>0){tkT--;drawTank(W*1.15*(1-tkT/150)-50,H*.82,Math.min(1.3,W/330))}
+if(flash>0){cx.fillStyle="rgba(255,220,120,"+flash/20+")";cx.fillRect(0,0,W,H);flash--}}
+requestAnimationFrame(draw);
+/* lab logic */
+function mixCol(){if(!mix.length)return;const a=mix.map(i=>rgb(S[i].c));col=hex([0,1,2].map(k=>a.reduce((s,c)=>s+c[k],0)/a.length))}
+function say(t){$("#msg").textContent=t}
+function gain(n){const l=lvl();D.xp+=n;if(lvl()>l){say("Дверь №"+lvl()+" открыта! Колба вмещает "+cap()+" веществ.");snd.disc()}hud();save()}
+function add(i){if(mix.length>=cap()){say("Колба полна ("+cap()+"). Встряхните или слейте.");return}mix.push(i);mixCol();snd.pour();spawn("foam",3,W/2,H*.5,col);if(!D.seen[i]){D.seen[i]=1;if(D.mode!="chal")gain(1)}say("В колбе: "+mix.map(i=>S[i].n).join(" + "));save()}
+function shake(){if(mix.length<2){say("Добавьте минимум два вещества.");return}ac();snd.shake();shk=40;
+const u=[...new Set(mix)].sort((a,b)=>a-b),key=u.join("-");let res=-1,fx;
+for(const r of R)if(r[0].every(x=>u.includes(x))){res=r[1];break}
+const h=hash(key);if(res<0&&u.length>=2&&h%5==0)res=40+(h>>4)%15;
+fx=Math.random()<.22?FX[Math.floor(Math.random()*FX.length)]:FX[h%FX.length];if(res>=0&&Math.random()<.6)fx="glow";if(u.some(i=>S[i].acid))fx="acid";EFX.forEach(e=>{if(e[0].every(x=>u.includes(x)))fx=e[1]});if(u.includes(TK))fx="tank";
+setTimeout(()=>{fxK=fx;fxT=40;const bx=W/2,by=H*.5;
+if(fx=="smoke")spawn("smoke",25,bx,by,"#999");if(fx=="foam")spawn("foam",30,bx,by,"#fff");if(fx=="freeze"){spawn("fl",20,bx,by,"#cff");col=hex(rgb(col).map(v=>v*.5+120))}
+if(fx=="boom"){spawn("boom",60,bx,by,"#f80");flash=12;shk=30;D.st.boom++;snd.boom()}if(fx=="crystal"){spawn("crystal",18,bx,by,"#e8b0ff");D.st.crystal++;snd.glow()}
+if(fx=="glow"){spawn("fl",20,bx,by,"#ffe");snd.glow()}if(fx=="mutate"){const c=rgb(col);col=hex([c[1],c[2],c[0]]);spawn("fl",20,bx,by,"#7f4");snd.bub()}if(fx=="color"){col=hex([Math.random()*255,Math.random()*255,Math.random()*255]);snd.bub()}if(fx=="expand")snd.bub();if(fx=="acid"){spawn("smoke",22,bx,by,"#9f3");spawn("foam",18,bx,by,"#cf4");const c0=rgb(col);col=hex([c0[0]*.6,Math.min(255,c0[1]+70),c0[2]*.5]);shk=18;snd.bub()}if(fx=="tank"){tkT=150;spawn("boom",45,bx,by,"#f80");shk=30;flash=8;D.st.boom++;snd.boom()}
+let t=FM[fx],g0=0;const nk=!D.mixes.some(m=>m[0]==key);
+if(nk){D.mixes.push([key,fx,res]);g0+=5;}
+D.st.mix++;
+if(res>=0){col=S[res].c;if(!D.disc[res]){D.disc[res]=1;g0+=25;snd.disc();t+=" НОВОЕ ВЕЩЕСТВО: "+S[res].e+" "+S[res].n+"!"}else t+=" Получено: "+S[res].n+"."}
+D.hist.unshift(u.map(i=>S[i].n).join("+")+" → "+fx+(res>=0?" → "+S[res].n:""));D.hist.length=Math.min(D.hist.length,40);
+mix=res>=0?[res]:mix;say(t+(nk?" (+"+g0+" XP)":""));gain(g0);chk();inv()},350)}
+$("#shake").onclick=shake;
+$("#pour").onclick=()=>{if(mix.length){snd.pour();spawn("foam",12,W/2,H*.8,col)}mix=[];fxK="";say("Колба пуста.")};
+$("#savem").onclick=()=>{if(!mix.length)return;D.potions=D.potions||[];const nm="Зелье №"+(D.potions.length+1)+" ("+(mix.length>1?mix.map(i=>S[i].e).join(""):S[mix[0]].n)+")";D.potions.push({n:nm,c:col,ids:mix.slice()});say("Сохранено: "+nm+". Его можно испытать на мышах.");save()};
+function inv(){const el=$("#inv");el.innerHTML="";ORD().forEach(i=>{const s=S[i];if(i>=40&&i<55&&!D.disc[i])return;const c=document.createElement("div"),ok=avail(i);c.className="cell"+(ok?"":" lock");c.innerHTML="<b>"+(ok?ico(s):"🔒")+"</b>"+(ok?s.n:"???");c.style.borderBottom="3px solid "+(ok?s.c:"#222");if(ok)c.onclick=()=>add(i);el.appendChild(c)})}
+/* mice */
+function mice(){$("#mlist").innerHTML=D.mice.map((m,i)=>`<div class="mc ${i==sel?"sel":""}${m.dead?" dead":""}" data-i="${i}"><div class="mw" style="transform:translateY(${m.f?-12:0}px)"><div class="mo" style="font-size:${54*m.s}px;filter:${mf(m)}">${mi(m)}</div>${stm(m)}</div><b>${m.n}</b><small>${m.p}</small><small>${m.t}${m.dead?": "+m.dead:""}</small></div>`).join("");
+document.querySelectorAll(".mc").forEach(e=>e.onclick=()=>{sel=+e.dataset.i;mice()});
+const pv=$("#msub").value,pt=D.potions||[];let h=mix.length?`<option value="c">🧫 Текущая колба (${mix.length})</option>`:"";if(pt.length)h+='<optgroup label="Мои зелья">'+pt.map((p,i)=>`<option value="p${i}">🧪 ${p.n}</option>`).join("")+"</optgroup>";h+='<optgroup label="Вещества">'+S.map((s,i)=>(D.disc[i]||D.seen[i])?`<option value="s${i}">${s.e} ${s.n}</option>`:"").join("")+"</optgroup>";$("#msub").innerHTML=h;if([...$("#msub").options].some(o=>o.value==pv))$("#msub").value=pv;$("#deliv").style.display=D.mice.every(x=>x.dead)?"block":"none"}
+const OUT=[["color","Мышь сменила цвет!",m=>m.h=(m.h+60+Math.random()*200)%360,"Другого цвета"],["glow","Мышь начала светиться!",m=>m.g=1,"Светится"],["big","Мышь стала огромной!",m=>m.s=1.7,"Великан"],["tiny","Мышь стала крошечной!",m=>m.s=.5,"Крошка"],["speed","Суперскорость! Мышь исчезла в размытом пятне.",m=>m.t="Сверхбыстрая"],["float","Мышь парит в воздухе!",m=>m.f=1,"Парит"],["fantasy","Мышь превратилась в фантастическое существо!",m=>{m.e=["🦄","🐲","👁️","🕷️","👻","🧚"][Math.random()*6|0]},"Фэнтези-существо"],["smoke","Мышь пускает разноцветный дым!",m=>m.t="Дымит радугой"],["power","Мышь обрела мультяшную суперсилу!",m=>m.t="Суперсила"],["nothing","Ничего не произошло.",m=>m.t="Здорова"],["weird","Неожиданный результат: мышь стала странной и довольной.",m=>{m.h=Math.random()*360;m.s=1.2;m.t="Странная"}]];
+const DM={color:"Мышь сменила цвет: теперь как стены в комнате 50!",glow:"Мышь светится — вот он, Guiding Light!",big:"Мышь выросла до размеров Figure!",tiny:"Мышь стала как Тимоти — и спряталась в ящик!",speed:"Суперскорость! Мышь несётся быстрее Rush: ШУУУУ!",float:"Мышь парит, как в Void: лапы не касаются пола!",fantasy:"Мышь превратилась в сущность отеля!",smoke:"Мышь пускает цветной дым, как Screech, только безобидный.",power:"Мышь нашла Crucifix: Ambush ей не страшен!",nothing:"Ничего не произошло. Мышь молча смотрит, как Eyes.",weird:"Странно! Мышь стала похожа на Джеффа и что-то продаёт."};OUT.forEach(o=>{if(DM[o[0]])o[1]=DM[o[0]]});
+$("#un").oninput=e=>$("#ul").textContent=e.target.value;
+$("#test").onclick=()=>{const it=getItem($("#msub").value);if(!it)return;if(D.mice[sel].dead&&!it.heal){$("#mlog").textContent=D.mice[sel].n+" мертва: "+D.mice[sel].dead+". Выберите другую мышь.";return}const u=+$("#un").value,m=D.mice[sel];let o;
+if(Math.random()<.8-.25*u+.05)o=OUT[hash(it.k+"m"+sel)%OUT.length];else o=OUT[Math.random()*OUT.length|0];
+if(o[0]=="nothing"&&u==3&&Math.random()<.7)o=OUT[10];if(it.photo)o=OUT[it.photo.o%OUT.length];if(it.heal)o=HEAL;
+const b=Object.assign({},m);if(Math.random()<pd(it,u)){o=["dead","Мышь погибла: "+die(it,m)]}else{o[2](m);if(o[3])m.t=o[3]}m.l=m.l||[];m.l.unshift(it.n+": "+o[1]);m.l.length=Math.min(m.l.length,5);D.st.tests++;D.hist.unshift(m.n+" + "+it.n+" → "+o[1]);D.hist.length=Math.min(D.hist.length,40);
+$("#mlog").textContent=m.n+" ("+m.p+"): "+o[1];showPop(m,o,it,u,b);if(o[0]=="dead")beep(200,.6,"sawtooth",.4,40);else if(o[0]=="fantasy"||o[0]=="weird")snd.disc();else snd.bub();gain(10+u*3);mice();chk();if(D.mice.every(x=>x.dead))$("#mlog").textContent="Все мыши погибли! Нажмите «Новая поставка мышей»."};
+const TS='<svg viewBox="0 0 64 40" style="width:1.2em;height:.8em;vertical-align:middle"><rect x="4" y="27" width="54" height="10" rx="5" fill="#2a3015" stroke="#cfe58a" stroke-width="2"/><rect x="9" y="17" width="44" height="10" fill="#4b5a2a" stroke="#cfe58a" stroke-width="2"/><rect x="20" y="7" width="22" height="10" fill="#5d6e34" stroke="#cfe58a" stroke-width="2"/><rect x="42" y="10" width="20" height="4" fill="#5d6e34" stroke="#cfe58a" stroke-width="1.5"/></svg>';
+const ico=s=>s.tank?TS:s.e;
+const mi=m=>m.dead?"💀":m.e=="TANK"?TS:m.e;
+const stm=m=>m.st&&!m.dead?'<div class="stm"><i></i><i style="animation-delay:.7s;margin-left:-12px"></i><i style="animation-delay:1.3s;margin-left:12px"></i></div>':"";
+function drawTank(x,y,k){cx.save();cx.translate(x,y);cx.scale(k,k);cx.shadowColor="#9acd32";cx.shadowBlur=8;cx.strokeStyle="#cfe58a";cx.lineWidth=2;cx.fillStyle="#2a3015";cx.fillRect(-46,0,92,14);cx.strokeRect(-46,0,92,14);cx.fillStyle="#4b5a2a";cx.fillRect(-40,-14,80,14);cx.strokeRect(-40,-14,80,14);cx.fillStyle="#5d6e34";cx.fillRect(-22,-30,40,16);cx.strokeRect(-22,-30,40,16);cx.fillRect(18,-26,46,6);cx.strokeRect(18,-26,46,6);cx.fillStyle="#cfe58a";for(let i=-36;i<=36;i+=18){cx.beginPath();cx.arc(i,7,4,0,6.28);cx.fill()}cx.fillStyle="#e22";cx.font="14px sans-serif";cx.fillText("★",-8,-3);cx.restore()}
+FM.tank="Сталиниум!!! Из колбы выехал танк! ТРРРР-БАХ!";FM.acid="Кислота шипит и пузырится! Ядовито-зелёный дым, колба дрожит!";
+const sm=OUT.find(o=>o[0]=="smoke");sm[1]="От мыши идёт пар! Она вся в облачках.";sm[2]=m=>{m.st=1;m.t="Пар идёт"};
+OUT.push(["tank","Мышь превратилась в стальной танк! Сталиниум делает своё дело.",m=>{m.e="TANK";m.s=1.2},"Стальной танк"]);
+const HEAL=["heal","Сталиниум исцелил мышь! Все раны и мутации сняты, она снова бодрая и здоровая.",m=>{delete m.dead;m.s=1;m.g=0;m.f=0;m.st=0;m.e="🐭";m.t="Исцелена"},"Исцелена"];
+const DEAD=["попала под Rush: ШУУУУ!","её догнал Seek","Ambush застал врасплох","Figure услышал шорох","взорвалась мультяшным салютом","испарилась в облачко пара","улетела в Void и не вернулась","рассыпалась на кубики льда","сгорела до уголька","раздавлена танком Сталиниума","Screech сказал «псс», и всё","лопнула, как воздушный шарик","Eyes посмотрели, а она посмотрела в ответ","споткнулась об Crucifix"],SP={3:"заморожена и рассыпалась",13:"получила разряд электроплазмы",14:"утонула в токсичной слизи",23:"растворилась в фэнтези-кислоте",25:"упала в лаву",36:"засосана Тёмной материей"};
+const pd=(it,u)=>it.heal?0:.2+.12*u+(/^s(25|13|36|3|14)$/.test(it.k)||(it.k[0]=="s"&&S[+it.k.slice(1)]&&S[+it.k.slice(1)].acid)?.2:0);
+S.forEach((x,i)=>{if(x.acid&&x.d)SP[i]=x.d});
+function die(it,m){const n=+it.k.slice(1),c=(it.k[0]=="s"&&SP[n])||DEAD[Math.random()*DEAD.length|0];m.dead=c;m.t="Погибла";m.st=0;m.f=0;m.g=0;D.st.dead=(D.st.dead||0)+1;return c}
+const NM=["Раш","Сик","Тимоти","Джефф","Гигл","Скрич","Халт","Дюп","Глитч","Бублик","Гром","Соня"],PS=["Вечно мчится","Следит глазами","Прячется в ящиках","Торгует в углу","Хихикает","Любопытная","Трусливая","Храбрая"];
+$("#deliv").onclick=()=>{const used=new Set();D.mice=[0,1,2,3].map(()=>{let n;do{n=NM[Math.random()*NM.length|0]}while(used.has(n));used.add(n);return{n,p:PS[Math.random()*PS.length|0],h:Math.random()*360|0,s:1,g:0,f:0,e:"🐭",t:"Здорова",st:0}});sel=0;D.deliv=(D.deliv||0)+1;D.hist.unshift("📦 Новая поставка мышей №"+D.deliv);D.hist.length=Math.min(D.hist.length,40);snd.disc();save();mice();$("#mlog").textContent="Пришла новая поставка: 4 свежие мыши!"};
+const mf=m=>m.dead?"grayscale(1) brightness(.8)":`sepia(.9) saturate(3) hue-rotate(${m.h}deg)`+(m.g?" drop-shadow(0 0 12px #ffe)":"");
+const cn=m=>{const h=(40+m.h)%360;return h<15||h>=345?"красный":h<45?"оранжевый":h<70?"жёлтый":h<165?"зелёный":h<200?"бирюзовый":h<255?"синий":h<290?"фиолетовый":"розовый"};
+const szn=m=>m.s>1.3?"великан":m.s<.8?"крошка":"обычный";
+const ds=m=>({"Размер":szn(m),"Цвет":cn(m),"Свечение":m.g?"светится":"нет","Полёт":m.f?"парит":"на земле","Облик":m.dead?"скелет 💀":m.e=="🐭"?"мышь":m.e=="TANK"?"танк":"фэнтези-существо "+m.e,"Пар":m.st?"идёт пар":"нет","Состояние":m.t,"Жизнь":m.dead?"погибла: "+m.dead:"жива"});
+function diff(b,m){if(!b)return"";const x=ds(b),y=ds(m);const r=Object.keys(y).filter(k=>x[k]!=y[k]).map(k=>`<div>${k}: ${x[k]} → <b class="ok">${y[k]}</b></div>`).join("");return `<div class="mut">Что изменилось:</div>`+(r||"<div>Внешне без изменений</div>")}
+const DF=["В животе найден ключ от двери 🔑","Внутри светится Guiding Light и указывает путь","Под рёбрами спрятан Crucifix: Ambush и Rush обходят мышь стороной","В ухе застрял Screech: слышно «псс...»","В лапе остаток Vitamins: бежать заметно быстрее","В костях нашлась зажигалка Lighter","Из кишечника смотрит Eyes. Не смотрите в ответ!","В хвосте прячется тень Тимоти","В костях звенят 2 монетки Knobs","По рёбрам пробежал Halt: стало холодно","Скелет выглядит как Дверь 50","Seek гнался, но мышь убежала"];
+$("#xray").onclick=()=>{const m=D.mice[sel],d=ds(m),k=hash(m.n+(m.l||[]).length+D.st.tests);const f=[DF[k%DF.length],DF[(k>>3)%DF.length]].filter((v,i,a)=>a.indexOf(v)==i);snd.glow();$("#pb").innerHTML=`<div class="xr"><div class="scan"></div><div class="mw" style="height:120px"><div class="mo" style="font-size:${60*m.s}px;filter:grayscale(1) invert(1) sepia(1) hue-rotate(80deg) saturate(5);animation:none">${mi(m)}</div>${stm(m)}</div><div style="font-size:26px">🦴🦴🦴</div></div><h3 style="margin:8px 0">Рентген: ${m.n}</h3><div class="df">${Object.keys(d).map(q=>`<div>${q}: <b class="ok">${d[q]}</b></div>`).join("")}</div><div class="df"><div class="mut">Находки:</div>${f.map(t=>`<div>• ${t}</div>`).join("")}</div>${(m.l&&m.l.length)?`<div class="df"><div class="mut">Последнее:</div>${m.l.slice(0,3).map(t=>`<div>• ${t}</div>`).join("")}</div>`:""}<button class="go" style="width:100%" id="pok">Ок</button>`;$("#pop").classList.add("on");$("#pok").onclick=()=>$("#pop").classList.remove("on")};
+function getItem(v){if(!v)return null;const t=v[0],n=+v.slice(1);if(t=="s"&&S[n])return{e:ico(S[n]),n:S[n].n,k:"s"+n,heal:n==TK};const p=(D.potions||[])[n];if(t=="p"&&p){if(p.img)return{e:'<img src="'+p.img+'" style="width:1.4em;height:1.4em;border-radius:6px;vertical-align:middle">',n:p.n,k:"ph"+n,photo:p};return{e:"🧪",n:p.n,k:"p"+p.ids.join("-"),heal:p.ids.includes(TK)}};if(t=="c"&&mix.length)return{e:"🧫",n:"Текущая смесь",k:"c"+mix.join("-"),heal:mix.includes(TK)};return null}
+function showPop(m,o,s,u,b){$("#pb").innerHTML=`<div class="mw" style="height:130px"><div class="mo" style="font-size:${70*m.s}px;filter:${mf(m)};animation:pp .9s ease-out">${mi(m)}</div>${stm(m)}</div><h3 style="margin:8px 0">${m.n} + ${s.e} ${s.n}</h3><div style="font-size:17px;margin:6px 0">${o[1]}</div><div class="df">${diff(b,m)}</div><div class="mut">Состояние: ${m.t}${m.s>1?" · увеличена":m.s<1?" · уменьшена":""}${m.f?" · парит":""}${m.g?" · светится":""}</div><div class="ok" style="margin:6px 0">+${10+u*3} XP</div><button class="go" style="width:100%" id="pok">Ок</button>`;$("#pop").classList.add("on");$("#pok").onclick=()=>$("#pop").classList.remove("on")}
+$("#pop").onclick=e=>{if(e.target.id=="pop")$("#pop").classList.remove("on")};
+/* encyclopedia, challenges */
+function enc(){const n=Object.keys(D.disc).length;$("#encl").innerHTML=`<div class="card"><b>Изучено веществ: ${Object.keys(D.seen).length} / ${S.length}</b><div class="mut">Скрытых: ${Object.keys(D.disc).filter(i=>i>=40).length} / 15. Реакций изучено: ${D.mixes.length}</div></div><div class="grid">`+S.map((s,i)=>`<div class="cell ${D.disc[i]||D.seen[i]?"":"lock"}"><b>${D.disc[i]||D.seen[i]?ico(s):"❔"}</b>${D.disc[i]||D.seen[i]?s.n:"???"}</div>`).join("")+`</div><div class="card"><b>История</b>${D.hist.map(h=>`<div class="mut">${h}</div>`).join("")||"<div class=mut>Пока пусто</div>"}</div>`}
+function chl(){$("#chll").innerHTML=CH.map((c,i)=>`<div class="card ${D.done[i]?"ok":""}">${D.done[i]?"✔":"○"} ${DN[i]||c[0]} <span class="mut">+50 XP</span></div>`).join("")}
+function chk(){CH.forEach((c,i)=>{if(!D.done[i]&&c[1](D)){D.done[i]=1;say("Достижение: "+c[0]+"! +50 XP");snd.disc();D.xp+=50;hud()}});save()}
+function hud(){const x=D.xp%100;$("#lv").textContent="Дверь №"+lvl()+" · "+D.xp+" XP";$("#xb").style.width=x+"%"}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button,.sec").forEach(e=>e.classList.remove("on"));b.classList.add("on");$("#"+b.dataset.t).classList.add("on");if(b.dataset.t=="mice")mice();if(b.dataset.t=="enc")enc();if(b.dataset.t=="chl")chl();if(b.dataset.t=="lab")rs()});
+D.mode="sandbox";if(D.mice&&D.mice[0]&&D.mice[0].n=="Пискля")D.mice.forEach((m,i)=>{m.n=MICE[i][0];m.p=MICE[i][1]});
+$("#vs").value=D.vs;$("#vm").value=D.vm;$("#vs").oninput=e=>{D.vs=+e.target.value;save()};$("#vm").oninput=e=>{D.vm=+e.target.value;if(mus)mus.g.gain.value=D.vm*.06;save()};
+$("#reset").onclick=()=>{if(confirm("Удалить весь прогресс?")){D=def();save();mix=[];hud();inv();say("Прогресс сброшен.")}};
+document.addEventListener("pointerdown",()=>ac(),{once:true});
+
+const phf=$("#phf");
+function phOpen(cam){if(cam)phf.setAttribute("capture","environment");else phf.removeAttribute("capture");phf.value="";phf.click()}
+$("#phcam").onclick=()=>phOpen(1);$("#phgal").onclick=()=>phOpen(0);
+phf.onchange=()=>{};
+
+hud();inv();
+</script>
+<script>
+/* MAD LAB v2 — дополнение. Подключается после основного скрипта. */
+(function(){
+var stl=document.createElement("style");
+stl.textContent="@keyframes dMelt{0%{transform:none}60%{transform:scale(1.1,.5) translateY(14px);filter:hue-rotate(90deg) saturate(4)}100%{transform:scale(1.5,.05) translateY(40px);opacity:0}}"+
+"@keyframes dFrz{0%{filter:none}30%{filter:grayscale(1) brightness(2) hue-rotate(160deg)}50%,70%{transform:translateX(-5px)}60%,80%{transform:translateX(5px)}100%{transform:scale(.2) rotate(40deg);opacity:0}}"+
+"@keyframes dBurn{0%{filter:none}30%{filter:brightness(1.8) sepia(1) saturate(6)}100%{filter:brightness(.1);transform:scale(.7) translateY(10px);opacity:.2}}"+
+"@keyframes dBoom{0%{transform:scale(1)}40%{transform:scale(2.2);filter:brightness(3)}100%{transform:scale(3);opacity:0}}"+
+"@keyframes dZap{0%,20%,40%,60%{filter:invert(1)}10%,30%,50%,70%{filter:none;transform:translateX(4px)}100%{filter:brightness(.2);transform:none}}"+
+"@keyframes dVoid{0%{transform:none}100%{transform:rotate(720deg) scale(0);opacity:0}}"+
+"@keyframes dFlat{0%{transform:none}100%{transform:scale(1.6,.1) translateY(30px)}}"+
+"@keyframes dSteam{0%{opacity:1}100%{opacity:0;transform:translateY(-60px) scale(1.4);filter:blur(8px)}}"+
+"@keyframes oSink{to{transform:translateY(66px) rotate(200deg)}}"+
+"@keyframes oFloat{0%{transform:translateY(0)}40%{transform:translateY(24px)}100%{transform:translateY(20px) rotate(10deg)}}"+
+".fxe{font-size:40px;display:block;position:absolute;left:0;right:0;top:-6px;animation:wob 1s infinite}";
+document.head.appendChild(stl);
+
+/* ---------- данные ---------- */
+var NS=[["Сухой песок","🏜️","#e0c27a"],["Мокрый песок","🟫","#a8864f"],["Глина","🧱","#b5651d"],["Какао","☕","#5a3825"],["Мёд","🍯","#e8a317"],["Спирт","🍸","#dff"],["Перекись","🧴","#cdeaff"]];
+var SAND=S.length,WET=SAND+1;
+NS.forEach(function(a){S.push({n:a[0],e:a[1],c:a[2]})});
+R.push([[SAND,27],WET]);
+NM.splice(0,NM.length,"Тимофей","Тимоша","Тимка","Тимофеич","Раш","Гигл","Халт","Дюп","Глитч","Бублик","Гром","Соня");
+Object.assign(FM,{smoke:"Из колбы валит густой дым!",glow:"Смесь вспыхнула неоновым светом.",foam:"Поднялась пена и пузыри!",freeze:"Всё мгновенно замёрзло.",expand:"Смесь раздулась и полезла вверх!",boom:"БАБАХ! Маленький мультяшный взрыв!",crystal:"В колбе вырастают кристаллы.",mutate:"Смесь мутирует и меняет цвет!",color:"Цвет смеси переливается.",calm:"Ничего не произошло... пока. Где-то хлопнула дверь."});
+DN.splice(0,DN.length,"Открой 3 вещества","Открой 10 веществ","Вызови взрыв","Вырасти кристалл","Проведи 3 эксперимента","Сделай 15 смесей","Получи Квинтэссенцию");
+DF.splice(0,DF.length,"В животе найден маленький ключик 🔑","Внутри что-то светится","Под рёбрами спрятан крестик","В лапе остаток витаминов: бежит быстрее","В костях нашлась зажигалка","В костях звенят 2 монетки","Скелет выглядит довольным","Рядом с мышью проскочил Rush: ШУУУ!","Из кишечника смотрят глаза. Не смотрите в ответ!");
+var PL=["Хотя бы цвет сменила!","Мышь сменила цвет!"];
+var TXT=["Мышь сменила цвет!","Мышь начала светиться!","Мышь стала огромной!","Мышь стала крошечной!","Суперскорость! Мышь исчезла в размытом пятне.","Мышь парит в воздухе!","Мышь превратилась в фантастическое существо!","От мыши идёт пар! Она вся в облачках.","Мышь обрела мультяшную суперсилу!","Ничего не произошло.","Мышь стала странной и довольной.","Мышь превратилась в стальной танк!"];
+OUT.forEach(function(o,i){if(TXT[i])o[1]=TXT[i]});
+var K=0;
+OUT[0][2]=function(m){m.h=(m.h+60+K%200)%360};
+OUT[6][2]=function(m){m.e=["🦄","🐲","👁️","🕷️","👻","🧚"][K%6]};
+OUT[10][2]=function(m){m.h=K%360;m.s=1.2;m.t="Странная"};
+
+/* ---------- реалистичная мышь ---------- */
+var MS='<svg viewBox="0 0 100 64" style="width:1em;height:.64em;vertical-align:middle">'+
+'<path d="M16 50 C-6 52 -4 22 10 20" stroke="#d9a5a5" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+'<ellipse cx="30" cy="59" rx="7" ry="3" fill="#e8b4b8"/><ellipse cx="68" cy="59" rx="7" ry="3" fill="#e8b4b8"/>'+
+'<ellipse cx="50" cy="42" rx="34" ry="18" fill="#8b8680"/><ellipse cx="52" cy="49" rx="24" ry="9" fill="#b5afa8"/>'+
+'<ellipse cx="80" cy="40" rx="15" ry="11" fill="#9a948d"/><path d="M90 34 L100 41 L90 47Z" fill="#8f8a84"/>'+
+'<circle cx="99" cy="41" r="2.6" fill="#e88"/><circle cx="72" cy="26" r="9" fill="#9a948d"/><circle cx="72" cy="26" r="5.5" fill="#e8b4b8"/>'+
+'<circle cx="86" cy="27" r="7" fill="#9a948d"/><circle cx="86" cy="27" r="4" fill="#e8b4b8"/>'+
+'<circle cx="87" cy="37" r="2.4" fill="#111"/><circle cx="87.7" cy="36.3" r=".8" fill="#fff"/>'+
+'<path d="M92 42 L108 36 M92 43 L108 44 M92 45 L106 51" stroke="#ddd" stroke-width=".8"/></svg>';
+function fixMice(r){r.querySelectorAll(".mo").forEach(function(o){if(o.textContent=="🐭")o.innerHTML=MS})}
+var mo0=mice;mice=function(){mo0();fixMice(document);rebuildSel()};
+var sp0=showPop;showPop=function(){sp0.apply(this,arguments);fixMice($("#pb"))};
+var xr0=$("#xray").onclick;$("#xray").onclick=function(){xr0();fixMice($("#pb"))};
+
+/* ---------- имена: Тимофей ---------- */
+D.mice.forEach(function(m){if(m.n=="Тимоти"){m.n="Тимофей";m.p="Тот самый Тимофей"}if(m.n=="Сик"){m.n="Тимоша";m.p="Тёзка Тимофея"}});save();
+$("#deliv").onclick=function(){var T=["Тимофей","Тимоша","Тимка","Тимофеич"],TP=["Тёзка того самого Тимофея","Любимец Тимофея","Мышиная копия Тимофея","Родня Тимофея"],O=["Раш","Гигл","Халт","Дюп","Глитч","Бублик","Гром","Соня"];
+var pk=function(a,n){return a.slice().sort(function(){return Math.random()-.5}).slice(0,n)},r=function(a){return a[Math.random()*a.length|0]};
+var ns=pk(T,2).map(function(n){return{n:n,p:r(TP)}}).concat(pk(O,2).map(function(n){return{n:n,p:r(PS)}})).sort(function(){return Math.random()-.5});
+D.mice=ns.map(function(x){return{n:x.n,p:x.p,h:Math.random()*360|0,s:1,g:0,f:0,e:"🐭",t:"Здорова",st:0}});sel=0;D.deliv=(D.deliv||0)+1;D.hist.unshift("📦 Новая поставка мышей №"+D.deliv);snd.disc();save();mice();$("#mlog").textContent="Пришла новая поставка: 4 свежие мыши!"};
+
+/* ---------- перемешивание ---------- */
+var mixed=false,ph=null;
+var add0=add;add=function(i){var n=mix.length;add0(i);if(mix.length>n)mixed=false};
+var shk0=shake;shake=function(){if(mix.length<2){shk0();return}shk0();mixed=true;shk=100;spawn("foam",25,W/2,H*.5,col);try{navigator.vibrate&&navigator.vibrate([60,40,60,40,60,40,120])}catch(e){}snd.shake();setTimeout(snd.shake,350)};
+$("#shake").onclick=shake;
+var pr0=$("#pour").onclick;$("#pour").onclick=function(){pr0();mixed=false;ph=null;OBJ.length=0};
+$("#savem").onclick=function(){if(!mix.length)return;if(!mixed){say("Сначала встряхните колбу: зелье надо перемешать!");return}
+D.potions=D.potions||[];var nm="Зелье №"+(D.potions.length+1)+(ph?" 📷":"")+" ("+(mix.length>1?mix.map(function(i){return S[i].e}).join(""):S[mix[0]].n)+")";
+D.potions.push({n:nm,c:col,ids:mix.slice(),ph:ph?{img:ph.img,o:ph.o,person:ph.person}:null});say("Сохранено: "+nm+". Его можно испытать на мышах.");save()};
+
+/* ---------- панель в лаборатории: фото + предметы ---------- */
+var OB=[["🪙","Монета","metal"],["🔩","Гвоздь","metal"],["🍎","Яблоко","org"],["🍃","Лист","org"],["🧀","Сыр","org"],["🥚","Яйцо","org"],["🍫","Шоколадка","org"],["🪵","Щепка","wood"],["🦆","Резиновая уточка","plastic"],["🧸","Мишка","plastic"],["🪨","Камешек","stone"],["⚫","Гравий","stone"],["🌰","Опилки","wood"]];
+var bar=document.createElement("div");bar.className="row";
+bar.innerHTML='<button id="phc" style="flex:0 0 auto">📷</button><button id="phg" style="flex:0 0 auto">🖼</button><select id="osel">'+OB.map(function(o,i){return'<option value="'+i+'">'+o[0]+" "+o[1]+"</option>"}).join("")+'</select><button id="odrop" style="flex:0 0 auto">Бросить</button>';
+$("#lab").insertBefore(bar,$("#inv"));
+$("#phcam").parentNode.style.display="none";
+$("#phc").onclick=function(){phOpen(1)};$("#phg").onclick=function(){phOpen(0)};
+phf.onchange=function(){var f=phf.files&&phf.files[0];if(!f)return;var url=URL.createObjectURL(f),im=new Image();
+im.onload=function(){try{var c=document.createElement("canvas");c.width=c.height=48;var k=c.getContext("2d"),q=Math.min(im.width,im.height);k.drawImage(im,(im.width-q)/2,(im.height-q)/2,q,q,0,0,48,48);
+var d=k.getImageData(0,0,48,48).data,r=0,g=0,b=0,n=0,sk=0;
+for(var i=0;i<d.length;i+=4){var R_=d[i],G=d[i+1],B=d[i+2];r+=R_;g+=G;b+=B;n++;if(R_>95&&G>40&&B>20&&Math.max(R_,G,B)-Math.min(R_,G,B)>15&&Math.abs(R_-G)>15&&R_>G&&R_>B)sk++}
+var person=sk/n>.22,cc=hex([r/n,g/n,b/n]),img=c.toDataURL("image/jpeg",.7);
+var fin=function(p){ph={img:img,o:Math.random()*OUT.length|0,person:p};mixed=false;if(mix.length){var a=rgb(col),z=rgb(cc);col=hex([(a[0]+z[0])/2,(a[1]+z[1])/2,(a[2]+z[2])/2])}else col=cc;
+spawn("foam",10,W/2,H*.5,col);snd.disc();say("Фото добавлено в зелье! Встряхните колбу и сохраните: эффект узнаете на мыши.")};
+if("FaceDetector" in window){try{new FaceDetector().detect(im).then(function(fs){fin(fs.length>0||person)}).catch(function(){fin(person)})}catch(e){fin(person)}}else fin(person)}
+catch(e){say("Не удалось обработать фото.")}URL.revokeObjectURL(url)};
+im.onerror=function(){say("Не удалось открыть фото.");URL.revokeObjectURL(url)};im.src=url};
+
+/* ---------- бросить предмет в колбу ---------- */
+function objRes(t){var h=function(f){return mix.some(function(i){return f(S[i])})},
+acid=h(function(s){return s.acid}),cold=mix.some(function(i){return i==3||i==24}),hot=mix.some(function(i){return i==25||i==13}),
+oil=h(function(s){return s.n=="Масло"}),thick=h(function(s){return/Глина|песок/.test(s.n)}),sug=h(function(s){return/Сахар|Мёд/.test(s.n)});
+if(!mix.length)return["Колба пуста: предмет просто упал на дно.","sink"];
+if(acid)return t=="plastic"?["Плавится и растворяется в кислоте!","melt"]:["Растворяется в кислоте: пузырьки, дымок, предмет тает на глазах!","melt"];
+if(hot)return t=="metal"||t=="stone"?["Тонет и раскаляется докрасна.","sink"]:["Вспыхивает и сгорает!","burn"];
+if(cold)return["Примерзает к поверхности и покрывается инеем.","freeze"];
+if(thick)return["Вязнет в густой массе и медленно тонет.","sink"];
+if(oil)return t=="metal"||t=="stone"?["Тонет сквозь масло.","sink"]:["Плавает на масле.","float"];
+if(sug)return["Тонет медленно в сиропе.","sink"];
+return t=="metal"||t=="stone"?["Тонет на дно.","sink"]:["Плавает на поверхности.","float"]}
+$("#odrop").onclick=function(){var o=OB[+$("#osel").value],r=objRes(o[2]);ac();snd.pour();
+if(OBJ.length>=6)OBJ.shift();OBJ.push({e:o[0],k:r[1],x:(Math.random()-.5)*40,y:-H*.62-10,vy:0,s:1,t:0,rot:0,landed:0});
+say(o[0]+" "+o[1]+": "+r[0]);D.hist.unshift(o[1]+" → "+r[0]);gain(2)};
+
+/* ---------- мыши: только зелья, без случайности ---------- */
+function rebuildSel(){var pv=$("#msub").value,pt=D.potions||[],h=(mixed&&mix.length)?'<option value="c">🧫 Текущая колба ('+mix.length+")</option>":"";
+h+=pt.map(function(p,i){return'<option value="p'+i+'">🧪 '+p.n+"</option>"}).join("");if(!h)h='<option value="">Нет зелий: смешайте и сохраните</option>';
+$("#msub").innerHTML=h;if([].some.call($("#msub").options,function(o){return o.value==pv}))$("#msub").value=pv}
+getItem=function(v){if(!v)return null;var t=v[0],n=+v.slice(1);
+if(t=="p"){var p=(D.potions||[])[n];if(!p)return null;return{e:p.ph?'<img src="'+p.ph.img+'" style="width:1.4em;height:1.4em;border-radius:6px;vertical-align:middle">':"🧪",n:p.n,k:"p"+p.ids.join("-")+(p.ph?"ph"+p.ph.o:""),ids:p.ids,ph:p.ph,heal:p.ids.indexOf(TK)>=0}}
+if(t=="c"&&mixed&&mix.length)return{e:"🧫",n:"Текущая смесь",k:"c"+mix.join("-"),ids:mix.slice(),ph:ph,heal:mix.indexOf(TK)>=0};return null};
+var CL={melt:"🟢",freeze:"❄️",burn:"🔥",boom:"💥",zap:"⚡",void:"🌀",flat:"🛡️",steam:"♨️"},AN={melt:"dMelt",freeze:"dFrz",burn:"dBurn",boom:"dBoom",zap:"dZap",void:"dVoid",flat:"dFlat",steam:"dSteam"};
+function cause(ids,k){for(var j=0;j<ids.length;j++){var s=S[ids[j]];if(s.acid)return["melt",s.d]}
+var h=function(x){return ids.indexOf(x)>=0};
+if(h(TK))return["flat","раздавлена танком Сталиниума"];if(h(25))return["burn","упала в лаву"];if(h(13))return["zap","получила разряд электроплазмы"];if(h(36))return["void","засосана Тёмной материей"];if(h(3)||h(24))return["freeze","заморожена и рассыпалась"];if(h(14))return["melt","утонула в токсичной слизи"];
+var al=["Na","K","Fr","Li"].some(function(s){return h(Z(s))});if(al&&h(27))return["boom","взорвалась: щелочной металл бурно реагирует с водой"];
+var T=[["Hg","steam","отравилась парами ртути"],["U","zap","получила смертельную дозу радиации"],["Ra","zap","получила смертельную дозу радиации"],["Po","zap","получила смертельную дозу радиации"],["As","steam","отравилась мышьяком"],["Pb","steam","отравилась свинцом"],["Cd","steam","отравилась кадмием"],["Tl","steam","отравилась таллием"]];
+for(var q=0;q<T.length;q++)if(h(Z(T[q][0])))return[T[q][1],T[q][2]];
+return null}
+function popDeath(m,c,it){var alive=Object.assign({},m,{dead:0});
+$("#pb").innerHTML='<div class="mw" style="height:130px"><span class="fxe">'+CL[c[0]]+'</span><div class="mo" id="dmo" style="font-size:'+70*m.s+"px;filter:"+mf(alive)+";animation:"+AN[c[0]]+' 2.2s ease-in forwards">'+(m.e=="🐭"?MS:mi(alive))+'</div></div><h3 style="margin:8px 0">'+m.n+" + "+it.e+" "+it.n+'</h3><div style="font-size:17px;margin:6px 0">Мышь погибла: '+c[1]+'</div><button class="go" style="width:100%" id="pok">Ок</button>';
+$("#pop").classList.add("on");$("#pok").onclick=function(){$("#pop").classList.remove("on")};
+setTimeout(function(){var e=$("#dmo");if(e){e.style.animation="none";e.style.filter="grayscale(1)";e.style.opacity=1;e.style.transform="none";e.textContent="💀"}},2300)}
+$("#test").onclick=function(){var it=getItem($("#msub").value);
+if(!it){$("#mlog").textContent="Нужно зелье: смешайте вещества в колбе (встряхните) и нажмите «Сохранить». Давать мышам можно только зелья.";return}
+var m=D.mice[sel];if(m.dead&&!it.heal){$("#mlog").textContent=m.n+" мертва: "+m.dead+". Выберите другую мышь.";return}
+var u=+$("#un").value,k=hash(it.k),b=Object.assign({},m),o,death=null;
+if(it.heal)o=HEAL;
+else if(it.ph){K=it.ph.o;o=it.ph.person?["love",m.n+" влюбилась в человека с фото! «Я влюблена!» 💕",function(x){x.t="Влюблена 💕"}]:OUT[it.ph.o%OUT.length].slice()}
+else{K=k;var dng=it.ids.some(function(i){return S[i].acid||[3,13,14,24,25,36].indexOf(i)>=0});
+death=cause(it.ids,k);o=OUT[k%OUT.length].slice();if(k%8==0)o[1]+=" (Где-то вдалеке хлопнула дверь.)"}
+if(death){m.dead=death[1];m.t="Погибла";m.st=0;m.f=0;m.g=0;D.st.dead=(D.st.dead||0)+1;o=["dead","Мышь погибла: "+death[1]]}
+else{o[2](m);if(o[3])m.t=o[3]}
+m.l=m.l||[];m.l.unshift(it.n+": "+o[1]);m.l.length=Math.min(m.l.length,5);D.st.tests++;D.hist.unshift(m.n+" + "+it.n+" → "+o[1]);D.hist.length=Math.min(D.hist.length,40);
+$("#mlog").textContent=m.n+" ("+m.p+"): "+o[1];
+if(death){popDeath(m,death,it);beep(200,.6,"sawtooth",.4,40)}else{showPop(m,o,it,u,b);if(o[0]=="love"||o[0]=="fantasy"||o[0]=="weird")snd.disc();else snd.bub()}
+gain(10+u*3);mice();chk();if(D.mice.every(function(x){return x.dead}))$("#mlog").textContent="Все мыши погибли! Нажмите «Новая поставка мышей»."};
+$("#ul").parentNode.firstChild.textContent="Опасность зелья: ";
+
+/* ---------- перевернул телефон: зелье пролилось ---------- */
+var spOn=false;
+function spill(){if(!mix.length||spOn)return;spOn=true;var w=innerWidth,h=innerHeight,cl=col,c=document.createElement("canvas");
+c.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;z-index:15;touch-action:none";c.width=w;c.height=h;document.body.appendChild(c);var g=c.getContext("2d");
+g.fillStyle=cl;g.globalAlpha=.88;
+function blob(x,y,rx,ry){g.beginPath();for(var a=0;a<=6.4;a+=.3){var q=1+.18*Math.sin(a*3+x)+.1*Math.sin(a*5+y);g.lineTo(x+Math.cos(a)*rx*q,y+Math.sin(a)*ry*q)}g.closePath();g.fill()}
+var cx0=w*.5,cy0=h*.32;blob(cx0,cy0,w*.3,h*.09);blob(cx0-w*.18,cy0+h*.07,w*.12,h*.05);blob(cx0+w*.2,cy0+h*.06,w*.1,h*.04);
+for(var i=0;i<8;i++){var x=w*(.22+.56*Math.random()),y0=cy0+h*.03,len=h*(.12+.38*Math.random());g.fillRect(x-4,y0,8,len);g.beginPath();g.arc(x,y0+len,6,0,6.3);g.fill()}
+for(i=0;i<9;i++)blob(w*Math.random(),h*(.25+.6*Math.random()),4+Math.random()*9,4+Math.random()*9);
+g.globalAlpha=.25;g.strokeStyle="#fff";g.lineWidth=3;g.beginPath();g.arc(cx0-w*.1,cy0-h*.01,w*.09,3.4,4.6);g.stroke();g.globalAlpha=1;
+var img=g.getImageData(0,0,w,h).data,pts=[];for(var yy=0;yy<h;yy+=14)for(var xx=0;xx<w;xx+=14){if(img[(yy*w+xx)*4+3]>40)pts.push((yy*w+xx)*4+3)}var tot=pts.length;
+var bn=document.createElement("div");bn.style.cssText="position:fixed;top:8px;left:8px;right:8px;z-index:16;background:#120f1f;border:2px solid #ff3df0;border-radius:12px;padding:8px;text-align:center;color:#e8e4ff";bn.textContent="Колба опрокинулась! Протрите экран тряпкой 🧽";document.body.appendChild(bn);
+var rag=document.createElement("div");rag.textContent="🧽";rag.style.cssText="position:fixed;z-index:17;font-size:48px;pointer-events:none;left:"+(w/2-24)+"px;top:"+(h*.7)+"px";document.body.appendChild(rag);
+mix=[];ph=null;mixed=false;fxK="";OBJ.length=0;snd.pour();try{navigator.vibrate&&navigator.vibrate([80,40,80])}catch(e){}
+var down=false,lx=0,ly=0,lastChk=0;g.lineCap="round";g.lineJoin="round";
+function chkc(){var d=g.getImageData(0,0,w,h).data,left=0;for(var j=0;j<pts.length;j++)if(d[pts[j]]>40)left++;if(left<tot*.06){c.remove();bn.remove();rag.remove();spOn=false;say("Экран вытерт. Колба пустая.");snd.disc()}}
+function mv(e){rag.style.left=(e.clientX-24)+"px";rag.style.top=(e.clientY-24)+"px";if(!down)return;g.globalCompositeOperation="destination-out";g.lineWidth=70;g.beginPath();g.moveTo(lx,ly);g.lineTo(e.clientX,e.clientY);g.stroke();g.globalCompositeOperation="source-over";lx=e.clientX;ly=e.clientY;var n=Date.now();if(n-lastChk>350){lastChk=n;chkc()}}
+c.onpointerdown=function(e){down=true;lx=e.clientX;ly=e.clientY;mv(e)};c.onpointermove=mv;c.onpointerup=c.onpointercancel=function(){down=false;chkc()}}
+try{matchMedia("(orientation:landscape)").addEventListener("change",function(e){if(e.matches)spill()})}catch(e){}
+
+hud();inv();rebuildSel();
+})();
+
+</script></body></html>
