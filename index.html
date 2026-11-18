@@ -64,6 +64,21 @@ nav button{font-size:12px;padding:12px 0;min-width:0;overflow:hidden;text-overfl
 .mc.dead{opacity:.8}.mc.dead::after{content:"R.I.P";position:absolute;right:8px;top:6px;color:var(--dim);font-weight:700}
 .cell svg{width:1.3em;height:.85em}
 input[type=range]{width:100%}
+.sign{max-height:94vh;max-height:94dvh;overflow:auto}
+.plq{border:2px dashed var(--n1);border-radius:12px;padding:8px;margin:0 0 14px;background:#031a0c;box-shadow:0 0 14px #39ff9c44}
+.plh{color:var(--n1);font-weight:700;letter-spacing:1px;margin-bottom:4px}
+.plw{height:84px;overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 25%,#000 75%,transparent);mask-image:linear-gradient(transparent,#000 25%,#000 75%,transparent)}
+.pll{animation:plup 7s linear infinite}.pll div{font:900 24px/42px Impact,"Arial Black",sans-serif;color:var(--n3);text-shadow:0 0 10px var(--n3)}
+@keyframes plup{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+@media (prefers-reduced-motion:reduce){.pll{animation:none}.plw{overflow:auto}}
+.king{text-align:center;margin-bottom:8px;padding:8px 4px;border-radius:10px;background:linear-gradient(90deg,#ff3df022,#ffc83a33,#39ff9c22);border:2px solid #ffc83a;box-shadow:0 0 22px #ffc83aaa;animation:kg 1.6s ease-in-out infinite}
+.kc{font-size:34px;line-height:1;animation:wob 1.4s ease-in-out infinite}
+.kn{font:900 34px/1.1 Impact,"Arial Black",sans-serif;letter-spacing:3px;background:linear-gradient(90deg,#ffc83a,#ff3df0,#3dd5ff,#39ff9c,#ffc83a);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:rb 3s linear infinite}
+.ks{color:#ffc83a;font-size:13px;font-weight:700}
+.pll .tk{color:#ffc83a;text-shadow:0 0 14px #ffc83a,0 0 28px #ff3df0;font-size:28px}
+@keyframes kg{0%,100%{box-shadow:0 0 14px #ffc83a88}50%{box-shadow:0 0 30px #ffc83a,0 0 50px #ff3df066}}
+@keyframes rb{to{background-position:300% 0}}
+@media (prefers-reduced-motion:reduce){.king,.kn,.kc{animation:none}}
 </style></head><body>
 <div id="err" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:99;background:#a00;color:#fff;padding:8px;font:12px monospace"></div>
 <script>window.onerror=function(m,u,l){var e=document.getElementById("err");if(e){e.style.display="block";e.textContent="Ошибка: "+m+" (строка "+l+")"}}</script>
@@ -91,7 +106,7 @@ input[type=range]{width:100%}
 
 <section id="enc" class="sec"><div id="encl"></div></section>
 <div id="pop"><div class="pb" id="pb"></div></div>
-<div id="gate"><div class="sign"><div class="no">⛔</div><h2>МИЛАНЕ ЗАПРЕЩЁН ВХОД</h2><p>Лаборатория закрыта для Миланы. Даже Guiding Light не поможет.</p><button class="go" id="gok" onclick="gateOpen()">Я не Милана, войти</button></div></div>
+<div id="gate"><div class="sign"><div class="no">⛔</div><h2>МИЛАНЕ ЗАПРЕЩЁН ВХОД</h2><p>Лаборатория закрыта для Миланы.<br><b style="color:#ff4a4a">Милана, тебе здесь никто не поможет. Даже Guiding Light.</b><br>Ты Милана? Жми «Я Милана» и уходи. Ты не Милана? Добро пожаловать!</p><div class="plq"><div class="king"><div class="kc">👑</div><div class="kn">ТИМОФЕЙ</div><div class="ks">самый крутой · приветствуется больше всех!</div></div><div class="plh">✨ Особо приветствуются ✨</div><div class="plw"><div class="pll"><div class="tk">👑 Тимофей 👑</div><div>💖 Камилла</div><div>⭐ Гоша</div><div>🌸 Лера</div><div class="tk">👑 Тимофей 👑</div><div>💖 Камилла</div><div>⭐ Гоша</div><div>🌸 Лера</div></div></div></div><button class="go" id="gok" style="width:100%" onclick="gateOpen()">Я не Милана, войти</button><button id="gno" style="width:100%;margin-top:8px" onclick="milKick()">Я Милана</button></div></div>
 <script>function gateOpen(){try{[0,160,320].forEach(function(d){setTimeout(function(){try{beep(90,.1,"square",.4)}catch(e){}},d)})}catch(e){}var g=document.getElementById("gate");if(g)g.parentNode.removeChild(g)}</script>
 <section id="chl" class="sec"><div id="chll"></div>
 <div class="card"><div>Звук <input type="range" id="vs" min="0" max="1" step=".05"></div><div>Музыка <input type="range" id="vm" min="0" max="1" step=".05"></div>
@@ -402,6 +417,14 @@ function mv(e){rag.style.left=(e.clientX-24)+"px";rag.style.top=(e.clientY-24)+"
 c.onpointerdown=function(e){down=true;lx=e.clientX;ly=e.clientY;mv(e)};c.onpointermove=mv;c.onpointerup=c.onpointercancel=function(){down=false;chkc()}}
 try{matchMedia("(orientation:landscape)").addEventListener("change",function(e){if(e.matches)spill()})}catch(e){}
 
+
+/* Милана: выкинуть с сайта */
+window.milKick=function(){var g=document.querySelector(".sign");if(g)g.innerHTML='<div class="no">🚪</div><h2>ВЫХОД</h2>';try{beep(90,.3,"square",.4)}catch(e){}setTimeout(function(){try{window.close()}catch(e){}location.replace("about:blank")},700)};
+/* переворот телефона: наклон */
+var tiltOn=false;
+function tilt(e){if(e.beta==null)return;var bad=e.beta<-30||Math.abs(e.gamma)>60;if(bad&&!tiltOn){tiltOn=true;spill()}else if(!bad&&Math.abs(e.gamma)<40&&e.beta>20)tiltOn=false}
+addEventListener("deviceorientation",tilt);
+document.addEventListener("click",function(){try{if(window.DeviceOrientationEvent&&DeviceOrientationEvent.requestPermission)DeviceOrientationEvent.requestPermission().catch(function(){})}catch(e){}},{once:true});
 hud();inv();rebuildSel();
 })();
 
