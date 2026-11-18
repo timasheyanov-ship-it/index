@@ -452,9 +452,10 @@ var vd=document.getElementById("mvd"),mc=document.getElementById("mvc");
 function clr(){tm.forEach(clearTimeout);tm=[]}
 function later(f,ms){tm.push(setTimeout(f,ms))}
 function closeAd(){document.getElementById("mvi").style.display="none";vd.pause();vd.style.display="none";ov.classList.remove("on");if(meme)later(showAd,25000+Math.random()*20000)}
+function quiet(){try{var a=ac();if(!a)return 0;if(!vd._s){var s=a.createMediaElementSource(vd),g=a.createGain();g.gain.value=.15;s.connect(g);g.connect(a.destination);vd._s=1}return 1}catch(e){return 0}}
 function showAd(){if(!meme)return;if(!V.length){later(showAd,15000);return}ov.classList.add("on");vd.style.display="none";document.getElementById("mvi").style.display="none";mc.style.display="block";mc.textContent="3";
 later(function(){mc.textContent="2"},1000);later(function(){mc.textContent="1"},2000);
-later(function(){var i;do{i=Math.random()*V.length|0}while(i==lastV&&V.length>1);lastV=i;mc.style.display="none";vd.style.display="block";vd.src=V[i];vd.muted=false;vd.volume=.3;var p=vd.play();if(p&&p.catch)p.catch(function(){vd.muted=true;vd.play().catch(function(){})})},3000)}
+later(function(){var i;do{i=Math.random()*V.length|0}while(i==lastV&&V.length>1);lastV=i;mc.style.display="none";vd.style.display="block";vd.src=V[i];vd.muted=false;vd.volume=quiet()?1:.12;var p=vd.play();if(p&&p.catch)p.catch(function(){vd.muted=true;vd.play().catch(function(){})})},3000)}
 vd.onerror=function(){if(ov.classList.contains("on")){vd.style.display="none";mc.style.display="block";mc.style.fontSize="16px";mc.textContent="Видео не найдено. Проверь папку videos на GitHub.";tm.push(setTimeout(function(){clr();mc.style.fontSize="";closeAd()},3500))}};vd.onended=function(){if(ov.classList.contains("on")){clr();closeAd()}};
 document.getElementById("mvx").onclick=function(){clr();closeAd()};
 function lera(m,i){m.n="Лера";m.p=["Странная Лера","Лера Тимофеевна","Лера с лишними лапами","Лера (не та Лера)"][i%4];if(!m.dead){m.s=[.7,1.5,1.2,.9][i%4];m.h=Math.random()*360|0;m.g=i%2;m.f=(i+1)%2;m.t="Очень странная"}}
