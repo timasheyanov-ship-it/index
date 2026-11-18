@@ -472,4 +472,109 @@ var mo0=mice;mice=function(){mo0();document.querySelectorAll(".mc b").forEach(fu
 var t0=$("#test").onclick;$("#test").onclick=function(){t0();var m=D.mice[sel],l=$("#mlog");if(m&&/^Тим/.test(m.n))l.textContent+=" · "+pk(m.dead?MO:TM);if(meme)l.textContent=pk()+" · "+l.textContent};
 var dl=$("#deliv").onclick;$("#deliv").onclick=function(){dl();if(meme)D.mice.forEach(lera),save(),mice()};
 })();
-</script></body></html>
+</script><!-- MAD LAB PATCH v3: вставь ЭТОТ блок в index.html прямо перед </body> (после всех остальных скриптов) -->
+<style>
+h1{cursor:pointer;user-select:none;background:linear-gradient(90deg,#39ff9c,#3dd5ff,#ff3df0,#39ff9c);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;animation:rb 5s linear infinite;text-shadow:none!important;filter:drop-shadow(0 0 8px #ff3df0)}
+body{background:radial-gradient(circle at 50% 0,#1a1040,#07060d 60%) fixed}
+.cell,.mc,.card{transition:transform .15s,box-shadow .2s}
+.cell:hover{box-shadow:0 0 12px #3dd5ff88;transform:translateY(-2px)}
+button.go{box-shadow:0 0 14px #39ff9c88}
+#lab{position:relative}
+#ptab{display:none;gap:2px;grid-template-columns:repeat(18,minmax(30px,1fr));grid-template-rows:repeat(7,auto) 8px repeat(2,auto);overflow:auto;flex:1;min-height:0;align-content:start}
+.pc{background:var(--pn);border:1px solid var(--ln);border-bottom:3px solid;border-radius:6px;text-align:center;font-size:8px;min-height:38px;padding:1px;cursor:pointer;color:var(--dim)}
+.pc b{display:block;font-size:15px;font-weight:700;color:var(--tx)}
+.pc:active{transform:scale(.9);border-color:var(--n3)}
+.shd{width:50px;height:8px;border-radius:50%;background:#000a;margin:2px auto -10px;filter:blur(3px);animation:shd 1.6s ease-in-out infinite}
+@keyframes shd{50%{transform:scale(.55);opacity:.4}}
+.wng{position:absolute;left:50%;top:6px;margin-left:-16px;font-size:32px;pointer-events:none;animation:wf .3s ease-in-out infinite alternate}
+@keyframes wf{from{transform:scaleX(1.6) rotate(-12deg)}to{transform:scaleX(.6) rotate(12deg)}}
+.chips span{display:inline-block;margin:2px;padding:2px 7px;border-radius:10px;background:#ff3df033;border:1px solid var(--n2);font-size:11px}
+.bnr{margin:6px 0;padding:6px;border-radius:10px;background:#3dd5ff22;border:1px solid var(--n3);font-weight:700;color:var(--n3)}
+</style>
+<script>
+function madlabPatch(){
+if(typeof S==='undefined'||typeof D==='undefined'){var e=document.createElement('div');e.style.cssText='position:fixed;left:0;right:0;top:0;z-index:99;background:#a00;color:#fff;padding:8px;font:13px monospace';e.textContent='Патч вставлен не в тот файл: основной код игры (const S=...) не найден на этой странице. Вставь патч в тот же index.html перед </body>.';document.body.appendChild(e);return}
+var $=function(s){return document.querySelector(s)};
+
+/* ===== новые вещества и реакции ===== */
+[["Лунный свет","🌙","#cfd8ff"],["Грозовая вода","⛈️","#6a7bd1"],["Пыльца фей","🧚","#ffb3f0"],["Жидкий свет","🔆","#fffbb0"],["Драконья кровь","🐉","#c1121f"],["Слёзы феникса","🔥","#ff9e3d"],["Вулканический пепел","🌋","#666"],["Морская пена","🌊","#8fe3ff"],["Антиматерия","⚛️","#b000ff"],["Эфир","🫧","#d5f5ff"],["Нектар","🌺","#ffc2d9"],["Кислотный дождь","🌧️","#b4ff4a"],["Кварц","💠","#e6f4ff"],["Янтарь","🟧","#ffb000"],["Горячий шоколад","🍫","#6b3b1e"],["Жидкая радуга","🎨","#ff7ad9"],["Мёд бога","🍯","#ffd54a"],["Ледяной кристалл","🧊","#a6e9ff"]].forEach(function(a){S.push({n:a[0],e:a[1],c:a[2]})});
+var ix=function(n){return S.findIndex(function(x){return x.n==n})};
+[["Молоко","Какао","Горячий шоколад"],["Лунный свет","Пыльца фей","Жидкий свет"],["Лава","Морская пена","Вулканический пепел"],["Жидкий азот","Кварц","Ледяной кристалл"],["Радужная жидкость","Нектар","Жидкая радуга"],["Мёд","Светящаяся жидкость","Мёд бога"],["Грозовая вода","Уксус","Кислотный дождь"],["Драконья кровь","Слёзы феникса","Антиматерия"]].forEach(function(r){var a=ix(r[0]),b=ix(r[1]),c=ix(r[2]);if(a>=0&&b>=0&&c>=0)R.push([[a,b],c])});
+var snap=S.map(function(x){return[x.n,x.e,x.c]});
+
+/* ===== мем-режим по клику на название; всё (кроме Сталиниума) = какашка ===== */
+var mb=$("#memeb"),h1=$("h1");
+if(mb){var mo=mb.onclick;mb.onclick=function(){mo();var on=document.body.classList.contains("meme");
+S.forEach(function(x,i){if(x.tank||!snap[i])return;if(on){x.n="Какашка: "+snap[i][0];x.e="💩";x.c="#5b3a1c"}else{x.n=snap[i][0];x.e=snap[i][1];x.c=snap[i][2]}});
+try{if(mix.length)mixCol()}catch(e){}inv()};mb.style.display="none"}
+h1.onclick=function(){if(mb)mb.click()};
+
+/* ===== таблица Менделеева / вещества ===== */
+var BASE=Z("H");
+function pos(i){if(i<2)return[1,i?18:1];if(i<10)return[2,i<4?i-1:i+9];if(i<18)return[3,i<12?i-9:i+1];if(i<36)return[4,i-17];if(i<54)return[5,i-35];if(i<56)return[6,i-53];if(i<70)return[9,i-53];if(i<86)return[6,i-67];if(i<88)return[7,i-85];if(i<102)return[10,i-85];return[7,i-99]}
+var pt=document.createElement("div");pt.id="ptab";
+var bar=document.createElement("div");bar.className="row";bar.innerHTML='<button id="mS" class="on">🧪 Вещества</button><button id="mT">⚛ Таблица Менделеева</button>';
+$("#lab").insertBefore(bar,$("#inv"));$("#lab").insertBefore(pt,$("#inv"));
+function setMode(m){$("#inv").style.display=m?"none":"";pt.style.display=m?"grid":"none";$("#mS").classList.toggle("on",!m);$("#mT").classList.toggle("on",!!m)}
+$("#mS").onclick=function(){setMode(0)};$("#mT").onclick=function(){setMode(1)};
+function ptab(){pt.innerHTML="";EL.forEach(function(s,i){var p=pos(i),idx=BASE+i,x=S[idx],d=document.createElement("div");d.className="pc";d.style.gridRow=p[0];d.style.gridColumn=p[1];d.style.borderBottomColor=x.c;d.title=x.n;d.innerHTML="<small>"+(i+1)+"</small><b>"+x.e+"</b>";d.onclick=function(){add(idx)};pt.appendChild(d)})}
+inv=function(){var el=$("#inv");el.innerHTML="";ORD().forEach(function(i){var s=S[i];if(s.el)return;if(i>=40&&i<55&&!D.disc[i])return;var c=document.createElement("div"),ok=avail(i);c.className="cell"+(ok?"":" lock");c.innerHTML="<b>"+(ok?ico(s):"🔒")+"</b>"+(ok?s.n:"???");c.style.borderBottom="3px solid "+(ok?s.c:"#222");if(ok)c.onclick=function(){add(i)};el.appendChild(c)});ptab()};
+
+/* ===== мыши: без короны, понятные состояния, полёт ===== */
+var m1=mice;mice=function(){m1();try{mx()}catch(e){console.error(e)}};function mx(){document.querySelectorAll(".mc").forEach(function(e){var m=D.mice[+e.dataset.i];if(!m)return;var b=e.querySelector("b");if(b)b.textContent=b.textContent.replace("👑 ","");
+var ch=[];if(m.dead)ch.push("💀 МЕРТВА");else{if(m.f)ch.push("🎈 ПАРИТ НАД ПОЛОМ");if(m.g)ch.push("✨ СВЕТИТСЯ");if(m.s>1.3)ch.push("🔺 ВЕЛИКАН");if(m.s<.8)ch.push("🔹 КРОШКА");if(m.st)ch.push("☁️ ИДЁТ ПАР");if(m.e=="TANK")ch.push("🛡 ТАНК");else if(m.e!="🐭")ch.push("🦄 СУЩЕСТВО "+m.e);if(m.t=="Сверхбыстрая")ch.push("💨 СВЕРХСКОРОСТЬ")}
+if(m.f&&!m.dead){var w=e.querySelector(".mw");w.style.transform="translateY(-28px)";w.insertAdjacentHTML("beforeend",'<span class="wng">🪽</span>');w.insertAdjacentHTML("afterend",'<div class="shd"></div>')}
+var c=document.createElement("div");c.className="chips";c.innerHTML=ch.map(function(t){return"<span>"+t+"</span>"}).join("");e.appendChild(c)})}
+var sp=showPop;showPop=function(m,o,s,u,b){sp(m,o,s,u,b);try{var w=$("#pb .mw");if(w&&m.f&&!m.dead){w.style.transform="translateY(-24px)";w.insertAdjacentHTML("beforeend",'<span class="wng">🪽</span>');w.insertAdjacentHTML("afterend",'<div class="shd"></div><div class="bnr">🎈 Мышь ПАРИТ в воздухе: лапы не касаются пола!</div>')}
+if(w&&m.g&&!m.dead)w.insertAdjacentHTML("afterend",'<div class="bnr">✨ Мышь СВЕТИТСЯ в темноте!</div>')}catch(e){console.error(e)}};
+
+/* ===== красивые твёрдые предметы: растворение, горение, заморозка ===== */
+var OC=document.createElement("canvas");OC.width=OC.height=72;var ox=OC.getContext("2d");
+function gl(o,p,burn){ox.globalCompositeOperation="source-over";ox.clearRect(0,0,72,72);ox.font="52px sans-serif";ox.textAlign="center";ox.textBaseline="middle";ox.fillText(o.e,36,40);
+if(burn){ox.globalCompositeOperation="source-atop";ox.fillStyle="rgba(25,10,0,"+Math.min(.9,p*1.3)+")";ox.fillRect(0,0,72,72)}
+ox.globalCompositeOperation="destination-out";o.hl.forEach(function(h){ox.beginPath();ox.arc(h[0],h[1],h[2]*p*2.4*(.5+h[3]),0,6.3);ox.fill()});ox.fillRect(0,72*(1-p*1.05),72,80);ox.globalCompositeOperation="source-over"}
+function ice(R,p){cx.save();cx.globalAlpha=.25+.45*p;cx.fillStyle="#bfefff";cx.strokeStyle="#fff";cx.lineWidth=1.5;cx.beginPath();for(var a=0;a<6;a++){var g=a*Math.PI/3+.3,r=R*(a%2?.85:1.05);cx[a?"lineTo":"moveTo"](Math.cos(g)*r,Math.sin(g)*r)}cx.closePath();cx.fill();cx.stroke();
+cx.globalAlpha=.9*p;cx.lineWidth=1;for(a=0;a<6;a++){g=a*Math.PI/3;cx.beginPath();cx.moveTo(0,0);cx.lineTo(Math.cos(g)*R*.95*p,Math.sin(g)*R*.95*p);cx.stroke();for(var s=.4;s<.9;s+=.25){var X=Math.cos(g)*R*s*p,Y=Math.sin(g)*R*s*p;cx.beginPath();cx.moveTo(X,Y);cx.lineTo(X+Math.cos(g+.8)*R*.2,Y+Math.sin(g+.8)*R*.2);cx.moveTo(X,Y);cx.lineTo(X+Math.cos(g-.8)*R*.2,Y+Math.sin(g-.8)*R*.2);cx.stroke()}}
+cx.globalAlpha=.85*p;cx.fillStyle="#e8fbff";for(a=-2;a<=2;a++){cx.beginPath();cx.moveTo(a*R*.3-3,R*.7);cx.lineTo(a*R*.3+3,R*.7);cx.lineTo(a*R*.3,R*(.95+.25*(Math.abs(a)%2)));cx.fill()}cx.restore()}
+drawObjs=function(t,bw,bh,lh){var bx=W/2,by=H*.88,fs=30*Math.min(1.2,bw/110);
+for(var i=OBJ.length-1;i>=0;i--){var o=OBJ[i],surf=-lh,floor=-16-(i%3)*4;o.t++;
+if(!o.hl){o.fr=[];o.p=0;o.hl=[];for(var q=0;q<8;q++)o.hl.push([6+Math.random()*60,6+Math.random()*60,4+Math.random()*8,Math.random()])}
+var inl=o.landed&&lh;
+if(!o.landed){o.vy+=.5;o.y+=o.vy;o.rot+=.08;if(o.y>=(lh?surf:floor)){o.landed=1;o.vy=0;if(lh)for(q=0;q<12;q++)P.push({x:bx+o.x+(Math.random()-.5)*24,y:by+surf,vx:(Math.random()-.5)*3,vy:-2-Math.random()*3,l:32,r:2+Math.random()*2,c:col,k:"x"})}}
+else if(!lh)o.y+=(floor-o.y)*.2;
+else if(o.k=="float"){o.y=surf+5+Math.sin(t/400+i)*3;o.x+=Math.sin(t/900+i)*.2;o.rot*=.95}
+else if(o.k=="freeze"){o.y=surf+5;o.rot*=.9;o.p=Math.min(1,o.p+.012);if(o.t%5==0&&o.p<1)P.push({x:bx+o.x+(Math.random()-.5)*30,y:by+o.y,vx:(Math.random()-.5)*.6,vy:-.6,l:40,r:2+Math.random()*3,c:"#dff",k:"x"})}
+else{o.y+=(floor-o.y)*(o.k=="sink"?.035:.014);o.rot*=.97;
+if(o.k=="sink"&&o.t%14==0)P.push({x:bx+o.x,y:by+o.y-8,vx:(Math.random()-.5)*.4,vy:-1.1,l:35,r:2+Math.random()*2,c:"#ffffffaa",k:"x"});
+if(o.k=="melt"||o.k=="burn"){o.p=Math.min(1,o.p+(o.k=="melt"?.0045:.006));if(o.t%3==0)P.push({x:bx+o.x+(Math.random()-.5)*18,y:by+o.y,vx:(Math.random()-.5)*.8,vy:-1.3,l:38,r:2+Math.random()*3,c:o.k=="burn"?(o.t%2?"#ff9a3c":"#ffd23c"):"#cfff5a",k:"x"});
+if(o.t%14==0&&o.p<.95)o.fr.push({x:(Math.random()-.5)*14,y:-4,vx:(Math.random()-.5)*.8,vy:.4,a:1,r:Math.random()*6});
+if(o.p>=1){OBJ.splice(i,1);continue}}}
+var hw=(o.y<=-bh*.7?.28*bw:.28*bw+.22*bw*((o.y+bh*.7)/(bh*.7)))-14;o.x=Math.max(-hw,Math.min(hw,o.x));
+var p=o.p||0;cx.save();cx.translate(o.x,o.y);cx.rotate(o.rot);cx.textAlign="center";cx.textBaseline="middle";
+if(inl&&(o.k=="melt"||o.k=="burn")){var bn=o.k=="burn";gl(o,p,bn);cx.scale(fs/46,fs/46);cx.globalAlpha=Math.max(0,1-p*.4);cx.shadowColor=bn?"#ff6a00":"#b4ff4a";cx.shadowBlur=16;cx.drawImage(OC,-36,-36);cx.shadowBlur=0;
+if(bn){cx.globalAlpha=1-p*.5;cx.font="34px sans-serif";cx.fillText("🔥",Math.sin(t/60)*3,-18-Math.sin(t/90)*4)}else{cx.globalAlpha=.5*(1-p);cx.strokeStyle="#cfff5a";cx.lineWidth=2;cx.beginPath();cx.arc(0,14,18+Math.sin(t/120)*3,0,6.3);cx.stroke()}}
+else{cx.font=fs+"px sans-serif";if(inl&&o.k=="freeze"){cx.shake=0;cx.translate(p<.6?Math.sin(t/25)*2*(1-p):0,0)}cx.fillText(o.e,0,0);
+if(inl&&o.k=="freeze")ice(fs*.85,p);
+if(inl&&o.k=="float"){cx.strokeStyle="rgba(255,255,255,.4)";cx.lineWidth=1.5;cx.beginPath();cx.ellipse(0,fs*.35,fs*.7+Math.sin(t/300)*3,4,0,0,6.3);cx.stroke()}}
+cx.restore();
+o.fr=o.fr.filter(function(f){return f.a>0});o.fr.forEach(function(f){f.x+=f.vx;f.y+=f.vy;f.a-=.02;f.r+=.05;cx.save();cx.globalAlpha=Math.max(0,f.a);cx.translate(o.x+f.x,o.y+f.y);cx.rotate(f.r);cx.font=(fs*.4)+"px sans-serif";cx.textAlign="center";cx.fillText(o.e,0,0);cx.restore()})}};
+
+var dO=drawObjs;drawObjs=function(){try{dO.apply(this,arguments)}catch(e){console.error(e)}};
+/* ===== заморозка жидкости в колбе: иней, кристаллы, блёстки ===== */
+var fz=0;
+(function L(){requestAnimationFrame(L);try{LL()}catch(e){console.error(e)}})();
+function LL(){if(!W)return;fz+=(fxK=="freeze"&&mix.length)?.012:-.05;fz=Math.max(0,Math.min(1,fz));if(fz<=0)return;
+var t=performance.now(),bw=Math.min(W*.4,170),bh=H*.62,lh=bh*(.15+.75*(mix.length/cap()));
+cx.save();cx.translate(W/2,H*.88);cx.lineWidth=1.3;cx.strokeStyle="rgba(235,252,255,"+(.85*fz)+")";
+for(var k=0;k<24;k++){var y=-lh*(k/23),wx=bw*.5-bw*.22*Math.min(1,-y/(bh*.7)),ln=(8+(k*37%11))*fz;
+[-1,1].forEach(function(sd){cx.beginPath();cx.moveTo(sd*wx,y);cx.lineTo(sd*(wx-ln),y-ln*.5);cx.moveTo(sd*(wx-ln*.5),y-ln*.25);cx.lineTo(sd*(wx-ln*.9),y+ln*.1);cx.stroke()})}
+cx.fillStyle="rgba(225,248,255,"+(.5*fz)+")";for(k=0;k<9;k++){var sx=-bw*.26+k*bw*.065,hh=(6+(k*13%9))*fz;cx.beginPath();cx.moveTo(sx-4,-lh);cx.lineTo(sx+4,-lh);cx.lineTo(sx,-lh-hh);cx.fill()}
+cx.fillStyle="#fff";for(k=0;k<10;k++){var r=(1+2*Math.abs(Math.sin(t/300+k)))*fz,px=Math.sin(k*7.1)*bw*.28,py=-lh*(.1+.8*Math.abs(Math.cos(k*3.3)));cx.beginPath();cx.moveTo(px-r*2,py);cx.lineTo(px,py-r);cx.lineTo(px+r*2,py);cx.lineTo(px,py+r);cx.fill()}
+cx.restore()}
+
+try{inv()}catch(e){console.error(e)}
+}
+if(document.readyState==='complete')madlabPatch();else addEventListener('load',madlabPatch);
+</script>
+
+</body></html>
