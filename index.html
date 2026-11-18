@@ -106,7 +106,7 @@ input[type=range]{width:100%}
 
 <section id="enc" class="sec"><div id="encl"></div></section>
 <div id="pop"><div class="pb" id="pb"></div></div>
-<div id="gate"><div class="sign"><div class="no">⛔</div><h2>МИЛАНЕ ЗАПРЕЩЁН ВХОД</h2><p>Лаборатория закрыта для Миланы.<br><b style="color:#ff4a4a">Милана, тебе здесь никто не поможет. Даже Guiding Light.</b><br>Ты Милана? Жми «Я Милана» и уходи. Ты не Милана? Добро пожаловать!</p><div class="plq"><div class="king"><div class="kc">👑</div><div class="kn">ТИМОФЕЙ</div><div class="ks">самый крутой · приветствуется больше всех!</div></div><div class="plh">✨ Особо приветствуются ✨</div><div class="plw"><div class="pll"><div class="tk">👑 Тимофей 👑</div><div>💖 Камилла</div><div>⭐ Гоша</div><div>🌸 Лера</div><div class="tk">👑 Тимофей 👑</div><div>💖 Камилла</div><div>⭐ Гоша</div><div>🌸 Лера</div></div></div></div><button class="go" id="gok" style="width:100%" onclick="gateOpen()">Я не Милана, войти</button><button id="gno" style="width:100%;margin-top:8px" onclick="milKick()">Я Милана</button></div></div>
+<div id="gate"><div class="sign"><div class="no">⛔</div><h2>МИЛАНЕ ЗАПРЕЩЁН ВХОД</h2><p>Лаборатория закрыта для Миланы.<br><b style="color:#ff4a4a">Милана, тебе здесь никто не поможет. Даже Guiding Light.</b><br>Милана, иди играй в свой Doors в Роблоксе!<br>Ты Милана? Жми «Я Милана» и уходи. Ты не Милана? Добро пожаловать!</p><div class="plq"><div class="king"><div class="kc">👑</div><div class="kn">ТИМОФЕЙ</div><div class="ks">самый крутой · приветствуется больше всех!</div></div><div class="plh">✨ Особо приветствуются ✨</div><div class="plw"><div class="pll"><div class="tk">👑 Тимофей 👑</div><div>💖 Камилла</div><div>⭐ Гоша</div><div>🌸 Лера</div><div class="tk">👑 Тимофей 👑</div><div>💖 Камилла</div><div>⭐ Гоша</div><div>🌸 Лера</div></div></div></div><button class="go" id="gok" style="width:100%" onclick="gateOpen()">Я не Милана, войти</button><button id="gno" style="width:100%;margin-top:8px" onclick="milKick()">Я Милана</button></div></div>
 <script>function gateOpen(){try{[0,160,320].forEach(function(d){setTimeout(function(){try{beep(90,.1,"square",.4)}catch(e){}},d)})}catch(e){}var g=document.getElementById("gate");if(g)g.parentNode.removeChild(g)}</script>
 <section id="chl" class="sec"><div id="chll"></div>
 <div class="card"><div>Звук <input type="range" id="vs" min="0" max="1" step=".05"></div><div>Музыка <input type="range" id="vm" min="0" max="1" step=".05"></div>
@@ -400,12 +400,12 @@ $("#ul").parentNode.firstChild.textContent="Опасность зелья: ";
 /* ---------- перевернул телефон: зелье пролилось ---------- */
 var spOn=false;
 function spill(){if(!mix.length||spOn)return;spOn=true;var w=innerWidth,h=innerHeight,cl=col,c=document.createElement("canvas");
-c.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;z-index:15;touch-action:none";c.width=w;c.height=h;document.body.appendChild(c);var g=c.getContext("2d");
+c.style.cssText="position:fixed!important;top:0!important;left:0!important;width:"+w+"px!important;height:"+h+"px!important;min-height:0!important;max-height:none!important;border:0!important;border-radius:0!important;z-index:15;touch-action:none";c.width=w;c.height=h;document.body.appendChild(c);var g=c.getContext("2d");
 g.fillStyle=cl;g.globalAlpha=.88;
 function blob(x,y,rx,ry){g.beginPath();for(var a=0;a<=6.4;a+=.3){var q=1+.18*Math.sin(a*3+x)+.1*Math.sin(a*5+y);g.lineTo(x+Math.cos(a)*rx*q,y+Math.sin(a)*ry*q)}g.closePath();g.fill()}
-var cx0=w*.5,cy0=h*.32;blob(cx0,cy0,w*.3,h*.09);blob(cx0-w*.18,cy0+h*.07,w*.12,h*.05);blob(cx0+w*.2,cy0+h*.06,w*.1,h*.04);
-for(var i=0;i<8;i++){var x=w*(.22+.56*Math.random()),y0=cy0+h*.03,len=h*(.12+.38*Math.random());g.fillRect(x-4,y0,8,len);g.beginPath();g.arc(x,y0+len,6,0,6.3);g.fill()}
-for(i=0;i<9;i++)blob(w*Math.random(),h*(.25+.6*Math.random()),4+Math.random()*9,4+Math.random()*9);
+var cx0=w*.5,cy0=h*.3;blob(cx0,cy0,w*.46,h*.2);blob(cx0-w*.25,cy0+h*.16,w*.25,h*.14);blob(cx0+w*.27,cy0+h*.14,w*.22,h*.12);blob(cx0,cy0+h*.3,w*.3,h*.13);blob(cx0-w*.2,cy0+h*.42,w*.2,h*.09);blob(cx0+w*.22,cy0+h*.45,w*.18,h*.08);
+for(var i=0;i<14;i++){var x=w*(.08+.84*Math.random()),y0=cy0+h*.05,len=h*(.25+.5*Math.random());g.fillRect(x-6,y0,12,len);g.beginPath();g.arc(x,y0+len,9,0,6.3);g.fill()}
+for(i=0;i<22;i++)blob(w*Math.random(),h*(.15+.8*Math.random()),6+Math.random()*16,6+Math.random()*16);
 g.globalAlpha=.25;g.strokeStyle="#fff";g.lineWidth=3;g.beginPath();g.arc(cx0-w*.1,cy0-h*.01,w*.09,3.4,4.6);g.stroke();g.globalAlpha=1;
 var img=g.getImageData(0,0,w,h).data,pts=[];for(var yy=0;yy<h;yy+=14)for(var xx=0;xx<w;xx+=14){if(img[(yy*w+xx)*4+3]>40)pts.push((yy*w+xx)*4+3)}var tot=pts.length;
 var bn=document.createElement("div");bn.style.cssText="position:fixed;top:8px;left:8px;right:8px;z-index:16;background:#120f1f;border:2px solid #ff3df0;border-radius:12px;padding:8px;text-align:center;color:#e8e4ff";bn.textContent="Колба опрокинулась! Протрите экран тряпкой 🧽";document.body.appendChild(bn);
@@ -413,7 +413,7 @@ var rag=document.createElement("div");rag.textContent="🧽";rag.style.cssText="
 mix=[];ph=null;mixed=false;fxK="";OBJ.length=0;snd.pour();try{navigator.vibrate&&navigator.vibrate([80,40,80])}catch(e){}
 var down=false,lx=0,ly=0,lastChk=0;g.lineCap="round";g.lineJoin="round";
 function chkc(){var d=g.getImageData(0,0,w,h).data,left=0;for(var j=0;j<pts.length;j++)if(d[pts[j]]>40)left++;if(left<tot*.06){c.remove();bn.remove();rag.remove();spOn=false;say("Экран вытерт. Колба пустая.");snd.disc()}}
-function mv(e){rag.style.left=(e.clientX-24)+"px";rag.style.top=(e.clientY-24)+"px";if(!down)return;g.globalCompositeOperation="destination-out";g.lineWidth=70;g.beginPath();g.moveTo(lx,ly);g.lineTo(e.clientX,e.clientY);g.stroke();g.globalCompositeOperation="source-over";lx=e.clientX;ly=e.clientY;var n=Date.now();if(n-lastChk>350){lastChk=n;chkc()}}
+function mv(e){rag.style.left=(e.clientX-24)+"px";rag.style.top=(e.clientY-24)+"px";if(!down)return;g.globalCompositeOperation="destination-out";g.lineWidth=90;g.beginPath();g.moveTo(lx,ly);g.lineTo(e.clientX,e.clientY);g.stroke();g.globalCompositeOperation="source-over";lx=e.clientX;ly=e.clientY;var n=Date.now();if(n-lastChk>350){lastChk=n;chkc()}}
 c.onpointerdown=function(e){down=true;lx=e.clientX;ly=e.clientY;mv(e)};c.onpointermove=mv;c.onpointerup=c.onpointercancel=function(){down=false;chkc()}}
 try{matchMedia("(orientation:landscape)").addEventListener("change",function(e){if(e.matches)spill()})}catch(e){}
 
