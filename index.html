@@ -428,4 +428,45 @@ document.addEventListener("click",function(){try{if(window.DeviceOrientationEven
 hud();inv();rebuildSel();
 })();
 
+</script>
+<script>
+(function(){
+var meme=false,SB=null,V=["videos/maks.mp4","videos/gnomik.mp4","videos/klyuch.mp4","videos/babulya.mp4","videos/skibidi.mp4"],tm=[],lastV=-1,IM=["images/cheremsha.png","images/pokoy.png","images/smert.png","images/taxi.png","images/skebob.png","images/67.png"];
+var MW=["6-7!","Скибиди доп доп да да","Тун Тун Тун Сахур!","Сигма-колба 🗿","Бомбардиро Крокодило 🐊","Ляляля Тралалело Тралала","Аура +1000","Ohio, просто Ohio","Мяу-мяу, 6-7","Тимофей — сигма 👑","Это ключевое событие!","Макс, куда едем?","Гномик в тебе проснулся"];
+var TM=["Мышь Тимофея сделала это с достоинством.","Тимофей гордится своей мышью 👑","Мышь Тимофея не боится ни кислот, ни Миланы.","Тимофей: «Это моя мышь, и она легенда».","Мышь Тимофея просит повышение до главного лаборанта.","Тимофей одобряет: 10/10.","Мышь Тимофея сказала «6-7» и исчезла.","Тимофей на другом конце лаборатории почувствовал эту мышь.","Мышь Тимофея вошла в историю науки."];
+var MO=["Тимофей скорбит по своей мыши 🕯","Мышь Тимофея пала героем. F.","Тимофей молча снял шапку."];
+var pk=function(a){a=a||MW;return a[Math.random()*a.length|0]};
+var st=document.createElement("style");st.textContent="#memeb{position:fixed;right:0;top:46%;z-index:8;width:26px;height:56px;padding:0;min-height:0;border-radius:10px 0 0 10px;border:1px solid var(--ln);border-right:0;opacity:.45;font-size:15px;background:var(--pn)}#memeb.on{opacity:1;border-color:#ff3df0;box-shadow:0 0 12px #ff3df0}"+
+"#mv{position:fixed;top:0;right:0;bottom:0;left:0;z-index:30;background:#000d;display:none;align-items:center;justify-content:center;padding:12px}#mv.on{display:flex}"+
+".mvb{background:var(--pn);border:3px solid #ff3df0;box-shadow:0 0 30px #ff3df0;border-radius:16px;padding:12px;width:100%;max-width:420px;text-align:center}"+
+"#mvt{font:900 20px/1.2 Impact,'Arial Black',sans-serif;color:#ffc83a;text-shadow:0 0 10px #ff3df0;margin-bottom:8px;animation:wob .5s infinite}#mvc{font-size:42px;font-weight:900;color:var(--n1);margin:8px 0}"+
+"@keyframes wobM{from{transform:rotate(-12deg) scale(1)}to{transform:rotate(12deg) scale(1.15)}}.meme .mo{animation:wobM .45s ease-in-out infinite alternate}.meme #cv{filter:sepia(.5) saturate(1.6)}.meme h1{color:#c98a3a;text-shadow:0 0 12px #5b3a1c,0 0 28px #ff3df0}"+
+"@media (prefers-reduced-motion:reduce){.meme .mo,#mvt{animation:none}}";
+st.textContent+=".stk{position:fixed;z-index:7;width:84px;pointer-events:none;border-radius:10px;opacity:0;animation:stk 3.2s ease-in-out forwards}@keyframes stk{0%{opacity:0;transform:scale(.3) rotate(-20deg)}20%,70%{opacity:.95;transform:scale(1) rotate(8deg)}100%{opacity:0;transform:scale(1.2) rotate(-8deg) translateY(-30px)}}";document.head.appendChild(st);
+setInterval(function(){if(!meme||ov.classList.contains("on"))return;var s=document.createElement("img");s.className="stk";s.src=IM[Math.random()*IM.length|0];s.style.left=(Math.random()*(innerWidth-90))+"px";s.style.top=(60+Math.random()*(innerHeight-160))+"px";document.body.appendChild(s);setTimeout(function(){s.remove()},3300)},4000);
+var b=document.createElement("button");b.id="memeb";b.textContent="🗿";b.title="Мемный режим";document.body.appendChild(b);
+var ov=document.createElement("div");ov.id="mv";ov.innerHTML='<div class="mvb"><div id="mvt">🚨 МЕМНЫЙ РЕЖИМ 🚨<br>ОСТОРОЖНО, СЛИШКОМ МНОГО МЕМОВ<br>🗿🥁🐊</div><div id="mvc">3</div><img id="mvi" alt="" style="display:none;width:100%;max-height:58vh;object-fit:contain;border-radius:12px;background:#000"><video id="mvd" playsinline controls style="display:none;width:100%;max-height:58vh;border-radius:12px;background:#000"></video><button class="go" id="mvx" style="width:100%;margin-top:8px">✖ Закрыть</button></div>';document.body.appendChild(ov);
+var vd=document.getElementById("mvd"),mc=document.getElementById("mvc");
+function clr(){tm.forEach(clearTimeout);tm=[]}
+function later(f,ms){tm.push(setTimeout(f,ms))}
+function closeAd(){document.getElementById("mvi").style.display="none";vd.pause();vd.style.display="none";ov.classList.remove("on");if(meme)later(showAd,25000+Math.random()*20000)}
+function showAd(){if(!meme)return;ov.classList.add("on");vd.style.display="none";document.getElementById("mvi").style.display="none";mc.style.display="block";mc.textContent="3";
+later(function(){mc.textContent="2"},1000);later(function(){mc.textContent="1"},2000);
+later(function(){if(Math.random()<.55){var im=document.getElementById("mvi");im.src=IM[Math.random()*IM.length|0];mc.style.display="none";im.style.display="block";later(function(){clr();closeAd()},4500);return}var i;do{i=Math.random()*V.length|0}while(i==lastV&&V.length>1);lastV=i;mc.style.display="none";vd.style.display="block";vd.src=V[i];vd.muted=false;var p=vd.play();if(p&&p.catch)p.catch(function(){vd.muted=true;vd.play().catch(function(){})})},3000)}
+vd.onended=function(){if(ov.classList.contains("on")){clr();closeAd()}};
+document.getElementById("mvx").onclick=function(){clr();closeAd()};
+function lera(m,i){m.n="Лера";m.p=["Странная Лера","Лера Тимофеевна","Лера с лишними лапами","Лера (не та Лера)"][i%4];if(!m.dead){m.s=[.7,1.5,1.2,.9][i%4];m.h=Math.random()*360|0;m.g=i%2;m.f=(i+1)%2;m.t="Очень странная"}}
+function liq(on){if(on){SB=S.map(function(x){return[x.n,x.e,x.c]});S.forEach(function(x,i){if(!x.el&&!x.tank){x.n="Говно: "+SB[i][0];x.e="💩";x.c="#5b3a1c"}})}else if(SB){S.forEach(function(x,i){x.n=SB[i][0];x.e=SB[i][1];x.c=SB[i][2]});SB=null}if(mix.length)mixCol();inv()}
+function setMeme(on){meme=on;b.classList.toggle("on",on);document.body.classList.toggle("meme",on);document.querySelector("h1").textContent=on?"MAD LAB 6-7":"MAD LAB";
+liq(on);
+if(on){if(!D.memeBackup)D.memeBackup=JSON.parse(JSON.stringify(D.mice));D.mice.forEach(lera);$("#msg").textContent=pk();$("#mlog").textContent=pk();later(showAd,3000)}
+else{clr();ov.classList.remove("on");vd.pause();if(D.memeBackup){D.mice=D.memeBackup;delete D.memeBackup}$("#msg").textContent="Нажимайте на вещества, чтобы налить их в колбу, затем встряхните.";$("#mlog").textContent="Выберите мышь и зелье."}
+save();mice()}
+b.onclick=function(){ac();setMeme(!meme)};
+if(D.memeBackup){D.mice=D.memeBackup;delete D.memeBackup;save()}
+var say0=say;say=function(t){say0(meme?pk()+" · "+t:t)};
+var mo0=mice;mice=function(){mo0();document.querySelectorAll(".mc b").forEach(function(x){if(/^Тим/.test(x.textContent))x.textContent="👑 "+x.textContent})};
+var t0=$("#test").onclick;$("#test").onclick=function(){t0();var m=D.mice[sel],l=$("#mlog");if(m&&/^Тим/.test(m.n))l.textContent+=" · "+pk(m.dead?MO:TM);if(meme)l.textContent=pk()+" · "+l.textContent};
+var dl=$("#deliv").onclick;$("#deliv").onclick=function(){dl();if(meme)D.mice.forEach(lera),save(),mice()};
+})();
 </script></body></html>
