@@ -933,188 +933,343 @@ try{inv&&inv()}catch(e){}
 if(document.readyState==="complete")v4();else addEventListener("load",v4);
 })();
 </script>
-<style id="madlab-admin-css">
-input[type=search],input[type=password],textarea{background:var(--pn);color:var(--tx);border:1px solid var(--ln);border-radius:10px;font:inherit;padding:10px;width:100%;min-width:0;min-height:44px}
-input[type=search]:focus,input[type=password]:focus,textarea:focus{outline:none;border-color:var(--n3);box-shadow:0 0 8px #3dd5ff55}
-#adm{position:fixed;top:0;right:0;bottom:0;left:0;background:#000d;display:none;align-items:flex-start;justify-content:center;padding:10px;overflow:auto;z-index:50}
+<style id="madlab-live-css">
+#adm{position:fixed;top:0;right:0;bottom:0;left:0;background:#000d;display:none;align-items:flex-start;justify-content:center;padding:10px;overflow:auto;z-index:60}
 #adm.on{display:flex}
-.admbox{background:var(--pn);border:2px solid var(--n3);box-shadow:0 0 24px #3dd5ff44;border-radius:16px;width:100%;max-width:520px;padding:12px;margin:auto 0}
+.admbox{background:var(--pn);border:2px solid var(--n3);box-shadow:0 0 24px #3dd5ff44;border-radius:16px;width:100%;max-width:560px;padding:12px;margin:auto 0}
 .admhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .admhead button{min-height:36px;padding:4px 12px}
-#admBody details{background:#0d0a18;border:1px solid var(--ln);border-radius:12px;padding:8px 10px;margin:6px 0}
-#admBody summary{cursor:pointer;font-weight:700;min-height:28px}
-#admBody .b{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-#admBody .b button{flex:1 1 auto;min-height:40px;padding:8px}
-#admBody button.warn{border-color:#ff4d4d;color:#ff9a9a}
-#admBody .ln{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:14px;overflow-wrap:anywhere}
-.led{flex:0 0 auto;display:inline-block;width:11px;height:11px;border-radius:50%;background:#888}
-.led.ok{background:#39ff9c;box-shadow:0 0 6px #39ff9c}
-.led.warn{background:#ffd23c;box-shadow:0 0 6px #ffd23c}
-.led.bad{background:#ff4d4d;box-shadow:0 0 6px #ff4d4d}
-#admBody .log{max-height:160px;overflow:auto;font:11px/1.35 monospace;color:#ffb0b0}
+#adm input[type=text],#adm input[type=password],#adm textarea,#adm input[type=url]{background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:10px;font:inherit;padding:10px;width:100%;min-width:0;min-height:44px}
+#adm .b{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+#adm .b button{flex:1 1 auto;min-height:40px;padding:8px}
+#adm button.warn{border-color:#ff4d4d;color:#ff9a9a}
+#adm .led{display:inline-block;width:11px;height:11px;border-radius:50%;background:#888;vertical-align:middle}
+#adm .led.ok{background:#39ff9c;box-shadow:0 0 6px #39ff9c}
+#adm .led.bad{background:#ff4d4d;box-shadow:0 0 6px #ff4d4d}
+#lvList button{display:block;width:100%;text-align:left;margin:4px 0;line-height:1.3}
+#lvList button.on{border-color:var(--n1);box-shadow:0 0 10px #39ff9c66}
+#lvList small{color:var(--dim)}
+#lvDet{background:#0d0a18;border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px}
+#lvDet h4{margin:10px 0 4px;font-size:14px}
+#lvInfo{font-size:13px;line-height:1.5}
+#lvInfo b{color:var(--n3)}
+#lvEv{font:11px/1.4 monospace;color:var(--dim);max-height:80px;overflow:auto}
+.lvchips button{flex:0 0 auto!important}
+.lvchips button.on{background:#ff4d4d33;border-color:#ff4d4d;color:#ffb0b0}
+[data-lvb]{opacity:.35!important;filter:grayscale(1)!important}
+#liveov{position:fixed;top:0;right:0;bottom:0;left:0;background:#000;z-index:120;display:none;align-items:center;justify-content:center;flex-direction:column}
+#liveov.on{display:flex}
+#liveov video,#liveov iframe{width:100%;height:100%;border:0;background:#000;flex:1;min-height:0}
+#liveov .x{position:absolute;top:calc(env(safe-area-inset-top,0px) + 8px);right:8px;z-index:2;min-height:40px;background:#000a}
+#livemsg{position:fixed;top:0;right:0;bottom:0;left:0;background:#000b;z-index:130;display:none;align-items:center;justify-content:center;padding:16px}
+#livemsg.on{display:flex}
+#livemsg .bx{background:var(--pn);border:2px solid var(--n2);box-shadow:0 0 24px #ff3df055;border-radius:16px;max-width:420px;width:100%;padding:16px}
+#livemsg .bx p{margin:8px 0 14px;font-size:17px;white-space:pre-wrap;overflow-wrap:anywhere}
+#livemsg .bx button{width:100%}
 </style>
-<script id="madlab-admin">
-/* MAD LAB: админ-панель (открывается по ссылке с #admin, пароль ниже).
-   Самодостаточный модуль: сам ждёт игру, сам пересоздаёт панель, если её нет,
-   и не дёргает страницу лишний раз (проверки раз в 3 секунды, пауза в фоне). */
+<script id="madlab-live">
+/* MAD LAB: живая админ-панель.
+   Игроки (все, кто открыл сайт) раз в 10 секунд сообщают о себе через публичный MQTT-брокер.
+   Админ (ссылка с #admin, пароль) видит, кто онлайн, и по нажатию на игрока может:
+   написать сообщение, заблокировать кнопки, включить видео (mp4-ссылка или YouTube). */
 (function(){
-var ADMPW="3365";                 /* ПАРОЛЬ АДМИН-ПАНЕЛИ */
-var GARB={test:function(n){for(var i=0;i<S.length;i++)if(S[i].n===n)return !!S[i].fill;return false}};               /* служебные вещества «Тёмный раствор №5» */
-var st={beat:Date.now()},failN={},DG=null,DGT=0,lastConn=null,AQ="",armed=null,armT=0,stC={t:0,v:true};
-var unlocked=false;try{unlocked=sessionStorage.getItem("madlab_adm")==="1"}catch(e){}
+var ADMPW="3365";
+var ROOT="madlab-k7Qx2mVd9RpL4wTe";                 /* секретный адрес канала: у каждого проекта свой */
+var BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt","wss://test.mosquitto.org:8081/"];
+var LIBS=["https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js","https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"];
+var T_HB=ROOT+"/hb",T_EV=ROOT+"/ev",T_CMD=ROOT+"/cmd";
+var HB_MS=10000,ONLINE_MS=30000;
+
+var GROUPS=[
+ ["all","Все кнопки","button,select,input,textarea,summary,.cell,.mc,canvas"],
+ ["tabs","Вкладки","nav button,#mS,#mT"],
+ ["shake","Встряхнуть / Слить / Сохранить","#shake,#pour,#savem"],
+ ["inv","Вещества и предметы","#inv .cell,#invSearch,#flsel,#osel,#odrop"],
+ ["stove","Плита и зажигалка","#stove,#lighter"],
+ ["mice","Мыши и эксперименты","#test,#deliv,#xray,#mlist .mc,#msub,#un,#phcam,#phgal"]
+];
+var SEL={};GROUPS.forEach(function(g){SEL[g[0]]=g[2]});
+var KEEP="#liveov,#livemsg,#adm";
+
 function $(s){return document.querySelector(s)}
 function esc(x){return String(x).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-function nz(x){return String(x||"").toLowerCase().replace(/ё/g,"е")}
-function ok(){try{return typeof S!=="undefined"&&typeof D!=="undefined"&&typeof mix!=="undefined"&&typeof add==="function"}catch(e){return false}}
-function stoveGet(){var s=$("#stove");return s?(+s.value||0):0}
-function stoveSet(v){var s=$("#stove");if(!s)return;s.value=v;if(typeof s.oninput==="function")s.oninput();else s.dispatchEvent(new Event("input"))}
-function isOpen(){var a=$("#adm");return !!a&&a.classList.contains("on")}
+function now(){return Date.now()}
+function rnd(n){var s="",a="abcdefghjkmnpqrstuvwxyz23456789";for(var i=0;i<n;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function isAdminHash(){return location.hash.toLowerCase()==="#admin"}
 
-/* ===== журнал ошибок ===== */
-var LOG=window.__errlog=window.__errlog||[];
-function logPush(s){LOG.push(new Date().toLocaleTimeString()+" · "+s);if(LOG.length>100)LOG.shift()}
-try{var ce=console.error;console.error=function(){try{logPush(Array.prototype.map.call(arguments,function(x){return x&&x.message?x.message:String(x)}).join(" "))}catch(e){}return ce.apply(console,arguments)}}catch(e){}
-addEventListener("error",function(e){logPush((e.message||"ошибка")+(e.lineno?" (строка "+e.lineno+")":""))});
-addEventListener("unhandledrejection",function(e){logPush("promise: "+(e.reason&&e.reason.message||e.reason))});
+/* ================= личность игрока ================= */
+var PID=lsGet("madlab_pid");if(!PID){PID=rnd(8);lsSet("madlab_pid",PID)}
+var T0=now();
+var BLK=[];try{BLK=JSON.parse(lsGet("madlab_blk")||"[]")}catch(e){BLK=[]}
+if(!Array.isArray(BLK))BLK=[];
+var vidOn=false,seenCmd={};
+function dev(){var u=navigator.userAgent||"";return/iPhone|iPad|iPod/.test(u)?"📱 iPhone/iPad":/Android/.test(u)?"📱 Android":/Mobi/.test(u)?"📱 Телефон":"💻 Компьютер"}
+function tabName(){var b=$("nav button.on");return b?b.textContent.trim():"—"}
+function gameOk(){try{return typeof D!=="undefined"&&typeof S!=="undefined"}catch(e){return false}}
+function info(){
+  var o={id:PID,name:"Игрок "+PID.slice(0,4),dev:dev(),w:innerWidth,h:innerHeight,lang:navigator.language||"",t0:T0,tab:tabName(),blk:BLK.join(","),vid:vidOn?1:0,ts:now()};
+  if(gameOk()){try{
+    o.lvl=1+Math.floor(D.xp/100);o.xp=Math.round(D.xp);o.disc=Object.keys(D.disc||{}).length;
+    o.tests=(D.st&&D.st.tests)||0;o.boom=(D.st&&D.st.boom)||0;o.dead=D.mice?D.mice.filter(function(m){return m.dead}).length:0;
+    o.mix=(typeof mix!=="undefined"?mix:[]).map(function(i){return S[i]&&S[i].n}).filter(Boolean).join(" + ");
+  }catch(e){}}
+  return o;
+}
 
-/* ===== диагностика соединения ===== */
-function storageOk(){
-  if(Date.now()-stC.t<10000)return stC.v;
-  var v=false;try{var k="madlab_t5";localStorage.setItem(k,"1");v=localStorage.getItem(k)==="1";localStorage.removeItem(k)}catch(e){}
-  stC={t:Date.now(),v:v};return v;
+/* ================= связь (MQTT) ================= */
+var cli=null,bi=0,connected=false,wantTopics={},mqttReady=false,rxN=0,lastRx=0;
+function loadLib(i,done){
+  if(window.mqtt){done(true);return}
+  if(i>=LIBS.length){done(false);return}
+  var s=document.createElement("script");s.src=LIBS[i];s.async=true;
+  s.onload=function(){window.mqtt?done(true):loadLib(i+1,done)};
+  s.onerror=function(){loadLib(i+1,done)};
+  document.head.appendChild(s);
 }
-function item(n,good,d,warn){return{n:n,ok:!!good,d:d,warn:!!warn}}
-function rawDiag(){
-  var a=[],hid=document.hidden;
-  a.push(item("Ядро игры",ok()&&typeof shake==="function"&&typeof inv==="function"&&typeof say==="function","вещества, колба, сохранение"));
-  a.push(item("Химия",typeof window.chemReact==="function"&&!!window.RXS,(window.RXS?window.RXS.length:0)+" реакций"));
-  a.push(item("Дополнения v2/v3",!!$("#ptab")&&!!$("#mS")&&!!$("#osel")&&!!$("#odrop"),"таблица, предметы, фото"));
-  a.push(item("Плита и зажигалка",!!$("#stove")&&!!$("#lighter"),"ползунок и кнопка"));
-  a.push(item("Колбы",!!$("#flsel")&&!!$("#cv"),"форма и холст"));
-  a.push(item("Мыши",!!$("#test")&&!!$("#mlist")&&ok()&&Array.isArray(D.mice)&&typeof mice==="function","эксперименты"));
-  a.push(item("Книга",typeof window.enc==="function","справочник"));
-  a.push(item("Отзывчивость",hid||Date.now()-st.beat<5000,"страница не зависла",true));
-  a.push(item("Сохранение",storageOk(),"память браузера (без неё прогресс не сохранится)",true));
-  a.push(item("Журнал ошибок",LOG.length===0,LOG.length?(LOG.length+" записей"):"чисто",true));
-  return a;
-}
-/* красным пункт становится только после 2 неудачных проверок подряд: так нет мигания при коротком подвисании */
-function diag(force){
-  if(!force&&DG&&Date.now()-DGT<1500)return DG;
-  var a=rawDiag();
-  a.forEach(function(x){
-    if(x.ok){failN[x.n]=0}
-    else{failN[x.n]=(failN[x.n]||0)+1;if(!x.warn&&failN[x.n]<2)x.ok=true}
+function link(){
+  if(cli){try{cli.end(true)}catch(e){}cli=null}
+  connected=false;paintConn();
+  var url=BROKERS[bi%BROKERS.length],c;
+  try{c=window.mqtt.connect(url,{clientId:"ml_"+PID+"_"+rnd(4),clean:true,reconnectPeriod:0,connectTimeout:8000,keepalive:20})}
+  catch(e){bi++;setTimeout(link,3000);return}
+  cli=c;var dead=false;
+  function lost(){if(dead||cli!==c)return;dead=true;connected=false;paintConn();bi++;setTimeout(function(){if(cli===c)link()},2000+Math.random()*1500)}
+  c.on("connect",function(){
+    connected=true;paintConn();
+    Object.keys(wantTopics).forEach(function(t){c.subscribe(t,{qos:0})});
+    beat();
   });
-  DG=a;DGT=Date.now();return a;
+  c.on("message",function(t,p){lastRx=now();rxN++;var o;try{o=JSON.parse(p.toString())}catch(e){return}onMsg(t,o)});
+  c.on("close",lost);c.on("error",lost);c.on("offline",lost);
 }
-function allGood(){return diag().every(function(x){return x.ok||x.warn})}
-function connBody(){
-  return diag().map(function(x){return'<div class="ln"><span class="led '+(x.ok?"ok":(x.warn?"warn":"bad"))+'"></span>'+esc(x.n)+' <span class="mut">'+esc(x.d)+'</span></div>'}).join("")+
-    '<div class="b"><button data-a="reconnect" class="go">🔄 Переподключить всё</button></div>'+
-    '<div class="mut">Проверка раз в 3 секунды, в фоне вкладки пауза. Красный = что-то отвалилось (нажми «Переподключить»), жёлтый = не мешает игре.</div>';
-}
-function refreshConn(){
-  if(!isOpen()||!unlocked)return;
-  var html=connBody(),c=$("#admConn");
-  if(c&&html!==lastConn){c.innerHTML=html;lastConn=html}
-  var t=$("#admConnT"),s="🔌 Соединение: "+(allGood()?"всё подключено":"есть разрыв");
-  if(t&&t.textContent!==s)t.textContent=s;
-}
+function sub(t){wantTopics[t]=1;if(cli&&connected)try{cli.subscribe(t,{qos:0})}catch(e){}}
+function pub(t,o){if(!cli||!connected)return false;try{cli.publish(t,JSON.stringify(o),{qos:0});return true}catch(e){return false}}
+function ev(txt){pub(T_EV,{id:PID,name:info().name,txt:txt,ts:now()})}
 
-/* ===== поиск веществ ===== */
-function find(q,limit){
-  var r=[];q=nz(q).trim();if(!q)return r;
-  for(var i=0;i<S.length&&(!limit||r.length<limit);i++){
-    var s=S[i];if(s.fill)continue;
-    if(nz(s.n).indexOf(q)>=0||(s.el&&nz(s.e)===q))r.push(i);
+/* ================= игрок: сердцебиение и команды ================= */
+function beat(){
+  if(document.hidden&&!vidOn)return;
+  if(adminMode())return;
+  pub(T_HB,info());
+}
+function adminMode(){return isAdminHash()&&unlocked}
+function onMsg(t,o){
+  if(t===T_CMD){if(!adminMode())onCmd(o)}
+  else if(t===T_HB)admHb(o);
+  else if(t===T_EV)admEv(o);
+}
+function onCmd(c){
+  if(!c||(c.to!==PID&&c.to!=="*"))return;
+  if(c.cid){if(seenCmd[c.cid])return;seenCmd[c.cid]=1}
+  switch(c.k){
+    case"block":setBlk(c.g||[]);break;
+    case"msg":showMsg(String(c.text||""));break;
+    case"video":playVideo(String(c.src||""),!!c.lock);break;
+    case"stop":stopVideo();break;
+    case"ping":beat();break;
   }
-  return r;
-}
-function admList(q){
-  if(!nz(q).trim())return"";
-  return find(q,24).map(function(i){return'<button data-a="addsub" data-i="'+i+'">'+esc(S[i].e)+" "+esc(S[i].n)+'</button>'}).join("")||'<span class="mut">Ничего не найдено</span>';
 }
 
-/* ===== панель ===== */
-function danger(btn,msg,fn){
-  if(armed===btn.dataset.a&&Date.now()-armT<4000){armed=null;fn();return}
-  armed=btn.dataset.a;armT=Date.now();btn.textContent=msg;
-  setTimeout(function(){if(armed===btn.dataset.a){armed=null;if(isOpen())renderAdmin()}},4000);
+/* --- блокировка кнопок --- */
+function blocked(t){
+  if(!BLK.length||!t||!t.closest)return false;
+  if(t.closest(KEEP))return false;
+  for(var i=0;i<BLK.length;i++){var s=SEL[BLK[i]];if(s&&t.closest(s))return true}
+  return false;
 }
-function exportText(){try{return JSON.stringify(D)}catch(e){return"{}"}}
+function setBlk(g){
+  g=g.filter(function(x){return SEL[x]});
+  var same=g.join(",")===BLK.join(",");
+  BLK=g;lsSet("madlab_blk",JSON.stringify(BLK));applyBlk();
+  if(!same){beat();if(BLK.length)toast("🔒 Админ заблокировал часть кнопок.");else toast("🔓 Кнопки разблокированы.")}
+}
+function applyBlk(){
+  var m=document.querySelectorAll("[data-lvb]");
+  for(var i=0;i<m.length;i++){m[i].removeAttribute("data-lvb");if(m[i].hasAttribute("data-lvd")){m[i].disabled=false;m[i].removeAttribute("data-lvd")}}
+  if(!BLK.length)return;
+  BLK.forEach(function(g){
+    var l;try{l=document.querySelectorAll(SEL[g])}catch(e){return}
+    for(var i=0;i<l.length;i++){var e=l[i];if(e.closest(KEEP))continue;e.setAttribute("data-lvb","1");if("disabled" in e&&!e.disabled){e.disabled=true;e.setAttribute("data-lvd","1")}}
+  });
+}
+function stopEv(e){if(blocked(e.target)){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}}
+["click","mousedown","pointerdown","touchstart","touchend","dblclick","input","change"].forEach(function(n){document.addEventListener(n,stopEv,{capture:true,passive:false})});
+document.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&blocked(e.target))stopEv(e)},true);
+
+/* --- сообщение и видео --- */
+var toastT=0;
+function toast(s){
+  var m=$("#livemsg");if(!m)return;
+  var d=$("#livetoast");if(!d){d=document.createElement("div");d.id="livetoast";d.style.cssText="position:fixed;left:50%;top:12px;transform:translateX(-50%);max-width:92vw;background:var(--pn);border:1px solid var(--n3);border-radius:12px;padding:8px 14px;z-index:140;font-size:14px;display:none";document.body.appendChild(d)}
+  d.textContent=s;d.style.display="block";clearTimeout(toastT);toastT=setTimeout(function(){d.style.display="none"},3500);
+}
+function ensureOv(){
+  if(!$("#liveov")){var v=document.createElement("div");v.id="liveov";document.body.appendChild(v)}
+  if(!$("#livemsg")){var m=document.createElement("div");m.id="livemsg";m.innerHTML='<div class="bx"><b>📢 Сообщение от админа</b><p id="livemsgt"></p><button class="go" id="livemsgok">Понятно</button></div>';document.body.appendChild(m);
+    $("#livemsgok").onclick=function(){m.classList.remove("on");ev("прочитал сообщение")}}
+}
+function showMsg(t){ensureOv();$("#livemsgt").textContent=t;$("#livemsg").classList.add("on");ev("получил сообщение");try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}}
+function ytId(u){
+  var m=/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/|v\/))([A-Za-z0-9_-]{11})/.exec(u);
+  return m?m[1]:null;
+}
+function playVideo(src,lock){
+  ensureOv();var o=$("#liveov"),id=ytId(src);
+  if(!/^https?:\/\//i.test(src)){return}
+  stopVideo(true);
+  var html=lock?"":'<button class="x" id="liveovx">✕ Закрыть</button>';
+  if(id)html+='<iframe src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&playsinline=1&rel=0&modestbranding=1" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+  else html+='<video id="livevid" src="'+esc(src)+'" autoplay playsinline controls></video>';
+  o.innerHTML=html;o.classList.add("on");vidOn=true;
+  var x=$("#liveovx");if(x)x.onclick=function(){stopVideo();ev("закрыл видео")};
+  var v=$("#livevid");
+  if(v){
+    var p=v.play&&v.play();
+    if(p&&p.catch)p.catch(function(){v.muted=true;v.play().catch(function(){})});
+    v.onended=function(){ev("досмотрел видео")};
+    v.onerror=function(){ev("видео не открылось (ссылка не mp4?)")};
+  }
+  ev("смотрит видео");beat();
+}
+function stopVideo(silent){
+  var o=$("#liveov");if(!o)return;
+  o.classList.remove("on");o.innerHTML="";
+  if(vidOn){vidOn=false;if(!silent)beat()}
+}
+
+/* ================= админ ================= */
+var unlocked=false;try{unlocked=sessionStorage.getItem("madlab_adm")==="1"}catch(e){}
+var users={},evs=[],selId=null,all=false,desired={},lastPush={},nextCid=0;
+try{desired=JSON.parse(lsGet("madlab_desired")||"{}")}catch(e){desired={}}
+function saveDesired(){lsSet("madlab_desired",JSON.stringify(desired))}
+function admHb(o){
+  if(!o||!o.id||o.id===PID)return;
+  if(o.bye){if(users[o.id])users[o.id].seen=0;return}
+  var u=users[o.id]||(users[o.id]={first:now()});
+  u.d=o;u.seen=now();
+  if(desired[o.id]===undefined&&desired["*"]&&desired["*"].length){desired[o.id]=desired["*"].slice();saveDesired()}
+  /* админ главный: если у игрока не такое состояние блокировки, как задумано, отправляем заново */
+  var want=(desired[o.id]||[]).join(",");
+  if(String(o.blk||"")!==want&&now()-(lastPush[o.id]||0)>15000){lastPush[o.id]=now();send(o.id,{k:"block",g:desired[o.id]||[]},true)}
+}
+function admEv(o){if(!o||!o.id)return;evs.unshift({id:o.id,name:o.name||o.id,txt:o.txt,ts:o.ts||now()});if(evs.length>60)evs.length=60}
+function send(to,c,quiet){
+  c.to=to;c.cid=PID+now().toString(36)+(nextCid++);
+  var ok=pub(T_CMD,c);
+  if(!quiet)flash(ok?"Отправлено":"Нет связи с сервером: подожди секунду и повтори");
+  return ok;
+}
+function flash(s){var f=$("#lvFlash");if(f){f.textContent=s;clearTimeout(flash.t);flash.t=setTimeout(function(){f.textContent=""},3000)}}
+function online(){var r=[];for(var k in users){var u=users[k];if(u.seen&&now()-u.seen<ONLINE_MS)r.push(u)}return r.sort(function(a,b){return a.first-b.first})}
+function ago(ms){var s=Math.max(0,Math.round(ms/1000));if(s<60)return s+" с";var m=Math.floor(s/60);if(m<60)return m+" мин";return Math.floor(m/60)+" ч "+(m%60)+" мин"}
+function grpTxt(a){return a&&a.length?a.map(function(g){var f=GROUPS.filter(function(x){return x[0]===g})[0];return f?f[1]:g}).join(", "):"нет"}
+
+function isOpen(){var a=$("#adm");return !!a&&a.classList.contains("on")}
+function paintConn(){
+  var l=$("#lvLed");if(l)l.className="led "+(connected?"ok":"bad");
+  var t=$("#lvConn");if(t)t.textContent=connected?("Связь есть · "+BROKERS[bi%BROKERS.length].replace(/^wss:\/\//,"").split("/")[0]):"Подключаюсь к серверу…";
+}
+var lastList="";
+function paintList(){
+  if(!isOpen()||!unlocked)return;
+  paintConn();
+  var on=online(),n=$("#lvCount");if(n)n.textContent=on.length;
+  var h='<button data-u="*" class="'+(all?"on":"")+'">📣 <b>Все, кто онлайн</b> <small>('+on.length+')</small></button>';
+  on.forEach(function(u){var d=u.d||{},b=(desired[d.id]||[]);
+    h+='<button data-u="'+esc(d.id)+'" class="'+(!all&&selId===d.id?"on":"")+'">'+esc(d.dev||"")+' <b>'+esc(d.name)+'</b> · ур. '+(d.lvl||"?")+' <small>· '+esc(d.tab||"")+' · '+ago(now()-(d.t0||u.first))+(d.vid?" · ▶ видео":"")+(b.length?" · 🔒":"")+'</small></button>'});
+  if(!on.length)h+='<div class="mut" style="margin:8px 0">Сейчас на сайте никого, кроме тебя. Список обновляется сам.</div>';
+  if(h!==lastList){var l=$("#lvList");if(l){l.innerHTML=h;lastList=h}}
+  paintInfo();
+}
+function paintInfo(){
+  var el=$("#lvInfo");if(!el)return;
+  if(all){var on=online();el.innerHTML='Действия применятся ко всем, кто онлайн (<b>'+on.length+'</b>).';return}
+  var u=users[selId],d=u&&u.d;
+  if(!d){el.innerHTML='<span class="mut">Выбери игрока из списка.</span>';return}
+  var isOn=u.seen&&now()-u.seen<ONLINE_MS;
+  el.innerHTML=(isOn?'🟢 онлайн':'⚪ вышел (был '+ago(now()-(u.seen||u.first))+' назад)')+'<br>'+
+   '<b>'+esc(d.name)+'</b> · '+esc(d.dev)+' · экран '+d.w+'×'+d.h+' · '+esc(d.lang||"")+'<br>'+
+   'Дверь №'+(d.lvl||"?")+' · опыт '+(d.xp||0)+' · веществ открыто '+(d.disc||0)+' · опытов '+(d.tests||0)+' · взрывов '+(d.boom||0)+' · погибших мышей '+(d.dead||0)+'<br>'+
+   'Сейчас: вкладка «'+esc(d.tab||"—")+'»'+(d.mix?' · в колбе: '+esc(d.mix):'')+'<br>'+
+   'На сайте: '+ago(now()-(d.t0||u.first))+' · блокировка: '+esc(grpTxt(desired[d.id]))+(d.vid?' · ▶ смотрит видео':'');
+}
+function paintEv(){
+  var e=$("#lvEv");if(!e)return;
+  var l=evs.filter(function(x){return all||!selId||x.id===selId}).slice(0,12);
+  e.innerHTML=l.length?l.map(function(x){return esc(new Date(x.ts).toLocaleTimeString())+" · "+esc(x.name)+": "+esc(x.txt)}).join("<br>"):"Пока тихо";
+}
+function targets(){return all?online().map(function(u){return u.d.id}):(selId?[selId]:[])}
+function pushBlk(ids,g){ids.forEach(function(id){desired[id]=g.slice();send(id,{k:"block",g:g},true)});saveDesired();flash(ids.length?"Блокировка обновлена":"Выбери игрока")}
+function renderDet(){
+  var d=$("#lvDet");if(!d)return;
+  var cur=all?(desired["*"]||[]):(desired[selId]||[]);
+  d.innerHTML='<div id="lvInfo"></div>'+
+   '<h4>💬 Сообщение</h4><textarea id="lvText" rows="2" placeholder="Текст, который появится у игрока на экране"></textarea>'+
+   '<div class="b"><button class="go" data-a="msg">Отправить</button></div>'+
+   '<h4>🔒 Блокировка кнопок (нажми, чтобы включить или выключить)</h4><div class="b lvchips">'+
+   GROUPS.map(function(g){return'<button data-g="'+g[0]+'" class="'+(cur.indexOf(g[0])>=0?"on":"")+'">'+esc(g[1])+'</button>'}).join("")+
+   '</div><div class="b"><button data-a="unblock">🔓 Разблокировать всё</button></div>'+
+   '<h4>▶ Видео</h4><input id="lvUrl" type="url" placeholder="Ссылка на mp4 или на YouTube" autocomplete="off">'+
+   '<label class="mut" style="display:block;margin:6px 0"><input type="checkbox" id="lvLock"> игрок не сможет закрыть видео сам</label>'+
+   '<div class="b"><button class="go" data-a="play">Включить видео</button><button data-a="stop" class="warn">⏹ Остановить</button></div>'+
+   '<div class="mut" style="font-size:12px">mp4: прямая ссылка на файл (https://…/video.mp4). Файл с телефона не передать, сначала загрузи его в интернет.</div>'+
+   '<h4>📋 Что делают игроки</h4><div id="lvEv"></div>';
+  paintInfo();paintEv();
+}
 function renderAdmin(){
   var b=$("#admBody");if(!b)return;
   if(!unlocked){
     b.innerHTML='<div class="mut" style="margin:6px 0">Введи пароль администратора.</div><input id="admPw" type="password" placeholder="Пароль" autocomplete="off"><div class="b"><button data-a="login" class="go">Войти</button></div><div id="admPwErr" class="mut" style="color:#ff9a9a"></div>';
     return;
   }
-  if(!ok()){b.innerHTML='<div class="mut">Игра ещё загружается…</div>';setTimeout(function(){if(isOpen())renderAdmin()},400);return}
-  var cur={};b.querySelectorAll("details").forEach(function(d){cur[d.dataset.d]=d.open});
-  var det=function(id,title,html,def){var o=cur[id]!==undefined?cur[id]:def;return'<details data-d="'+id+'"'+(o?" open":"")+'><summary>'+title+'</summary>'+html+'</details>'};
-  var T=stoveGet(),h="";
-  lastConn=null;
-  h+=det("conn",'<span id="admConnT">🔌 Соединение: '+(allGood()?"всё подключено":"есть разрыв")+'</span>','<div id="admConn">'+connBody()+'</div>',true);
-  h+=det("prog","⭐ Прогресс",
-    '<div class="mut">Уровень: '+lvl()+' · опыт: '+(Math.round(D.xp*100)/100)+' · колба вмещает '+cap()+'</div>'+
-    '<div class="b"><button data-a="xp" data-v="10">+10 XP</button><button data-a="xp" data-v="100">+100 XP</button><button data-a="xp" data-v="500">+500 XP</button>'+
-    '<button data-a="lvl4">Колба на 6 (ур. 4)</button>'+
-    '<button data-a="unlock">🔓 Открыть все вещества</button><button data-a="unlockrx">📖 Открыть все реакции</button>'+
-    '<button data-a="resetdisc" class="warn">Сбросить открытия</button><button data-a="resetall" class="warn">Стереть всё</button></div>',false);
-  h+=det("flask","🧪 Колба",
-    '<div class="b"><button data-a="shake">Встряхнуть</button><button data-a="clear">Слить</button></div>'+
-    '<input id="admAddQ" type="search" placeholder="Найти вещество и налить…" autocomplete="off" value="'+esc(AQ)+'">'+
-    '<div class="b" id="admAddRes">'+admList(AQ)+'</div>',false);
-  h+=det("heat","🔥 Нагрев",
-    '<div class="mut">Плита: '+T+' °C</div>'+
-    '<div class="b"><button data-a="temp" data-v="0">Выкл</button><button data-a="temp" data-v="50">50°</button><button data-a="temp" data-v="100">100°</button><button data-a="temp" data-v="160">160°</button><button data-a="temp" data-v="200">200°</button></div>'+
-    '<div class="b"><button data-a="coolfire">Погасить огонь</button></div>',false);
-  h+=det("mice","🐭 Мыши",
-    '<div class="b"><button data-a="revive">Оживить всех</button><button data-a="newmice">Новая поставка</button></div>',false);
-  h+=det("save","💾 Сохранение",
-    '<div class="b"><button data-a="export">Показать</button><button data-a="copy">Копировать</button><button data-a="download">Скачать файл</button></div>'+
-    '<textarea id="admSave" rows="4" placeholder="Здесь появится сохранение. Для импорта вставь JSON и нажми «Применить»." spellcheck="false"></textarea>'+
-    '<div class="b"><button data-a="import" class="warn">Применить (заменит прогресс)</button></div>',false);
-  h+=det("log","🪲 Журнал ошибок ("+LOG.length+")",
-    '<div class="log">'+(LOG.length?LOG.slice(-30).reverse().map(function(x){return'<div>'+esc(x)+'</div>'}).join(""):'<span class="mut">Ошибок нет</span>')+'</div>'+
-    '<div class="b"><button data-a="clearlog">Очистить журнал</button></div>',false);
-  b.innerHTML=h;
+  b.innerHTML='<div><span id="lvLed" class="led"></span> <span id="lvConn" class="mut"></span></div>'+
+   '<div style="margin:8px 0;font-size:16px">👥 Сейчас онлайн: <b id="lvCount">0</b></div>'+
+   '<div id="lvList"></div><div id="lvFlash" class="mut" style="min-height:18px;color:var(--n1)"></div><div id="lvDet"></div>';
+  lastList="";renderDet();paintList();
 }
-function openAdmin(){var a=$("#adm");if(!a){ensureAdmin();a=$("#adm")}if(!a)return;renderAdmin();a.classList.add("on");var p=$("#admPw");if(p)setTimeout(function(){try{p.focus()}catch(e){}},50)}
+function openAdmin(){
+  ensureAdmin();var a=$("#adm");if(!a)return;
+  renderAdmin();a.classList.add("on");
+  if(unlocked)startAdmin();
+  var p=$("#admPw");if(p)setTimeout(function(){try{p.focus()}catch(e){}},50);
+}
 function closeAdmin(){
   var a=$("#adm");if(a)a.classList.remove("on");
-  if(location.hash.toLowerCase()==="#admin"){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){location.hash=""}}
+  if(isAdminHash()){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){location.hash=""}}
 }
-function checkHash(){if(location.hash.toLowerCase()==="#admin")openAdmin();else{var a=$("#adm");if(a)a.classList.remove("on")}}
-
+function startAdmin(){sub(T_HB);sub(T_EV);startLib()}
 function act(btn){
-  var a=btn.dataset.a,v=btn.dataset.v;
-  try{
+  var a=btn.dataset.a;
+  if(btn.dataset.u!==undefined){
+    all=btn.dataset.u==="*";selId=all?null:btn.dataset.u;lastList="";renderDet();paintList();return;
+  }
+  if(btn.dataset.g){
+    var key=all?"*":selId;if(!all&&!selId){flash("Сначала выбери игрока");return}
+    var g=(desired[key]||[]).slice(),i=g.indexOf(btn.dataset.g);
+    if(i>=0)g.splice(i,1);else g.push(btn.dataset.g);
+    btn.classList.toggle("on",i<0);
+    if(all){desired["*"]=g;pushBlk(targets(),g);targets().forEach(function(id){desired[id]=g.slice()});saveDesired()}
+    else pushBlk([selId],g);
+    return;
+  }
   switch(a){
-    case"login":var pw=$("#admPw");if(pw&&pw.value===ADMPW){unlocked=true;try{sessionStorage.setItem("madlab_adm","1")}catch(e){}renderAdmin()}else{var er=$("#admPwErr");if(er)er.textContent="Неверный пароль.";if(pw){pw.value="";pw.focus()}}break;
-    case"reconnect":ensureAll(true);renderAdmin();break;
-    case"xp":gain(+v);renderAdmin();break;
-    case"lvl4":if(D.xp<300)D.xp=300;hud();save();inv();say("Колба вмещает "+cap()+" веществ.");renderAdmin();break;
-    case"unlock":S.forEach(function(s,i){if(!s.fill)D.disc[i]=1});save();inv();say("Все вещества открыты.");break;
-    case"unlockrx":D.rx=D.rx||{};D.rxl=D.rxl||[];(window.RXS||[]).forEach(function(r,i){if(!D.rx[i]){D.rx[i]=1;D.rxl.push(i)}});save();say("Все реакции записаны в Книгу.");break;
-    case"resetdisc":danger(btn,"Точно? Нажми ещё раз",function(){D.disc={};D.seen={};D.rx={};D.rxl=[];D.hx={};D.mixes=[];save();inv();say("Открытия сброшены.");renderAdmin()});break;
-    case"resetall":danger(btn,"Точно? Нажми ещё раз",function(){D=def();save();location.reload()});break;
-    case"shake":$("#shake").click();break;
-    case"clear":$("#pour").click();break;
-    case"addsub":add(+btn.dataset.i);break;
-    case"temp":stoveSet(+v);renderAdmin();break;
-    case"coolfire":HEATK="";HEATT=0;stoveSet(0);say("Огонь погашен, плита выключена.");renderAdmin();break;
-    case"revive":D.mice.forEach(function(m){m.dead=0;m.t="Здорова";m.st=0});save();if(typeof mice==="function")mice();say("Все мыши живы.");break;
-    case"newmice":var dv=$("#deliv");if(dv)dv.click();break;
-    case"export":var t=$("#admSave");if(t){t.value=exportText();t.select()}break;
-    case"copy":var t2=$("#admSave");if(t2){if(!t2.value)t2.value=exportText();t2.select();try{navigator.clipboard&&navigator.clipboard.writeText(t2.value)}catch(e){}try{document.execCommand("copy")}catch(e){}btn.textContent="Скопировано";setTimeout(function(){btn.textContent="Копировать"},1500)}break;
-    case"download":try{var bl=new Blob([exportText()],{type:"application/json"}),u=URL.createObjectURL(bl),l=document.createElement("a");l.href=u;l.download="madlab-save.json";document.body.appendChild(l);l.click();setTimeout(function(){URL.revokeObjectURL(u);l.remove()},500)}catch(e){console.error(e)}break;
-    case"import":var t3=$("#admSave");danger(btn,"Точно? Нажми ещё раз",function(){try{var o=JSON.parse(t3.value);if(!o||typeof o!=="object")throw 0;D=Object.assign(def(),o);save();location.reload()}catch(e){btn.textContent="Не похоже на сохранение";setTimeout(function(){if(isOpen())renderAdmin()},1500)}});break;
-    case"clearlog":LOG.length=0;renderAdmin();break;
-  }}catch(e){console.error(e)}
+    case"login":var pw=$("#admPw");
+      if(pw&&pw.value===ADMPW){unlocked=true;try{sessionStorage.setItem("madlab_adm","1")}catch(e){}renderAdmin();startAdmin()}
+      else{var er=$("#admPwErr");if(er)er.textContent="Неверный пароль.";if(pw){pw.value="";pw.focus()}}break;
+    case"msg":var t=($("#lvText").value||"").trim();if(!t){flash("Напиши текст");return}
+      var ids=targets();if(!ids.length){flash("Выбери игрока");return}
+      ids.forEach(function(id){send(id,{k:"msg",text:t},true)});flash("Сообщение отправлено: "+ids.length);$("#lvText").value="";break;
+    case"unblock":var ids2=targets();if(!ids2.length){flash("Выбери игрока");return}
+      if(all)desired["*"]=[];pushBlk(ids2,[]);renderDet();break;
+    case"play":var u=($("#lvUrl").value||"").trim();
+      if(!/^https?:\/\//i.test(u)){flash("Нужна ссылка, начинающаяся с https://");return}
+      var ids3=targets();if(!ids3.length){flash("Выбери игрока");return}
+      ids3.forEach(function(id){send(id,{k:"video",src:u,lock:$("#lvLock").checked},true)});flash("Видео запущено у: "+ids3.length);break;
+    case"stop":var ids4=targets();ids4.forEach(function(id){send(id,{k:"stop"},true)});flash("Видео остановлено");break;
+  }
 }
-
-/* ===== подключение ===== */
 function ensureAdmin(){
   if($("#adm")||!document.body)return;
   var a=document.createElement("div");a.id="adm";a.setAttribute("role","dialog");
@@ -1124,39 +1279,37 @@ function ensureAdmin(){
     if(e.target===a){closeAdmin();return}
     var b=e.target.closest&&e.target.closest("button");if(!b)return;
     if(b.id==="admX"){closeAdmin();return}
-    if(b.dataset.a)act(b);
+    act(b);
   });
   a.addEventListener("keydown",function(e){
     if(e.key==="Enter"&&e.target.id==="admPw"){var g=a.querySelector('[data-a="login"]');if(g)act(g)}
     if(e.key==="Escape")closeAdmin();
   });
-  a.addEventListener("input",function(e){if(e.target.id==="admAddQ"){AQ=e.target.value;var r=$("#admAddRes");if(r)r.innerHTML=admList(AQ)}});
 }
-function ensureAll(force){
-  ensureAdmin();
-  if(force){
-    failN={};DG=null;stC.t=0;st.beat=Date.now();
-    try{if(typeof inv==="function")inv()}catch(e){console.error(e)}
-    try{if(typeof rs==="function")rs()}catch(e){console.error(e)}
-    try{if(typeof mice==="function")mice()}catch(e){console.error(e)}
-  }
-  refreshConn();
+function checkHash(){if(isAdminHash())openAdmin();else{var a=$("#adm");if(a)a.classList.remove("on")}}
+
+/* ================= запуск ================= */
+var libStarted=false;
+function startLib(){
+  if(libStarted)return;libStarted=true;
+  loadLib(0,function(ok){if(!ok){libStarted=false;mqttReady=false;setTimeout(startLib,8000);return}mqttReady=true;sub(T_CMD);link()});
 }
 var started=false;
 function start(){
   if(started)return;started=true;
-  ensureAdmin();
-  var tries=0;
-  (function boot(){
-    if((ok()&&!!window.RXS&&!!$("#flsel"))||tries>40){ensureAll(false);checkHash();return}
-    tries++;setTimeout(boot,150);
-  })();
-  setInterval(function(){st.beat=Date.now()},1000);
-  setInterval(function(){if(document.hidden)return;ensureAdmin();refreshConn()},3000);
-  document.addEventListener("visibilitychange",function(){if(!document.hidden){st.beat=Date.now();ensureAll(false)}});
+  ensureOv();ensureAdmin();
+  startLib();
+  setInterval(beat,HB_MS);
+  setInterval(function(){applyBlk();if(isOpen())paintList()},2000);
+  setInterval(function(){if(isOpen()){paintEv()}},3000);
+  /* связь жива? если брокер молчит дольше минуты (даже своих сообщений нет), переподключаемся */
+  setInterval(function(){if(connected&&cli&&now()-lastRx>60000&&now()-lastRx<1e12&&lastRx>0&&!document.hidden){lastRx=now();link()}},20000);
+  document.addEventListener("visibilitychange",function(){if(!document.hidden){if(!connected&&mqttReady)link();beat()}});
+  addEventListener("online",function(){if(mqttReady)link()});
+  addEventListener("pagehide",function(){if(!adminMode())pub(T_HB,{id:PID,bye:1,ts:now()})});
   addEventListener("hashchange",checkHash);
-  addEventListener("pageshow",function(){ensureAll(false)});
-  window.MADLAB_ADMIN={diag:function(){return diag(true)},ensure:ensureAll,open:openAdmin};
+  applyBlk();checkHash();
+  window.MADLAB_LIVE={users:users,online:online,link:link,info:info};
 }
 if(document.readyState==="complete")start();else addEventListener("load",start);
 })();
