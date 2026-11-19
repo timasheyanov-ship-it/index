@@ -374,7 +374,8 @@ if(thick)return["Вязнет в густой массе и медленно т�
 if(oil)return t=="metal"||t=="stone"?["Тонет сквозь масло.","sink"]:["Плавает на масле.","float"];
 if(sug)return["Тонет медленно в сиропе.","sink"];
 return t=="metal"||t=="stone"?["Тонет на дно.","sink"]:["Плавает на поверхности.","float"]}
-$("#odrop").onclick=function(){var o=OB[+$("#osel").value],r=objRes(o[2]);ac();snd.pour();
+window.objRes=objRes;
+$("#odrop").onclick=function(){var o=OB[+$("#osel").value],r=(window.objRes||objRes)(o[2]);ac();snd.pour();
 if(OBJ.length>=6)OBJ.shift();OBJ.push({e:o[0],k:r[1],x:(Math.random()-.5)*40,y:-H*.62-10,vy:0,s:1,t:0,rot:0,landed:0});
 say(o[0]+" "+o[1]+": "+r[0]);D.hist.unshift(o[1]+" → "+r[0]);gain(.1)};
 
@@ -397,6 +398,7 @@ function popDeath(m,c,it){var alive=Object.assign({},m,{dead:0});
 $("#pb").innerHTML='<div class="mw" style="height:130px"><span class="fxe">'+CL[c[0]]+'</span><div class="mo" id="dmo" style="font-size:'+70*m.s+"px;filter:"+mf(alive)+";animation:"+AN[c[0]]+' 2.2s ease-in forwards">'+(m.e=="🐭"?MS:mi(alive))+'</div></div><h3 style="margin:8px 0">'+m.n+" + "+it.e+" "+it.n+'</h3><div style="font-size:17px;margin:6px 0">Мышь погибла: '+c[1]+'</div><button class="go" style="width:100%" id="pok">Ок</button>';
 $("#pop").classList.add("on");$("#pok").onclick=function(){$("#pop").classList.remove("on")};
 setTimeout(function(){var e=$("#dmo");if(e){e.style.animation="none";e.style.filter="grayscale(1)";e.style.opacity=1;e.style.transform="none";e.textContent="💀"}},2300)}
+window.popDeath=popDeath;
 $("#test").onclick=function(){var it=getItem($("#msub").value);
 if(!it){$("#mlog").textContent="Нужно зелье: смешайте вещества в колбе (встряхните) и нажмите «Сохранить». Давать мышам можно только зелья.";return}
 var m=D.mice[sel];if(m.dead&&!it.heal){$("#mlog").textContent=m.n+" мертва: "+m.dead+". Выберите другую мышь.";return}
@@ -409,7 +411,7 @@ if(death){m.dead=death[1];m.t="Погибла";m.st=0;m.f=0;m.g=0;D.st.dead=(D.s
 else{o[2](m);if(o[3])m.t=o[3]}
 m.l=m.l||[];m.l.unshift(it.n+": "+o[1]);m.l.length=Math.min(m.l.length,5);D.st.tests++;D.hist.unshift(m.n+" + "+it.n+" → "+o[1]);D.hist.length=Math.min(D.hist.length,40);
 $("#mlog").textContent=m.n+" ("+m.p+"): "+o[1];
-if(death){popDeath(m,death,it);beep(200,.6,"sawtooth",.4,40)}else{showPop(m,o,it,u,b);if(o[0]=="love"||o[0]=="fantasy"||o[0]=="weird")snd.disc();else snd.bub()}
+if(death){(window.popDeath||popDeath)(m,death,it);beep(200,.6,"sawtooth",.4,40)}else{showPop(m,o,it,u,b);if(o[0]=="love"||o[0]=="fantasy"||o[0]=="weird")snd.disc();else snd.bub()}
 gain(10+u*3);mice();chk();if(D.mice.every(function(x){return x.dead}))$("#mlog").textContent="Все мыши погибли! Нажмите «Новая поставка мышей»."};
 $("#ul").parentNode.firstChild.textContent="Опасность зелья: ";
 
@@ -918,10 +920,10 @@ try{
   var EMO=["🧪","🧫","⚗️","🔮","💧","🟢","🟣","🔵","🟡","🟠","🔴","⚪","⚫","✨","🌫️","🫧","🔷","🔶","🫙","🧊"];
   var need=500-S.length;
   for(var i=0;i<need;i++){
-    var n=ADJ[i%ADJ.length]+" "+NOUN[(i*7)%NOUN.length]+" №"+(i+1);
+    var n=ADJ[i%ADJ.length]+" "+NOUN[(i*7)%NOUN.length]+"";
     var e=EMO[(i*3)%EMO.length];
     var c=(typeof hx==="function")?hx((i*53)%360,55+((i*13)%30),40+((i*9)%25)):"#888";
-    S.push({n:n,e:e,c:c});
+    S.push({n:n,e:e,c:c,fill:1});
   }
   save&&save();
 }catch(e){console.error("MAD LAB PATCH v4: ошибка добора веществ",e)}
@@ -957,7 +959,7 @@ input[type=search]:focus,input[type=password]:focus,textarea:focus{outline:none;
    и не дёргает страницу лишний раз (проверки раз в 3 секунды, пауза в фоне). */
 (function(){
 var ADMPW="3365";                 /* ПАРОЛЬ АДМИН-ПАНЕЛИ */
-var GARB=/ №\d+$/;               /* служебные вещества «Тёмный раствор №5» */
+var GARB={test:function(n){for(var i=0;i<S.length;i++)if(S[i].n===n)return !!S[i].fill;return false}};               /* служебные вещества «Тёмный раствор №5» */
 var st={beat:Date.now()},failN={},DG=null,DGT=0,lastConn=null,AQ="",armed=null,armT=0,stC={t:0,v:true};
 var unlocked=false;try{unlocked=sessionStorage.getItem("madlab_adm")==="1"}catch(e){}
 function $(s){return document.querySelector(s)}
@@ -1024,7 +1026,7 @@ function refreshConn(){
 function find(q,limit){
   var r=[];q=nz(q).trim();if(!q)return r;
   for(var i=0;i<S.length&&(!limit||r.length<limit);i++){
-    var s=S[i];if(GARB.test(s.n))continue;
+    var s=S[i];if(s.fill)continue;
     if(nz(s.n).indexOf(q)>=0||(s.el&&nz(s.e)===q))r.push(i);
   }
   return r;
@@ -1093,7 +1095,7 @@ function act(btn){
     case"reconnect":ensureAll(true);renderAdmin();break;
     case"xp":gain(+v);renderAdmin();break;
     case"lvl4":if(D.xp<300)D.xp=300;hud();save();inv();say("Колба вмещает "+cap()+" веществ.");renderAdmin();break;
-    case"unlock":S.forEach(function(s,i){if(!GARB.test(s.n))D.disc[i]=1});save();inv();say("Все вещества открыты.");break;
+    case"unlock":S.forEach(function(s,i){if(!s.fill)D.disc[i]=1});save();inv();say("Все вещества открыты.");break;
     case"unlockrx":D.rx=D.rx||{};D.rxl=D.rxl||[];(window.RXS||[]).forEach(function(r,i){if(!D.rx[i]){D.rx[i]=1;D.rxl.push(i)}});save();say("Все реакции записаны в Книгу.");break;
     case"resetdisc":danger(btn,"Точно? Нажми ещё раз",function(){D.disc={};D.seen={};D.rx={};D.rxl=[];D.hx={};D.mixes=[];save();inv();say("Открытия сброшены.");renderAdmin()});break;
     case"resetall":danger(btn,"Точно? Нажми ещё раз",function(){D=def();save();location.reload()});break;
