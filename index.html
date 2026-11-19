@@ -310,6 +310,7 @@ var MS='<svg viewBox="0 0 100 64" style="width:1em;height:.64em;vertical-align:m
 '<circle cx="86" cy="27" r="7" fill="#9a948d"/><circle cx="86" cy="27" r="4" fill="#e8b4b8"/>'+
 '<circle cx="87" cy="37" r="2.4" fill="#111"/><circle cx="87.7" cy="36.3" r=".8" fill="#fff"/>'+
 '<path d="M92 42 L108 36 M92 43 L108 44 M92 45 L106 51" stroke="#ddd" stroke-width=".8"/></svg>';
+window.MS=MS;
 function fixMice(r){r.querySelectorAll(".mo").forEach(function(o){if(o.textContent=="🐭")o.innerHTML=MS})}
 var mo0=mice;mice=function(){mo0();fixMice(document);rebuildSel()};
 var sp0=showPop;showPop=function(){sp0.apply(this,arguments);fixMice($("#pb"))};
