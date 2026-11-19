@@ -119,7 +119,7 @@ const hex=a=>"#"+a.map(v=>Math.max(0,Math.min(255,v|0)).toString(16).padStart(2,
 function avail(i){if(D.disc[i])return 1;if(S[i]&&S[i].prod)return 0;if(i>=55)return 1;if(i>=40)return 0;if(D.mode=="sandbox")return 1;return i<12+(lvl()-1)*2}
 /* sound */
 let AC,mus;
-function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=="suspended")AC.resume();if(AC&&!mus){mus=AC.createOscillator();const g=AC.createGain();g.gain.value=0;mus.type="sine";mus.frequency.value=55;mus.connect(g);g.connect(AC.destination);mus.start();mus.g=g}if(mus)mus.g.gain.value=D.vm*.06;return AC}
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=="suspended")AC.resume();return AC}
 function beep(f,d,t,v,s){const a=ac();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.type=t||"sine";o.frequency.setValueAtTime(f,a.currentTime);if(s)o.frequency.exponentialRampToValueAtTime(s,a.currentTime+d);g.gain.setValueAtTime((v||.3)*D.vs,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d)}
 const snd={pour:()=>{for(let i=0;i<5;i++)setTimeout(()=>beep(300+Math.random()*300,.08,"sine",.2),i*60)},shake:()=>{for(let i=0;i<6;i++)setTimeout(()=>beep(120+Math.random()*80,.07,"square",.15),i*70)},boom:()=>beep(160,.5,"sawtooth",.5,30),glow:()=>beep(500,.5,"triangle",.3,1200),disc:()=>[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.25,"triangle",.3),i*90)),bub:()=>beep(400,.15,"sine",.2,900)};
 /* particles */
@@ -178,8 +178,8 @@ cx.fillStyle="#ffd23c";cx.beginPath();cx.moveTo(x-4,-lh);cx.quadraticCurveTo(x-3
 cx.restore();
 if(HEATK=="boil"){if(Math.random()<.2*ft)spawn("smoke",1,W/2,H*.88-bh,"#999");if(Math.random()<.5*ft)P.push({x:bx+(Math.random()-.5)*bw*.5,y:by-lh,vx:(Math.random()-.5)*2,vy:-1.5-Math.random()*2,l:22,r:2+Math.random()*2,c:col,k:"x"})}
 else{if(Math.random()<.7*ft)P.push({x:bx+(Math.random()-.5)*bw*.5,y:by-lh-8,vx:(Math.random()-.5),vy:-1.5-Math.random()*2.5,l:30,r:2+Math.random()*3,c:Math.random()>.5?"#ff9a3c":"#ffd23c",k:"x"});if(Math.random()<.1*ft)spawn("smoke",1,W/2,H*.88-bh,"#666")}}
-if(pouring){cx.save();cx.fillStyle=col;cx.globalAlpha=.9;const sw=6+Math.sin(t/90)*1.5;cx.fillRect(-sw/2,-bh-60,sw,bh+60-lh);cx.beginPath();cx.ellipse(0,-lh,sw*1.6,2.5,0,0,6.28);cx.fill();cx.restore();if(Math.random()<.6)P.push({x:bx+(Math.random()-.5)*16,y:by-lh,vx:(Math.random()-.5)*2,vy:-1-Math.random()*1.8,l:24,r:2+Math.random()*2,c:col,k:"x"})}cx.strokeStyle="#9ef3ffcc";cx.lineWidth=3;cx.shadowColor="#3dd5ff";cx.shadowBlur=8;FLP(bw,bh);cx.stroke();cx.shadowBlur=0;
-cx.strokeStyle="#ffffff44";cx.lineWidth=2;cx.beginPath();cx.moveTo(-bw*.2,-bh*.6);cx.lineTo(-bw*.3,-bh*.1);cx.stroke();if(mix.includes(TK))drawTank(0,-bh*.28,bw/110);drawObjs(t,bw,bh,lh);cx.restore();
+if(pouring){cx.save();cx.fillStyle=col;cx.globalAlpha=.85;var sway=Math.sin(t/140)*4;cx.beginPath();cx.moveTo(-sway*.3-3,-bh-70);cx.quadraticCurveTo(sway*.4,-bh*.3,-sway*.2,-lh-4);cx.quadraticCurveTo(sway*.4+3,-bh*.3+3,sway*.3+3,-bh-70);cx.closePath();cx.fill();cx.beginPath();cx.ellipse(-sway*.2,-lh,7+Math.sin(t/60)*1.5,2.4,0,0,6.28);cx.fill();cx.font="20px sans-serif";cx.textAlign="center";cx.save();cx.translate(-sway*.4,-bh-78);cx.rotate(-.55+Math.sin(t/300)*.05);cx.fillText("🧪",0,0);cx.restore();cx.restore();if(Math.random()<.5)P.push({x:bx-sway*.2+(Math.random()-.5)*10,y:by-lh,vx:(Math.random()-.5)*2.4,vy:-1.4-Math.random()*1.6,l:22,r:1.6+Math.random()*2,c:col,k:"x"})}cx.strokeStyle="#9ef3ffcc";cx.lineWidth=3;cx.shadowColor="#3dd5ff";cx.shadowBlur=8;FLP(bw,bh);cx.stroke();cx.shadowBlur=0;
+cx.save();FLP(bw,bh);cx.clip();cx.strokeStyle="#ffffff44";cx.lineWidth=2;cx.beginPath();cx.moveTo(-bw*.2,-bh*.6);cx.lineTo(-bw*.3,-bh*.1);cx.stroke();if(mix.includes(TK)&&lh>4)drawTank(0,-Math.min(lh-14,bh*.8),bw/110);cx.restore();drawObjs(t,bw,bh,lh);cx.restore();
 if(fxT>0)fxT--;if(HEATK){HEATT--;if(HEATT<=0){say(HEATK=="boil"?"Кипение улеглось.":"Огонь погас.");HEATK=""}}if(!mix.length){HEATK="";FLG.disc=0}
 for(let i=P.length-1;i>=0;i--){const p=P[i];p.x+=p.vx;p.y+=p.vy;p.l--;if(p.k=="boom")p.vy+=.15;if(p.k=="smoke"||p.k=="foam"){p.r+=.15}
 if(p.l<=0){P.splice(i,1);continue}cx.globalAlpha=Math.min(1,p.l/40)*(p.k=="smoke"?.5:.9);cx.fillStyle=p.k=="boom"?(i%2?"#ffb000":"#ff4500"):p.k=="smoke"?"#999":p.c;
@@ -211,7 +211,7 @@ $("#shake").onclick=shake;
 $("#pour").onclick=()=>{if(mix.length){snd.pour();spawn("foam",12,W/2,H*.8,col)}mix=[];fxK="";say("Колба пуста.")};
 $("#savem").onclick=()=>{if(!mix.length)return;D.potions=D.potions||[];const nm="Зелье №"+(D.potions.length+1)+" ("+(mix.length>1?mix.map(i=>S[i].e).join(""):S[mix[0]].n)+")";D.potions.push({n:nm,c:col,ids:mix.slice()});say("Сохранено: "+nm+". Его можно испытать на мышах.");save()};
 function inv(){const el=$("#inv");el.innerHTML="";ORD().forEach(i=>{const s=S[i];if((i>=40&&i<55||S[i].prod)&&!D.disc[i])return;const c=document.createElement("div"),ok=avail(i);c.className="cell"+(ok?"":" lock");c.innerHTML="<b>"+(ok?ico(s):"🔒")+"</b>"+(ok?s.n:"???");c.style.borderBottom="3px solid "+(ok?s.c:"#222");if(ok)c.onclick=()=>add(i);el.appendChild(c)})}
-/* mice */
+/* мыши */
 function mice(){$("#mlist").innerHTML=D.mice.map((m,i)=>`<div class="mc ${i==sel?"sel":""}${m.dead?" dead":""}" data-i="${i}"><div class="mw" style="transform:translateY(${m.f?-12:0}px)"><div class="mo" style="font-size:${54*m.s}px;filter:${mf(m)}">${mi(m)}</div>${stm(m)}</div><b>${m.n}</b><small>${m.p}</small><small>${m.t}${m.dead?": "+m.dead:""}</small></div>`).join("");
 document.querySelectorAll(".mc").forEach(e=>e.onclick=()=>{sel=+e.dataset.i;mice()});
 const pv=$("#msub").value,pt=D.potions||[];let h=mix.length?`<option value="c">🧫 Текущая колба (${mix.length})</option>`:"";if(pt.length)h+='<optgroup label="Мои зелья">'+pt.map((p,i)=>`<option value="p${i}">🧪 ${p.n}</option>`).join("")+"</optgroup>";h+='<optgroup label="Вещества">'+S.map((s,i)=>(D.disc[i]||D.seen[i])?`<option value="s${i}">${s.e} ${s.n}</option>`:"").join("")+"</optgroup>";$("#msub").innerHTML=h;if([...$("#msub").options].some(o=>o.value==pv))$("#msub").value=pv;$("#deliv").style.display=D.mice.every(x=>x.dead)?"block":"none"}
@@ -248,7 +248,7 @@ $("#xray").onclick=()=>{const m=D.mice[sel],d=ds(m),k=hash(m.n+(m.l||[]).length+
 function getItem(v){if(!v)return null;const t=v[0],n=+v.slice(1);if(t=="s"&&S[n])return{e:ico(S[n]),n:S[n].n,k:"s"+n,heal:n==TK};const p=(D.potions||[])[n];if(t=="p"&&p){if(p.img)return{e:'<img src="'+p.img+'" style="width:1.4em;height:1.4em;border-radius:6px;vertical-align:middle">',n:p.n,k:"ph"+n,photo:p};return{e:"🧪",n:p.n,k:"p"+p.ids.join("-"),heal:p.ids.includes(TK)}};if(t=="c"&&mix.length)return{e:"🧫",n:"Текущая смесь",k:"c"+mix.join("-"),heal:mix.includes(TK)};return null}
 function showPop(m,o,s,u,b){$("#pb").innerHTML=`<div class="mw" style="height:130px"><div class="mo" style="font-size:${70*m.s}px;filter:${mf(m)};animation:pp .9s ease-out">${mi(m)}</div>${stm(m)}</div><h3 style="margin:8px 0">${m.n} + ${s.e} ${s.n}</h3><div style="font-size:17px;margin:6px 0">${o[1]}</div><div class="df">${diff(b,m)}</div><div class="mut">Состояние: ${m.t}${m.s>1?" · увеличена":m.s<1?" · уменьшена":""}${m.f?" · парит":""}${m.g?" · светится":""}</div><div class="ok" style="margin:6px 0">+${10+u*3} XP</div><button class="go" style="width:100%" id="pok">Ок</button>`;$("#pop").classList.add("on");$("#pok").onclick=()=>$("#pop").classList.remove("on")}
 $("#pop").onclick=e=>{if(e.target.id=="pop")$("#pop").classList.remove("on")};
-/* encyclopedia, challenges */
+/* энциклопедия, задания */
 function enc(){const n=Object.keys(D.disc).length;$("#encl").innerHTML=`<div class="card"><b>Изучено веществ: ${Object.keys(D.seen).length} / ${S.length}</b><div class="mut">Скрытых: ${Object.keys(D.disc).filter(i=>i>=40).length} / 15. Реакций изучено: ${D.mixes.length}</div></div><div class="grid">`+S.map((s,i)=>`<div class="cell ${D.disc[i]||D.seen[i]?"":"lock"}"><b>${D.disc[i]||D.seen[i]?ico(s):"❔"}</b>${D.disc[i]||D.seen[i]?s.n:"???"}</div>`).join("")+`</div><div class="card"><b>История</b>${D.hist.map(h=>`<div class="mut">${h}</div>`).join("")||"<div class=mut>Пока пусто</div>"}</div>`}
 function chl(){$("#chll").innerHTML=CH.map((c,i)=>`<div class="card ${D.done[i]?"ok":""}">${D.done[i]?"✔":"○"} ${DN[i]||c[0]} <span class="mut">+50 XP</span></div>`).join("")}
 function chk(){CH.forEach((c,i)=>{if(!D.done[i]&&c[1](D)){D.done[i]=1;say("Достижение: "+c[0]+"! +50 XP");snd.disc();D.xp+=50;hud()}});save()}
@@ -310,7 +310,7 @@ var MS='<svg viewBox="0 0 100 64" style="width:1em;height:.64em;vertical-align:m
 '<circle cx="86" cy="27" r="7" fill="#9a948d"/><circle cx="86" cy="27" r="4" fill="#e8b4b8"/>'+
 '<circle cx="87" cy="37" r="2.4" fill="#111"/><circle cx="87.7" cy="36.3" r=".8" fill="#fff"/>'+
 '<path d="M92 42 L108 36 M92 43 L108 44 M92 45 L106 51" stroke="#ddd" stroke-width=".8"/></svg>';
-function fixMice(r){r.querySelectorAll(".mo").forEach(function(o){if(o.textContent=="🐭")o.innerHTML=MS})}
+window.MS=MS;function fixMice(r){r.querySelectorAll(".mo").forEach(function(o){if(o.textContent=="🐭")o.innerHTML=MS})}
 var mo0=mice;mice=function(){mo0();fixMice(document);rebuildSel()};
 var sp0=showPop;showPop=function(){sp0.apply(this,arguments);fixMice($("#pb"))};
 function skelSVG(m,pts){var c=m.dead?"#6fae8c":"#9fffc8",s='<svg viewBox="0 0 112 64" style="width:'+Math.min(240,150*m.s)+'px;max-width:100%;height:auto;overflow:visible;filter:drop-shadow(0 0 4px #39ff9c)'+(m.g&&!m.dead?" drop-shadow(0 0 10px #ffe)":"")+'" fill="none" stroke="'+c+'" stroke-linecap="round" stroke-linejoin="round">';
@@ -345,7 +345,7 @@ D.potions=D.potions||[];var nm="Зелье №"+(D.potions.length+1)+(ph?" 📷"
 D.potions.push({n:nm,c:col,ids:mix.slice(),ph:ph?{img:ph.img,o:ph.o,person:ph.person}:null});say("Сохранено: "+nm+". Его можно испытать на мышах.");save()};
 
 /* ---------- панель в лаборатории: фото + предметы ---------- */
-var OB=[["🪙","Монета","metal"],["🔩","Гвоздь","metal"],["🍎","Яблоко","org"],["🍃","Лист","org"],["🧀","Сыр","org"],["🥚","Яйцо","org"],["🍫","Шоколадка","org"],["🪵","Щепка","wood"],["🦆","Резиновая уточка","plastic"],["🧸","Мишка","plastic"],["🪨","Камешек","stone"],["⚫","Гравий","stone"],["🌰","Опилки","wood"]];
+var OB=window.OB=[["🪙","Монета","metal"],["🔩","Гвоздь","metal"],["🍎","Яблоко","org"],["🍃","Лист","org"],["🧀","Сыр","org"],["🥚","Яйцо","org"],["🍫","Шоколадка","org"],["🪵","Щепка","wood"],["🦆","Резиновая уточка","plastic"],["🧸","Мишка","plastic"],["🪨","Камешек","stone"],["⚫","Гравий","stone"],["🌰","Опилки","wood"]];
 var bar=document.createElement("div");bar.className="row";
 bar.innerHTML='<button id="phc" style="flex:0 0 auto">📷</button><button id="phg" style="flex:0 0 auto">🖼</button><select id="osel">'+OB.map(function(o,i){return'<option value="'+i+'">'+o[0]+" "+o[1]+"</option>"}).join("")+'</select><button id="odrop" style="flex:0 0 auto">Бросить</button>';
 $("#lab").insertBefore(bar,$("#inv"));
@@ -374,9 +374,9 @@ if(thick)return["Вязнет в густой массе и медленно т�
 if(oil)return t=="metal"||t=="stone"?["Тонет сквозь масло.","sink"]:["Плавает на масле.","float"];
 if(sug)return["Тонет медленно в сиропе.","sink"];
 return t=="metal"||t=="stone"?["Тонет на дно.","sink"]:["Плавает на поверхности.","float"]}
-$("#odrop").onclick=function(){var o=OB[+$("#osel").value],r=objRes(o[2]);ac();snd.pour();
+window.objRes=objRes;$("#odrop").onclick=function(){var o=OB[+$("#osel").value],r=window.objRes(o[2]);ac();snd.pour();
 if(OBJ.length>=6)OBJ.shift();OBJ.push({e:o[0],k:r[1],x:(Math.random()-.5)*40,y:-H*.62-10,vy:0,s:1,t:0,rot:0,landed:0});
-say(o[0]+" "+o[1]+": "+r[0]);D.hist.unshift(o[1]+" → "+r[0]);gain(.001)};
+say(o[0]+" "+o[1]+": "+r[0]);D.hist.unshift(o[1]+" → "+r[0]);gain(.1)};
 
 /* ---------- мыши: только зелья, без случайности ---------- */
 function rebuildSel(){var pv=$("#msub").value,pt=D.potions||[],h=(mixed&&mix.length)?'<option value="c">🧫 Текущая колба ('+mix.length+")</option>":"";
@@ -397,7 +397,7 @@ function popDeath(m,c,it){var alive=Object.assign({},m,{dead:0});
 $("#pb").innerHTML='<div class="mw" style="height:130px"><span class="fxe">'+CL[c[0]]+'</span><div class="mo" id="dmo" style="font-size:'+70*m.s+"px;filter:"+mf(alive)+";animation:"+AN[c[0]]+' 2.2s ease-in forwards">'+(m.e=="🐭"?MS:mi(alive))+'</div></div><h3 style="margin:8px 0">'+m.n+" + "+it.e+" "+it.n+'</h3><div style="font-size:17px;margin:6px 0">Мышь погибла: '+c[1]+'</div><button class="go" style="width:100%" id="pok">Ок</button>';
 $("#pop").classList.add("on");$("#pok").onclick=function(){$("#pop").classList.remove("on")};
 setTimeout(function(){var e=$("#dmo");if(e){e.style.animation="none";e.style.filter="grayscale(1)";e.style.opacity=1;e.style.transform="none";e.textContent="💀"}},2300)}
-$("#test").onclick=function(){var it=getItem($("#msub").value);
+window.popDeath=popDeath;$("#test").onclick=function(){var it=getItem($("#msub").value);
 if(!it){$("#mlog").textContent="Нужно зелье: смешайте вещества в колбе (встряхните) и нажмите «Сохранить». Давать мышам можно только зелья.";return}
 var m=D.mice[sel];if(m.dead&&!it.heal){$("#mlog").textContent=m.n+" мертва: "+m.dead+". Выберите другую мышь.";return}
 var u=+$("#un").value,k=hash(it.k),b=Object.assign({},m),o,death=null;
@@ -409,7 +409,7 @@ if(death){m.dead=death[1];m.t="Погибла";m.st=0;m.f=0;m.g=0;D.st.dead=(D.s
 else{o[2](m);if(o[3])m.t=o[3]}
 m.l=m.l||[];m.l.unshift(it.n+": "+o[1]);m.l.length=Math.min(m.l.length,5);D.st.tests++;D.hist.unshift(m.n+" + "+it.n+" → "+o[1]);D.hist.length=Math.min(D.hist.length,40);
 $("#mlog").textContent=m.n+" ("+m.p+"): "+o[1];
-if(death){popDeath(m,death,it);beep(200,.6,"sawtooth",.4,40)}else{showPop(m,o,it,u,b);if(o[0]=="love"||o[0]=="fantasy"||o[0]=="weird")snd.disc();else snd.bub()}
+if(death){window.popDeath(m,death,it);beep(200,.6,"sawtooth",.4,40)}else{showPop(m,o,it,u,b);if(o[0]=="love"||o[0]=="fantasy"||o[0]=="weird")snd.disc();else snd.bub()}
 gain(10+u*3);mice();chk();if(D.mice.every(function(x){return x.dead}))$("#mlog").textContent="Все мыши погибли! Нажмите «Новая поставка мышей»."};
 $("#ul").parentNode.firstChild.textContent="Опасность зелья: ";
 
@@ -533,8 +533,8 @@ o.fr=o.fr.filter(function(f){return f.a>0});o.fr.forEach(function(f){f.x+=f.vx;f
 var dO=drawObjs;drawObjs=function(){try{dO.apply(this,arguments)}catch(e){console.error(e)}};
 /* ===== предметы: дискриминант, раскалённый и огненный шар ===== */
 (function(){var st=document.createElement("style");st.textContent="@keyframes hxs{0%{transform:translate(-2px,1px) rotate(-2deg)}50%{transform:translate(2px,-1px) rotate(2deg)}100%{transform:translate(-2px,1px) rotate(-2deg)}}@keyframes hxg{0%{transform:translate(-50%,-50%) scale(.6);background:#f5a8b0}60%{background:#ff4d4d}100%{transform:translate(-50%,-50%) scale(3.6);background:#ff1a1a}}@keyframes hxf{0%{opacity:.95}100%{opacity:0}}";document.head.appendChild(st)})();
-OB.push(["🟠","Раскалённый шар","hot"],["🔥","Огненный шар","fire"],["📐","Дискриминант","disc"]);
-$("#osel").insertAdjacentHTML("beforeend",[["🟠","Раскалённый шар"],["🔥","Огненный шар"],["📐","Дискриминант"]].map(function(o,i){return'<option value="'+(OB.length-3+i)+'">'+o[0]+" "+o[1]+"</option>"}).join(""));
+OB.push(["📐","Дискриминант","disc"]);
+$("#osel").insertAdjacentHTML("beforeend",[["📐","Дискриминант","disc"]].map(function(o,i){return'<option value="'+(OB.length-1+i)+'">'+o[0]+" "+o[1]+"</option>"}).join(""));
 function coldMix(){return mix.some(function(i){return i==3||i==24||/Жидкий азот|лёд/i.test(S[i].n)})}
 function flamMix(){return mix.some(function(i){return/Масло|Спирт|Метан|Водород|Бензин|Керосин|Эфир|Глицерин|Сероводород|Этил/i.test(S[i].n)})}
 function ballRes(t){
@@ -592,7 +592,6 @@ try{inv()}catch(e){console.error(e)}
 }
 if(document.readyState==='complete')madlabPatch();else addEventListener('load',madlabPatch);
 </script>
-
 <script id="madlab-chem">
 /* MAD LAB: реальная химия (стехиометрия, продукты, остатки реагентов) */
 (function(){
@@ -780,14 +779,14 @@ var RS=[
 "Лакмус+Нашатырный спирт>Синий лакмус|color|Лакмус в щелочной среде становится синим: значит, это основание (нашатырный спирт).",
 "Лакмус+Мыльный раствор>Синий лакмус|color|Лакмус в щелочной среде становится синим: значит, это основание (мыльный раствор).",
 "Лакмус+Пищевая сода>Синий лакмус|color|Лакмус в щелочной среде становится синим: значит, это основание (пищевая сода).",
-"Красная капуста+Соляная кислота>Розовый капустный сок|color|Красная капуста в кислой среде становится розовым: значит, это кислота (соляная кислота).",
-"Красная капуста+Лимонная кислота>Розовый капустный сок|color|Красная капуста в кислой среде становится розовым: значит, это кислота (лимонная кислота).",
-"Красная капуста+Уксус>Розовый капустный сок|color|Красная капуста в кислой среде становится розовым: значит, это кислота (уксус).",
-"Красная капуста+Едкий натр>Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёным: значит, это основание (едкий натр).",
-"Красная капуста+Гашёная известь>Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёным: значит, это основание (гашёная известь).",
-"Красная капуста+Нашатырный спирт>Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёным: значит, это основание (нашатырный спирт).",
-"Красная капуста+Мыльный раствор>Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёным: значит, это основание (мыльный раствор).",
-"Красная капуста+Пищевая сода>Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёным: значит, это основание (пищевая сода).",
+"Красная капуста+Соляная кислота>Розовый капустный сок|color|Красная капуста в кислой среде становится розовой: значит, это кислота (соляная кислота).",
+"Красная капуста+Лимонная кислота>Розовый капустный сок|color|Красная капуста в кислой среде становится розовой: значит, это кислота (лимонная кислота).",
+"Красная капуста+Уксус>Розовый капустный сок|color|Красная капуста в кислой среде становится розовой: значит, это кислота (уксус).",
+"Красная капуста+Едкий натр>Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёной: значит, это основание (едкий натр).",
+"Красная капуста+Гашёная известь>Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёной: значит, это основание (гашёная известь).",
+"Красная капуста+Нашатырный спирт>Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёной: значит, это основание (нашатырный спирт).",
+"Красная капуста+Мыльный раствор>Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёной: значит, это основание (мыльный раствор).",
+"Красная капуста+Пищевая сода>Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёной: значит, это основание (пищевая сода).",
 "Фенолфталеин+Едкий натр>Малиновый раствор|color|Фенолфталеин в щелочной среде становится малиновым (едкий натр). В кислоте и воде он бесцветный.",
 "Фенолфталеин+Гашёная известь>Малиновый раствор|color|Фенолфталеин в щелочной среде становится малиновым (гашёная известь). В кислоте и воде он бесцветный.",
 "Фенолфталеин+Нашатырный спирт>Малиновый раствор|color|Фенолфталеин в щелочной среде становится малиновым (нашатырный спирт). В кислоте и воде он бесцветный.",
@@ -845,114 +844,788 @@ var d=document.createElement("div");d.innerHTML=h;if(last)el.insertBefore(d.firs
 if(document.readyState==="complete")chemInit();else addEventListener("load",chemInit);
 })();
 </script>
-<script id="madlab-admin">
-/* MAD LAB: админка. Открой сайт со ссылкой вида  https://твой-сайт/#admin  */
-(function(){
-var ADMIN_ID="madlab-k7q2x9v4m1z8",   /* ЗАМЕНИ на свою случайную строку (латиница/цифры/дефис) */
-    PASS="3365";               /* ЗАМЕНИ пароль админки */
-var LS=function(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){}return null};
-var isAdm=/admin/i.test(location.hash)||/[?&]admin/i.test(location.search);
-var LK={shake:"Встряхнуть",pour:"Слить",save:"Сохранить",items:"Вещества",drop:"Предметы",tabs:"Вкладки",mice:"Мыши",all:"ВСЁ"};
-var NT="https://ntfy.sh/",UP=ADMIN_ID+"-up",DN=ADMIN_ID+"-dn";
-var TX={err:"",backoff:0},seen={};
-function pub(t,o,f){if(!f&&Date.now()<TX.backoff)return;try{fetch(NT+t,{method:"POST",body:JSON.stringify(o)}).then(function(r){if(r.status==429){TX.backoff=Date.now()+20000;TX.err="лимит ntfy.sh (429), жду"}else if(!r.ok)TX.err="HTTP "+r.status;else TX.err=""}).catch(function(){TX.err="запрос не прошёл (интернет/блокировка)"})}catch(e){}}
-/* подписка: SSE + запасной опрос, если SSE не открылся */
-function sub(topic,since,onm,onst){var es=null,last=since;
-function got(d){if(!d||d.event!="message"||!d.id||seen[d.id])return;seen[d.id]=1;last=d.id;var o;try{o=JSON.parse(d.message)}catch(e){return}onm(o)}
-function open(){try{if(es)es.close();es=new EventSource(NT+topic+"/sse?since="+encodeURIComponent(last));es.onopen=function(){if(onst)onst(1)};es.onmessage=function(m){try{got(JSON.parse(m.data))}catch(e){}};es.onerror=function(){if(onst)onst(3)}}catch(e){if(onst)onst(3)}}
-function poll(){fetch(NT+topic+"/json?poll=1&since="+encodeURIComponent(last)).then(function(r){return r.text()}).then(function(t){t.split("\n").forEach(function(l){if(l.trim())try{got(JSON.parse(l))}catch(e){}});if(onst)onst(2)}).catch(function(){if(onst)onst(0)})}
-open();setInterval(function(){if(!es||es.readyState==2)open();if(!es||es.readyState!=1)poll()},8000)}
-function loadP(cb){if(window.Peer)return cb();var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";s.onload=cb;s.onerror=function(){setTimeout(function(){loadP(cb)},8000)};document.head.appendChild(s)}
-function yt(u){var m=/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/.exec(u);return m&&m[1]}
-function dev(){var u=navigator.userAgent;return/iPhone/.test(u)?"iPhone":/iPad/.test(u)?"iPad":/Android/.test(u)?"Android":/Windows/.test(u)?"Windows":/Mac/.test(u)?"Mac":/Linux/.test(u)?"Linux":"?"}
-
-/* ================= ГОСТЬ ================= */
-function visitor(){
-var uid=LS("madlab_uid");if(!uid){uid="g"+Math.random().toString(36).slice(2,7);LS("madlab_uid",uid)}
-var T0=Date.now(),name="Гость-"+uid.slice(1).toUpperCase(),ban=LS("madlab_ban")==="1",locks=[],vOn=0,es,lastS=0;
-try{locks=JSON.parse(LS("madlab_lk")||"[]")}catch(e){}
-var SEL={shake:"#shake",pour:"#pour",save:"#savem",items:"#inv,#ptab,#mS,#mT",drop:"#odrop,#osel",tabs:"nav",mice:"#test,#xray,#deliv,#phc,#phg,#phcam,#phgal,#msub,#un",all:"button,select,input,.cell,.pc,.mc,h1"};
-var st=document.createElement("style");st.textContent=Object.keys(SEL).map(function(k){return SEL[k].split(",").map(function(s){return'body[data-lk~="'+k+'"] '+s}).join(",")+"{opacity:.35!important;filter:grayscale(1)}"}).join("\n");document.head.appendChild(st);
-function applyLk(){document.body.setAttribute("data-lk",locks.join(" "));LS("madlab_lk",locks.length?JSON.stringify(locks):null)}
-function toast(t){var d=document.createElement("div");d.className="admx";d.style.cssText="position:fixed;left:10px;right:10px;top:12px;z-index:2147483400;background:#120f1f;border:2px solid #ff3df0;border-radius:12px;padding:10px;text-align:center;color:#e8e4ff;font:15px system-ui";d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove()},2200)}
-function block(e){if(!locks.length)return;var t=e.target;if(!t||!t.closest||t.closest(".admx"))return;
-for(var i=0;i<locks.length;i++){var s=SEL[locks[i]];if(s&&t.closest(s)){e.preventDefault();e.stopImmediatePropagation();if(e.type=="click")toast("🔒 Заблокировано администратором");return}}}
-["click","pointerdown","mousedown","touchstart","change","input"].forEach(function(n){document.addEventListener(n,block,{capture:true,passive:false})});
-function msgBox(t){var d=document.createElement("div");d.className="admx";d.style.cssText="position:fixed;inset:0;z-index:2147483500;background:#000c;display:flex;align-items:center;justify-content:center;padding:18px";d.innerHTML='<div style="background:#120f1f;border:2px solid #39ff9c;border-radius:16px;padding:18px;max-width:340px;width:100%;text-align:center;color:#e8e4ff;font:17px system-ui"><div style="font-size:34px">📢</div><p></p><button style="width:100%;padding:12px;border:0;border-radius:10px;background:#39ff9c;font-weight:700">Ок</button></div>';d.querySelector("p").textContent=t;d.querySelector("button").onclick=function(){d.remove()};document.body.appendChild(d)}
-function vStop(){var v=document.getElementById("vz");if(v)v.remove();vOn=0}
-function vPlay(u){vStop();vOn=1;var d=document.createElement("div");d.id="vz";d.className="admx";d.style.cssText="position:fixed;inset:0;z-index:2147483300;background:#000;display:flex;align-items:center;justify-content:center";var id=yt(u);
-if(id)d.innerHTML='<iframe src="https://www.youtube.com/embed/'+id+'?autoplay=1&playsinline=1&controls=0&rel=0" allow="autoplay;encrypted-media" allowfullscreen style="border:0;width:100%;height:100%"></iframe>';
-else{var v=document.createElement("video");v.src=u;v.playsInline=true;v.autoplay=true;v.style.cssText="max-width:100%;max-height:100%";v.onended=vStop;v.onerror=function(){vStop()};d.appendChild(v);
-var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;v.play().catch(function(){});var b=document.createElement("button");b.textContent="▶ Нажми, чтобы смотреть";b.style.cssText="position:absolute;padding:16px;font-size:18px;border:0;border-radius:12px;background:#39ff9c";b.onclick=function(){v.muted=false;v.play();b.remove()};d.appendChild(b)})}
-document.body.appendChild(d)}
-function kickScreen(t,hard){if(document.getElementById("kk"))return;var d=document.createElement("div");d.id="kk";d.className="admx";d.style.cssText="position:fixed;inset:0;z-index:2147483600;background:#000;color:#ff4a4a;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;font:900 26px Impact,sans-serif";d.innerHTML='<div style="font-size:80px">🚪</div>'+t;document.body.appendChild(d);vStop();
-if(hard)setTimeout(function(){try{window.close()}catch(e){}location.replace("about:blank")},2500)}
-function info(){var s=document.querySelector(".sec.on"),tb={lab:"Лаборатория",mice:"Мыши",enc:"Книга",chl:"Задания"},fl="",lv=1,xp=0;
-try{fl=mix.map(function(i){return S[i].n}).join(" + ")}catch(e){}try{lv=lvl();xp=D.xp}catch(e){}
-return{t:"st",u:uid,n:name,d:dev(),tab:(tb[s&&s.id]||"?"),lv:lv,xp:xp,fl:fl,lk:locks,ban:ban?1:0,vid:vOn,h:document.hidden?1:0,t0:T0}}
-function send(o){if(!o){if(Date.now()-lastS<4000)return;o=info()}lastS=Date.now();pub(UP,o)}
-function cmd(d){if(!d||!d.c)return;
-if(d.c=="kick")kickScreen("ВАС ВЫГНАЛИ С САЙТА",1);
-else if(d.c=="ban"){ban=true;LS("madlab_ban","1");kickScreen("ДОСТУП ЗАПРЕЩЁН",0)}
-else if(d.c=="unban"){ban=false;LS("madlab_ban",null);var k=document.getElementById("kk");if(k)k.remove()}
-else if(d.c=="msg")msgBox(String(d.v||"").slice(0,500));
-else if(d.c=="video")vPlay(String(d.v||""));
-else if(d.c=="stop")vStop();
-else if(d.c=="lock"){locks=(d.v||[]).filter(function(k){return SEL[k]});applyLk()}
-else if(d.c=="ping"){setTimeout(function(){send(info())},Math.random()*3000);return}
-send(info())}
-sub(DN,String(Math.floor(Date.now()/1000)),function(d){if(d&&(d.to=="*"||d.to==uid))cmd(d)});
-(function hb(){send(info());setTimeout(hb,25000+Math.random()*10000)})();
-document.addEventListener("click",function(){if(Date.now()-lastS>4000)setTimeout(function(){send()},150)},true);document.addEventListener("visibilitychange",function(){send()});
-applyLk();if(ban)kickScreen("ДОСТУП ЗАПРЕЩЁН",0);
-}
-
-/* ================= АДМИН ================= */
-function admin(){
-var root=document.createElement("div");root.className="admx";root.style.cssText="position:fixed;inset:0;z-index:2147483647;background:#07060d;color:#e8e4ff;overflow:auto;font:15px/1.35 system-ui,sans-serif;padding:calc(env(safe-area-inset-top,0px) + 10px) 10px calc(env(safe-area-inset-bottom,0px) + 40px)";document.body.appendChild(root);
-var css=document.createElement("style");css.textContent=".admx button{background:#1a1530;color:#e8e4ff;border:1px solid #2a2344;border-radius:10px;padding:11px 10px;min-height:44px;font:inherit}.admx button.g{background:#39ff9c;color:#021;border:0;font-weight:700}.admx button.r{background:#ff3d57;color:#fff;border:0}.admx button.on{border-color:#ff3df0;color:#ff3df0}.gc{background:#120f1f;border:1px solid #2a2344;border-radius:12px;padding:10px;margin:8px 0}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#555;margin-right:6px}.dot.on{background:#39ff9c;box-shadow:0 0 8px #39ff9c}.sm{color:#8c85b3;font-size:13px}.rw{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.rw>*{flex:1 1 40%}";document.head.appendChild(css);
-var G={},open={},pw=false;
-function login(){root.innerHTML='<div style="max-width:340px;margin:18vh auto;text-align:center"><h2>👑 Админка MAD LAB</h2><input id="ap" type="password" placeholder="Пароль" style="width:100%;padding:12px;border-radius:10px;border:1px solid #2a2344;background:#120f1f;color:#fff;font:inherit"><button class="g" id="ab" style="width:100%;margin-top:10px">Войти</button><div id="ae" style="color:#ff4a4a;margin-top:8px"></div></div>';
-var go=function(){if(document.getElementById("ap").value===PASS){try{sessionStorage.setItem("madlab_adm","1")}catch(e){}start()}else document.getElementById("ae").textContent="Неверный пароль"};document.getElementById("ab").onclick=go;document.getElementById("ap").onkeydown=function(e){if(e.key=="Enter")go()}}
-var ss=0,pt=0,lastIn=0;function onSt(s){if(s==1)ss=1;else if(s==3)ss=0;else if(s==2)pt=Date.now();else pt=0}
-function onUp(d){if(!d||!d.u)return;lastIn=Date.now();if(d.t=="st")G[d.u]=Object.assign(G[d.u]||{ev:[]},d,{last:Date.now()});else if(d.t=="evt"){var g=G[d.u]=G[d.u]||{u:d.u,n:d.u,ev:[],last:Date.now(),lk:[]};g.ev.unshift(new Date().toTimeString().slice(0,5)+" "+d.e);g.ev.length=Math.min(g.ev.length,5)}}
-function stat(){var s=ss?"🟢 На связи (SSE)":(pt&&Date.now()-pt<25000)?"🟡 На связи (опрос)":"🔴 Нет связи с ntfy.sh";if(TX.err)s+=" · ⚠️ "+TX.err;s+=lastIn?" · данные "+Math.round((Date.now()-lastIn)/1000)+" с назад":" · данных пока нет";return s}
-function start(){pw=true;sub(UP,"90s",onUp,onSt);setTimeout(function(){pub(DN,{to:"*",c:"ping"},true)},1500);draw();setInterval(draw,1500)}
-function tell(u,m){m.to=u;pub(DN,m,true)}
-function every(m){m.to="*";pub(DN,m,true)}
-function live(g){return g.last&&Date.now()-g.last<80000}
-function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-function draw(){if(!pw)return;var ks=Object.keys(G).filter(function(k){return G[k].last&&Date.now()-G[k].last<300000}).sort(function(a,b){return G[b].last-G[a].last}),n=ks.filter(function(k){return live(G[k])}).length;
-var h='<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">👑 Админка</h2><b>👥 '+n+'</b></div><div class="sm">'+stat()+'</div>'+
-'<div class="gc"><b>Всем сразу</b><div class="rw"><button data-a="gv">🎬 Видео всем</button><button data-a="gs">⏹ Стоп видео</button><button data-a="gm">💬 Сообщение всем</button><button data-a="rf">🔄 Обновить список</button><button data-a="gl">🔒 Заблокировать всё</button><button data-a="gu">🔓 Разблокировать всё</button></div></div>';
-if(!ks.length)h+='<p class="sm">Пока никого нет. Гости появляются в течение ~30 секунд после открытия сайта. Нажми «🔄 Обновить список».</p>';
-ks.forEach(function(k){var g=G[k],o=open[k],on=live(g),mins=Math.max(0,Math.round((Date.now()-(g.t0||Date.now()))/60000));
-h+='<div class="gc" data-u="'+k+'"><div data-a="tg"><i class="dot '+(on?"on":"")+'"></i><b>'+esc(g.n)+'</b> '+(g.ban?"⛔ ":"")+(g.vid?"🎬 ":"")+(g.h?"💤 ":"")+'<div class="sm">'+esc(g.d)+" · "+esc(g.tab)+" · ур."+g.lv+" · "+mins+" мин"+(g.lk&&g.lk.length?" · 🔒"+g.lk.length:"")+'</div></div>';
-if(o){h+='<div class="sm">🧪 В колбе: '+esc(g.fl||"пусто")+'</div>'+(g.ev&&g.ev.length?'<div class="sm">'+g.ev.map(esc).join("<br>")+"</div>":"")+
-'<div class="rw"><button data-a="vd">🎬 Видео</button><button data-a="st">⏹ Стоп</button><button data-a="ms">💬 Сообщение</button></div><div class="sm">Заблокировать кнопки:</div><div class="rw">'+
-Object.keys(LK).map(function(x){return'<button data-a="lk" data-k="'+x+'" class="'+((g.lk||[]).indexOf(x)>=0?"on":"")+'" style="flex:1 1 30%">'+((g.lk||[]).indexOf(x)>=0?"🔒 ":"")+LK[x]+"</button>"}).join("")+
-'</div><div class="rw"><button class="r" data-a="ki">🚪 Выгнать</button>'+(g.ban?'<button class="g" data-a="ub">✅ Разбанить</button>':'<button class="r" data-a="bn">⛔ Бан</button>')+"</div>"}
-h+="</div>"});
-if(root.querySelector("input")&&document.activeElement&&document.activeElement.tagName=="INPUT")return;root.innerHTML=h}
-root.addEventListener("click",function(e){var b=e.target.closest("[data-a]");if(!b)return;var a=b.dataset.a,c=b.closest("[data-u]"),u=c&&c.dataset.u,g=u&&G[u],v;
-if(a=="tg"){open[u]=!open[u]}
-else if(a=="vd"||a=="gv"){v=prompt("Ссылка на видео (mp4 или YouTube):",LS("madlab_vurl")||"");if(v){LS("madlab_vurl",v);a=="gv"?every({c:"video",v:v}):tell(u,{c:"video",v:v})}}
-else if(a=="st")tell(u,{c:"stop"});else if(a=="gs")every({c:"stop"});
-else if(a=="ms"||a=="gm"){v=prompt("Сообщение:");if(v)a=="gm"?every({c:"msg",v:v}):tell(u,{c:"msg",v:v})}
-else if(a=="lk"){var l=(g.lk||[]).slice(),i=l.indexOf(b.dataset.k);i>=0?l.splice(i,1):l.push(b.dataset.k);g.lk=l;tell(u,{c:"lock",v:l})}
-else if(a=="rf")every({c:"ping"});else if(a=="gl")every({c:"lock",v:["all"]});else if(a=="gu")every({c:"lock",v:[]});
-else if(a=="ki"){if(confirm("Выгнать "+g.n+"?"))tell(u,{c:"kick"})}
-else if(a=="bn"){if(confirm("Забанить "+g.n+"?"))tell(u,{c:"ban"})}
-else if(a=="ub")tell(u,{c:"unban"});
-draw()});
-try{if(sessionStorage.getItem("madlab_adm")==="1")start();else login()}catch(e){login()}
-}
-if(isAdm)admin();else visitor();
-})();
-</script>
-
 <script id="madlab-flask">(function(){function f(){var l=document.getElementById("lab"),i=document.getElementById("inv");if(!l||!i||document.getElementById("flsel"))return;
 var r=document.createElement("div");r.className="row";r.innerHTML='<select id="flsel"><option value="0">🧪 Колба Эрленмейера</option><option value="1">⚗️ Круглодонная</option><option value="2">📏 Мензурка</option><option value="3">🥛 Стакан</option><option value="4">🧫 Пробирка</option><option value="5">🍾 Бутыль</option><option value="6">❤️ Колба-сердце</option><option value="7">💎 Кристалл</option><option value="8">🫙 Банка</option><option value="9">🍸 Бокал-конус</option><option value="10">⭐ Звезда</option><option value="11">⏳ Песочные часы</option></select>';
 l.insertBefore(r,i);var q=document.getElementById("flsel");q.value=FLK;q.onchange=function(){FLK=+q.value;try{localStorage.setItem("madlabfl",FLK)}catch(e){}try{say("Колба: "+q.options[q.selectedIndex].text)}catch(e){}}}
 if(document.readyState==="complete")f();else addEventListener("load",f)})();</script>
+<style id="madlab-v5-css">
+/* поле поиска и текстовые поля */
+input[type=search],input[type=text],input[type=password],textarea{background:var(--pn);color:var(--tx);border:1px solid var(--ln);border-radius:10px;font:inherit;padding:10px;width:100%;min-width:0;min-height:44px}
+input[type=search]:focus,textarea:focus{outline:none;border-color:var(--n3);box-shadow:0 0 8px #3dd5ff55}
+#srchRow input{flex:1}
+/* лаборатория скроллится целиком, сетка веществ не сжимается в щёлку */
+#lab.on{height:auto}
+#lab .grid{flex:none;max-height:42vh;min-height:150px}
+#heatInfo{font-size:12px;min-height:16px;margin:0 2px 4px}
+/* админ-панель */
+#adm{position:fixed;top:0;right:0;bottom:0;left:0;background:#000d;display:none;align-items:flex-start;justify-content:center;padding:10px;overflow:auto;z-index:50}
+#adm.on{display:flex}
+.admbox{background:var(--pn);border:2px solid var(--n3);box-shadow:0 0 24px #3dd5ff44;border-radius:16px;width:100%;max-width:520px;padding:12px;margin:auto 0}
+.admhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.admhead button{min-height:36px;padding:4px 12px}
+#admBody details{background:#0d0a18;border:1px solid var(--ln);border-radius:12px;padding:8px 10px;margin:6px 0}
+#admBody summary{cursor:pointer;font-weight:700;min-height:28px}
+#admBody .b{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+#admBody .b button{flex:1 1 auto;min-height:40px;padding:8px}
+#admBody button.warn{border-color:#ff4d4d;color:#ff9a9a}
+#admBody .ln{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:14px;overflow-wrap:anywhere}
+.led{flex:0 0 auto;display:inline-block;width:11px;height:11px;border-radius:50%;background:#888}
+.led.ok{background:#39ff9c;box-shadow:0 0 6px #39ff9c}
+.led.warn{background:#ffd23c;box-shadow:0 0 6px #ffd23c}
+.led.bad{background:#ff4d4d;box-shadow:0 0 6px #ff4d4d}
+#admBody .log{max-height:160px;overflow:auto;font:11px/1.35 monospace;color:#ffb0b0}
+</style>
+<script id="madlab-v5">
+/* MAD LAB v5.1: поиск, нагрев и кипячение, много реакций, админ-панель, автопереподключение.
+   Модуль самодостаточный: сам ждёт нужные части игры и сам их переподключает, если они пропали. */
+(function(){
+var DATAV=7;            /* версия формата сохранения: при смене чистим мусор старых версий */
+function $(s){return document.querySelector(s)}
+function esc(x){return String(x).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function ok(){return typeof S!=="undefined"&&typeof D!=="undefined"&&typeof mix!=="undefined"&&typeof add==="function"}
+function NI(n){return S.findIndex(function(x){return x.n===n})}
+function IX(k){return /^[A-Z][a-z]?$/.test(k)?Z(k):NI(k)}
+var ERRS=[];
+var st={T:0,spd:1,prog:0,sig:"",boiling:false,stoveBoil:false,vapor:0,last:Date.now(),rule:-1,beat:Date.now()};
+var SQ="";
+var ID={};
+var RXPARSED=null,RXBASE=0;
+
+/* ================= ДАННЫЕ ================= */
+var NEWSUB=[
+["Сахар","🍚","#fffaf0",0],["Карамель","🍮","#c9801f",1],["Пористая карамель","🍯","#d9a441",1],["Ириска","🍬","#a8662a",1],
+["Варёное яйцо","🥚","#fff7e0",1],["Кипячёное молоко","🥛","#f3ecd8",1],["Известковая вода","💧","#e6f2f0",1],
+["Оксид фосфора","⚪","#f7f7f7",1],["Фосфорная кислота","🧪","#e8f0c8",1],
+["Нержавеющая сталь","🔪","#c9d1d6",1],["Припой","🔗","#b9bcc0",1],["Мельхиор","🥄","#d5d9dc",1],
+["Латте","☕","#c8a27a",1],["Лимонад","🍋","#fff3a0",1],["Мороженое","🍨","#fdf0d5",1],["Клейстер","🥣","#f1ecdc",1],
+["Красное золото","🟠","#e0a070",1],["Стерлинговое серебро","🥈","#dfe3e6",1],["Электрум","🟡","#e6d27a",1],
+["Нитрат кальция","⚪","#f6f6f6",1],["Нитрат магния","⚪","#f4f6f6",1],["Нитрат цинка","⚪","#f2f4f4",1],
+["Хлорид свинца","⚪","#f2f2f2",1],["Сульфат свинца","⚪","#f8f8f8",1]
+];
+/* реакции при встряхивании. Формат: реагенты>продукты|эффект|текст|вспышка(1).
+   В колбе максимум 6 веществ, поэтому в левой части сумма цифр не больше 6. */
+var NEWRX=[
+/* --- сильные окислители и бурные реакции --- */
+"Mg+Марганцовка>Оксид магния+Оксид марганца|boom|Mg + KMnO₄ → MgO + MnO₂ (упрощённо): активный металл + сильный окислитель = мгновенная вспышка и ВЗРЫВ! В жизни такую смесь нельзя делать ни при каких условиях.|1",
+"Al+Марганцовка>Оксид алюминия+Оксид марганца|boom|Алюминий + марганцовка: окислитель отдаёт кислород металлу, реакция идёт взрывно, колба вспыхивает!|1",
+"Zn+Марганцовка>Оксид цинка+Оксид марганца|boom|Цинк + марганцовка: быстрое горение и яркая вспышка.|1",
+"Спирт+Марганцовка>Оксид марганца+Углекислый газ+Вода|boom|Спирт + сильный окислитель: смесь самовоспламеняется, колба вспыхивает!|1",
+"Сахар+Марганцовка>Оксид марганца+Углекислый газ+Вода|boom|Сахар + марганцовка: сильный окислитель поджигает сахар, смесь вспыхивает сиреневым пламенем!|1",
+"Эфир+2O>Углекислый газ+Вода|boom|Пары эфира с кислородом образуют взрывоопасную смесь: достаточно искры. ХЛОП!|1",
+"2Na+2Соляная кислота>2Соль+2H|boom|2Na + 2HCl → 2NaCl + H₂↑: в кислоте натрий реагирует ещё бурнее, чем в воде, водород вспыхивает!|1",
+"2K+2Соляная кислота>2Хлорид калия+2H|boom|2K + 2HCl → 2KCl + H₂↑: калий в кислоте взрывается, водород горит фиолетовым пламенем!|1",
+"2Na+Серная кислота>Сульфат натрия+2H|boom|2Na + H₂SO₄ → Na₂SO₄ + H₂↑: натрий в серной кислоте реагирует как в воде, только злее. Водород вспыхивает!|1",
+"Na+Лёд>Едкий натр+H|boom|Натрий на льду: лёд мгновенно тает, натрий реагирует с водой и вспыхивает.|1",
+"Ca+2Соляная кислота>Хлорид кальция+2H|foam|Ca + 2HCl → CaCl₂ + H₂↑: кальций бурно растворяется, идут пузырьки водорода.",
+"Ca+2Азотная кислота>Нитрат кальция+2H|foam|Ca + 2HNO₃ → Ca(NO₃)₂ + H₂↑: кальций растворяется с пузырьками водорода.",
+"Mg+2Азотная кислота>Нитрат магния+2H|foam|Mg + 2HNO₃ (разб.) → Mg(NO₃)₂ + H₂↑: магний такой активный, что выделяет водород даже из азотной кислоты.",
+"Na+Спирт>Щёлочь+H|foam|2Na + 2C₂H₅OH → 2C₂H₅ONa + H₂↑: в спирте натрий реагирует спокойнее, чем в воде: шипит и выделяет водород.",
+"K+Спирт>Едкое кали+H|boom|Калий в спирте реагирует бурно: выделяется водород и он вспыхивает.|1",
+"Li+Спирт>Щёлочь+H|foam|Литий в спирте реагирует спокойно: медленно шипит и выделяет водород.",
+"Ba+Вода>Щёлочь+H|foam|Ba + 2H₂O → Ba(OH)₂ + H₂↑: барий реагирует с водой заметно, но спокойнее натрия.",
+"Sr+Вода>Щёлочь+H|foam|Sr + 2H₂O → Sr(OH)₂ + H₂↑: стронций шипит в воде, выделяя водород.",
+"Mg+2Вода>Гидроксид магния+2H|calm|Mg + 2H₂O → Mg(OH)₂ + H₂↑: в холодной воде магний реагирует очень медленно, помогает нагрев.",
+"2F+Вода>2Плавиковая кислота+O|boom|2F₂ + 2H₂O → 4HF + O₂: фтор самый активный неметалл, он заставляет гореть даже воду!|1",
+"2Cl+Вода>2Соляная кислота+O|smoke|Cl₂ + H₂O → HCl + HClO (упрощённо): хлорная вода пахнет бассейном и обесцвечивает краски.",
+"Mg+Перекись>Оксид магния+Вода|boom|Mg + H₂O₂ → MgO + H₂O: перекись отдаёт кислород металлу, магний вспыхивает!|1",
+"Al+Перекись>Оксид алюминия+Вода|glow|2Al + 3H₂O₂ → Al₂O₃ + 3H₂O (упрощённо): алюминий окисляется перекисью, смесь заметно греется.",
+"Zn+Перекись>Оксид цинка+Вода|glow|Zn + H₂O₂ → ZnO + H₂O: перекись окисляет цинк, смесь теплеет.",
+"Cu+Перекись>Оксид меди+Вода|color|Cu + H₂O₂ → CuO + H₂O: перекись окисляет медь, она чернеет.",
+"2Fe+3Перекись>Ржавчина+3Вода|color|2Fe + 3H₂O₂ → Fe₂O₃ + 3H₂O: перекись быстро превращает железо в ржавчину.",
+"P+2O>Оксид фосфора|glow|4P + 5O₂ → 2P₂O₅ (упрощённо, на один атом фосфора): фосфор горит ослепительно-белым пламенем, дым состоит из оксида фосфора.|1",
+"Оксид фосфора+3Вода>2Фосфорная кислота|smoke|P₂O₅ + 3H₂O → 2H₃PO₄: оксид фосфора жадно хватает воду, смесь сильно нагревается.",
+"Вода+Электроплазма>2H+O|boom|Электролиз: ток разлагает воду на водород (2 части) и кислород (1 часть). Хлопок!",
+"Лава+Вода>Пар+Вулканический пепел|boom|Лава мгновенно превращает воду в пар: паровой взрыв! Остался вулканический пепел.|1",
+"Mg+Сернистый газ>Оксид магния+S|boom|2Mg + SO₂ → 2MgO + S (упрощённо): магний горит даже в сернистом газе, остаётся жёлтая сера.|1",
+"Al+Азотная кислота>Оксид алюминия|calm|Концентрированная азотная кислота пассивирует алюминий: на нём появляется плотная плёнка оксида, металл дальше не растворяется.",
+"Сахар+Азотная кислота>Бурый газ+Углекислый газ+Вода|smoke|Горячая азотная кислота окисляет сахар: идёт бурый газ и углекислый газ.",
+/* --- осадки: соли и нерастворимые вещества --- */
+"Хлорид бария+Сульфат магния>Сульфат бария+Хлорид магния|crystal|BaCl₂ + MgSO₄ → BaSO₄↓ + MgCl₂: выпал белый нерастворимый осадок сульфата бария.",
+"Хлорид бария+Сульфат меди>Сульфат бария+Хлорид меди|crystal|BaCl₂ + CuSO₄ → BaSO₄↓ + CuCl₂: белый осадок, раствор позеленел.",
+"Хлорид бария+Сульфат цинка>Сульфат бария+Хлорид цинка|crystal|BaCl₂ + ZnSO₄ → BaSO₄↓ + ZnCl₂: выпал белый осадок сульфата бария.",
+"Хлорид бария+Сульфат железа>Сульфат бария+Хлорид железа|crystal|BaCl₂ + FeSO₄ → BaSO₄↓ + FeCl₂: белый осадок, раствор желтовато-зелёный.",
+"Хлорид кальция+2Едкий натр>Гашёная известь+2Соль|crystal|CaCl₂ + 2NaOH → Ca(OH)₂↓ + 2NaCl: выпал белый осадок гашёной извести.",
+"Хлорид кальция+Сульфат натрия>Сульфат кальция+2Соль|crystal|CaCl₂ + Na₂SO₄ → CaSO₄↓ + 2NaCl: выпал белый осадок гипса.",
+"Хлорид кальция+Серная кислота>Сульфат кальция+2Соляная кислота|crystal|CaCl₂ + H₂SO₄ → CaSO₄↓ + 2HCl: выпал гипс, а кислота сменилась на соляную.",
+"Хлорид кальция+2Нитрат серебра>2Хлорид серебра+Нитрат кальция|crystal|CaCl₂ + 2AgNO₃ → 2AgCl↓ + Ca(NO₃)₂: выпал белый творожистый осадок хлорида серебра.",
+"Хлорид магния+2Нитрат серебра>2Хлорид серебра+Нитрат магния|crystal|MgCl₂ + 2AgNO₃ → 2AgCl↓ + Mg(NO₃)₂: белый творожистый осадок.",
+"Хлорид цинка+2Нитрат серебра>2Хлорид серебра+Нитрат цинка|crystal|ZnCl₂ + 2AgNO₃ → 2AgCl↓ + Zn(NO₃)₂: белый творожистый осадок.",
+"Сульфат железа+2Едкий натр>Гидроксид железа+Сульфат натрия|color|FeSO₄ + 2NaOH → Fe(OH)₂↓ + Na₂SO₄: зеленоватый осадок, на воздухе он буреет.",
+"Сульфат цинка+2Едкий натр>Гидроксид цинка+Сульфат натрия|crystal|ZnSO₄ + 2NaOH → Zn(OH)₂↓ + Na₂SO₄: белый осадок.",
+"Сульфат магния+2Едкий натр>Гидроксид магния+Сульфат натрия|crystal|MgSO₄ + 2NaOH → Mg(OH)₂↓ + Na₂SO₄: белый осадок.",
+"Хлорид меди+2Едкий натр>Гидроксид меди+2Соль|color|CuCl₂ + 2NaOH → Cu(OH)₂↓ + 2NaCl: голубой студенистый осадок.",
+"Нитрат меди+2Едкий натр>Гидроксид меди+2Нитрат натрия|color|Cu(NO₃)₂ + 2NaOH → Cu(OH)₂↓ + 2NaNO₃: голубой студенистый осадок.",
+"Нитрат свинца+2Соляная кислота>Хлорид свинца+2Азотная кислота|crystal|Pb(NO₃)₂ + 2HCl → PbCl₂↓ + 2HNO₃: выпал белый осадок хлорида свинца.",
+"Нитрат свинца+2Соль>Хлорид свинца+2Нитрат натрия|crystal|Pb(NO₃)₂ + 2NaCl → PbCl₂↓ + 2NaNO₃: белый осадок хлорида свинца.",
+"Нитрат свинца+Сульфат натрия>Сульфат свинца+2Нитрат натрия|crystal|Pb(NO₃)₂ + Na₂SO₄ → PbSO₄↓ + 2NaNO₃: белый осадок сульфата свинца.",
+"Нитрат свинца+Серная кислота>Сульфат свинца+2Азотная кислота|crystal|Pb(NO₃)₂ + H₂SO₄ → PbSO₄↓ + 2HNO₃: белый осадок сульфата свинца (из него состоят пластины в автомобильных аккумуляторах).",
+"Хлорид аммония+Едкий натр>Аммиак+Соль+Вода|smoke|NH₄Cl + NaOH → NH₃↑ + NaCl + H₂O: так узнают соли аммония, выделяется резкий запах аммиака.",
+"Хлорид аммония+Едкое кали>Аммиак+Хлорид калия+Вода|smoke|NH₄Cl + KOH → NH₃↑ + KCl + H₂O: щёлочь вытесняет аммиак из соли аммония, резкий запах!",
+"Гашёная известь+2Хлорид аммония>Хлорид кальция+2Аммиак+2Вода|smoke|Ca(OH)₂ + 2NH₄Cl → CaCl₂ + 2NH₃↑ + 2H₂O: так в школьной лаборатории получают аммиак.",
+/* --- вытеснение металлов --- */
+"Fe+Хлорид меди>Хлорид железа+Cu|color|Fe + CuCl₂ → FeCl₂ + Cu: железо активнее меди и вытесняет её из раствора.",
+"Zn+Хлорид меди>Хлорид цинка+Cu|color|Zn + CuCl₂ → ZnCl₂ + Cu: цинк вытесняет медь, на нём оседает красный налёт.",
+"2Al+3Хлорид меди>2Хлорид алюминия+3Cu|color|2Al + 3CuCl₂ → 2AlCl₃ + 3Cu: алюминий вытесняет медь, раствор светлеет.",
+"Zn+Сульфат железа>Сульфат цинка+Fe|color|Zn + FeSO₄ → ZnSO₄ + Fe: цинк активнее железа и вытесняет его.",
+"Mg+Сульфат железа>Сульфат магния+Fe|color|Mg + FeSO₄ → MgSO₄ + Fe: магний вытесняет железо из раствора.",
+"Mg+Сульфат цинка>Сульфат магния+Zn|color|Mg + ZnSO₄ → MgSO₄ + Zn: магний активнее цинка и вытесняет его.",
+"Mg+Хлорид цинка>Хлорид магния+Zn|color|Mg + ZnCl₂ → MgCl₂ + Zn: магний вытесняет цинк.",
+"Zn+Хлорид железа>Хлорид цинка+Fe|color|Zn + FeCl₂ → ZnCl₂ + Fe: цинк вытесняет железо.",
+"Zn+Нитрат свинца>Нитрат цинка+Pb|color|Zn + Pb(NO₃)₂ → Zn(NO₃)₂ + Pb: цинк вытесняет свинец, вырастает «свинцовое дерево».",
+"Zn+Нитрат меди>Нитрат цинка+Cu|color|Zn + Cu(NO₃)₂ → Zn(NO₃)₂ + Cu: цинк вытесняет медь, синий раствор бледнеет.",
+"Mg+Нитрат меди>Нитрат магния+Cu|color|Mg + Cu(NO₃)₂ → Mg(NO₃)₂ + Cu: магний вытесняет медь, раствор обесцвечивается.",
+"Zn+2Нитрат серебра>Нитрат цинка+2Ag|color|Zn + 2AgNO₃ → Zn(NO₃)₂ + 2Ag: цинк вытесняет серебро, вырастают серебристые иголочки.",
+"Mg+2Нитрат серебра>Нитрат магния+2Ag|color|Mg + 2AgNO₃ → Mg(NO₃)₂ + 2Ag: магний вытесняет серебро.",
+"Fe+Хлорид золота>Хлорид железа+Au|color|Fe + AuCl₃ → FeCl₂ + Au (упрощённо): железо вытесняет золото из раствора.",
+"Zn+Хлорид золота>Хлорид цинка+Au|color|Zn + AuCl₃ → ZnCl₂ + Au (упрощённо): цинк вытесняет золото.",
+/* --- кислоты, основания, соли, нейтрализация --- */
+"Гидроксид меди+Серная кислота>Сульфат меди+2Вода|color|Cu(OH)₂ + H₂SO₄ → CuSO₄ + 2H₂O: голубой осадок растворился, раствор стал синим.",
+"Гидроксид меди+2Соляная кислота>Хлорид меди+2Вода|color|Cu(OH)₂ + 2HCl → CuCl₂ + 2H₂O: осадок растворился, раствор позеленел.",
+"Гидроксид цинка+2Соляная кислота>Хлорид цинка+2Вода|smoke|Zn(OH)₂ + 2HCl → ZnCl₂ + 2H₂O: осадок растворился в кислоте.",
+"Гидроксид железа+2Соляная кислота>Хлорид железа+2Вода|color|Fe(OH)₂ + 2HCl → FeCl₂ + 2H₂O: осадок растворился, раствор стал желтовато-зелёным.",
+"Гидроксид магния+Серная кислота>Сульфат магния+2Вода|smoke|Mg(OH)₂ + H₂SO₄ → MgSO₄ + 2H₂O: нейтрализация, получилась английская соль.",
+"Оксид магния+Серная кислота>Сульфат магния+Вода|smoke|MgO + H₂SO₄ → MgSO₄ + H₂O: основный оксид + кислота = соль + вода.",
+"Оксид цинка+Серная кислота>Сульфат цинка+Вода|smoke|ZnO + H₂SO₄ → ZnSO₄ + H₂O: оксид растворился в кислоте.",
+"Оксид алюминия+2Едкий натр>2Алюминат натрия+Вода|calm|Al₂O₃ + 2NaOH → 2NaAlO₂ + H₂O: оксид алюминия амфотерный, он растворяется и в щёлочи.",
+"Оксид алюминия+3Соляная кислота>Хлорид алюминия+Вода|smoke|Al₂O₃ + 6HCl → 2AlCl₃ + 3H₂O (упрощённо): оксид алюминия растворяется и в кислоте, это амфотерный оксид.",
+"Негашёная известь+Серная кислота>Сульфат кальция+Вода|smoke|CaO + H₂SO₄ → CaSO₄ + H₂O: основный оксид + кислота = гипс + вода.",
+"Негашёная известь+2Азотная кислота>Нитрат кальция+Вода|smoke|CaO + 2HNO₃ → Ca(NO₃)₂ + H₂O: основный оксид + кислота = соль + вода.",
+"Гашёная известь+2Азотная кислота>Нитрат кальция+2Вода|smoke|Ca(OH)₂ + 2HNO₃ → Ca(NO₃)₂ + 2H₂O: нейтрализация.",
+"Гашёная известь+Серная кислота>Сульфат кальция+2Вода|smoke|Ca(OH)₂ + H₂SO₄ → CaSO₄ + 2H₂O: нейтрализация, получился гипс.",
+"Гашёная известь+Лимонная кислота>2Вода|calm|Ca(OH)₂ + лимонная кислота → цитрат кальция + вода: нейтрализация, ничего бурного.",
+"Гашёная известь+2Уксус>2Вода|calm|Ca(OH)₂ + 2CH₃COOH → (CH₃COO)₂Ca + 2H₂O: нейтрализация, получился ацетат кальция.",
+"Едкий натр+Лимонная кислота>Вода|smoke|NaOH + лимонная кислота → цитрат натрия + вода: щёлочь и кислота нейтрализовали друг друга.",
+"Едкое кали+Азотная кислота>Нитрат калия+Вода|smoke|KOH + HNO₃ → KNO₃ + H₂O: нейтрализация, получилась калийная селитра.",
+"Нашатырный спирт+Соляная кислота>Хлорид аммония+Вода|smoke|NH₄OH + HCl → NH₄Cl + H₂O: нейтрализация, получился нашатырь.",
+"Нашатырный спирт+Нитрат меди>Аммиакат меди|color|Cu(NO₃)₂ + NH₃ → комплекс меди: раствор стал ярко-синим (васильковым).",
+"2Едкий натр+Углекислый газ>Карбонат натрия+Вода|calm|2NaOH + CO₂ → Na₂CO₃ + H₂O: щёлочь «съедает» углекислый газ из воздуха.",
+"Оксид натрия+2Соляная кислота>2Соль+Вода|smoke|Na₂O + 2HCl → 2NaCl + H₂O: основный оксид + кислота = соль + вода.",
+"Оксид натрия+Серная кислота>Сульфат натрия+Вода|smoke|Na₂O + H₂SO₄ → Na₂SO₄ + H₂O: основный оксид + кислота = соль + вода.",
+"Оксид натрия+Углекислый газ>Карбонат натрия|calm|Na₂O + CO₂ → Na₂CO₃: основный оксид поглощает кислотный.",
+"Карбонат натрия+2Уксус>2Ацетат натрия+Углекислый газ+Вода|foam|Na₂CO₃ + 2CH₃COOH → 2CH₃COONa + CO₂↑ + H₂O: кальцинированная сода шипит в уксусе.",
+"Карбонат натрия+Лимонная кислота>Углекислый газ+Вода|foam|Сода + лимонная кислота: шипит и пенится, остаётся цитрат натрия.",
+"Карбонат натрия+Серная кислота>Сульфат натрия+Углекислый газ+Вода|foam|Na₂CO₃ + H₂SO₄ → Na₂SO₄ + CO₂↑ + H₂O: бурное шипение.",
+"Карбонат натрия+2Азотная кислота>2Нитрат натрия+Углекислый газ+Вода|foam|Na₂CO₃ + 2HNO₃ → 2NaNO₃ + CO₂↑ + H₂O: шипит и пенится.",
+"Мел+Азотная кислота>Нитрат кальция+Углекислый газ+Вода|foam|CaCO₃ + 2HNO₃ → Ca(NO₃)₂ + CO₂↑ + H₂O (упрощённо): мел растворяется с шипением.",
+"Яйцо+Соляная кислота>Голое яйцо+Углекислый газ|foam|Соляная кислота растворяет скорлупу быстрее уксуса: яйцо осталось «голым».",
+"Яйцо+Лимонная кислота>Голое яйцо+Углекислый газ|foam|Лимонная кислота растворяет известковую скорлупу: идут пузырьки, яйцо остаётся в мягкой плёнке.",
+"Гашёная известь+Вода>Известковая вода|calm|Ca(OH)₂ чуть-чуть растворяется в воде: получилась известковая вода (ею проверяют углекислый газ).",
+"Известковая вода+Углекислый газ>Мел+Вода|crystal|Ca(OH)₂ + CO₂ → CaCO₃↓ + H₂O: известковая вода помутнела, так узнают углекислый газ.",
+/* --- кислоты и металлы (концентрированные кислоты) --- */
+"Cu+2Серная кислота>Сульфат меди+Сернистый газ+2Вода|smoke|Cu + 2H₂SO₄(конц.) → CuSO₄ + SO₂↑ + 2H₂O: медь растворяется только в горячей концентрированной серной кислоте, идёт едкий газ.",
+"C+2Серная кислота>Углекислый газ+2Сернистый газ+2Вода|smoke|C + 2H₂SO₄ → CO₂↑ + 2SO₂↑ + 2H₂O: горячая концентрированная серная кислота окисляет даже уголь.",
+"Zn+4Азотная кислота>Нитрат цинка+2Бурый газ+2Вода|smoke|Zn + 4HNO₃(конц.) → Zn(NO₃)₂ + 2NO₂↑ + 2H₂O: цинк растворяется, идёт бурый газ.",
+"Pb+4Азотная кислота>Нитрат свинца+2Бурый газ+2Вода|smoke|Pb + 4HNO₃ → Pb(NO₃)₂ + 2NO₂↑ + 2H₂O: свинец растворяется в азотной кислоте, идёт бурый газ.",
+"Cu+Царская водка>Хлорид меди+Бурый газ+Вода|smoke|Царская водка растворяет почти всё: медь превратилась в хлорид меди, идёт бурый газ.",
+"Ag+Царская водка>Хлорид серебра+Бурый газ+Вода|smoke|Царская водка растворяет серебро, но тут же выпадает белый осадок хлорида серебра.",
+"Fe+Царская водка>Хлорид железа+Бурый газ+Вода|smoke|Железо растворяется в царской водке с бурым газом.",
+"Ag+Cl>Хлорид серебра|crystal|2Ag + Cl₂ → 2AgCl (на один атом серебра): серебро темнеет и покрывается белым налётом хлорида.",
+"Au+3Cl>Хлорид золота|smoke|2Au + 3Cl₂ → 2AuCl₃ (на один атом золота): золото реагирует с хлором только при нагреве, но здесь условно получилось.",
+"Сероводород+Серная кислота>S+Сернистый газ+2Вода|smoke|H₂S + H₂SO₄(конц.) → S↓ + SO₂↑ + 2H₂O: кислота окисляет сероводород, выпала жёлтая сера.",
+"Сероводород+2Cl>2Соляная кислота+S|smoke|H₂S + Cl₂ → 2HCl + S↓: хлор окисляет сероводород, выпала жёлтая сера.",
+"2Сероводород+Сернистый газ>3S+2Вода|crystal|2H₂S + SO₂ → 3S↓ + 2H₂O: так получают серу из природного газа (процесс Клауса).",
+"Ржавчина+3Угарный газ>2Fe+3Углекислый газ|glow|Fe₂O₃ + 3CO → 2Fe + 3CO₂: угарный газ отбирает кислород у ржавчины, это основа выплавки чугуна.",
+/* --- сплавы --- */
+"Fe+Cr>Нержавеющая сталь|glow|Fe + Cr: добавка хрома делает сталь нержавеющей, на ней появляется защитная плёнка оксида.",
+"Sn+Pb>Припой|color|Олово + свинец = мягкий легкоплавкий сплав: припой для пайки.",
+"Cu+Ni>Мельхиор|color|Медь + никель = мельхиор: сплав «под серебро», из него делают ложки и монеты.",
+"Ag+Cu>Стерлинговое серебро|color|Серебро + немного меди = стерлинговое серебро: оно твёрже чистого, из него делают украшения и столовые приборы.",
+"Au+Cu>Красное золото|color|Золото + медь = красное (розовое) золото: медь даёт тёплый розовый оттенок и твёрдость.",
+"Au+Ag>Электрум|color|Золото + серебро = электрум, природный бледно-жёлтый сплав: из него чеканили первые монеты в истории.",
+"Hg+Ag>Амальгама|mutate|Серебро растворяется в ртути: получилась амальгама (из неё когда-то делали зубные пломбы).",
+"Hg+Sn>Амальгама|mutate|Олово растворяется в ртути: получилась амальгама (ею раньше покрывали зеркала).",
+/* --- еда и бытовая химия --- */
+"Дрожжи+Сахар+Вода>Спирт+Углекислый газ|foam|Дрожжи едят сахар и выделяют газ и спирт: брожение (так поднимается тесто и делают квас).",
+"Дрожжи+Мёд+Вода>Спирт+Углекислый газ|foam|Дрожжи сбраживают сахара мёда: получается спирт и газ. Так делают медовуху.",
+"Вода+Лимонная кислота+Сахар>Лимонад|glow|Вода + кислота + сахар = лимонад: кислинка лимонной кислоты и сладость сахара.",
+"Сахар+Вода>Сахарный раствор|calm|Сахар растворился в воде: получился сахарный раствор (сахар никуда не делся, его можно выпарить).",
+"Мёд+Вода>Сахарный раствор|calm|Мёд разбавился водой: получился сладкий раствор.",
+"Сахар+Серная кислота>C+Вода|expand|C₁₂H₂₂O₁₁ → 12C + 11H₂O: серная кислота забирает воду у сахара, он чернеет и вспучивается «угольной змеёй»!",
+"Кофе+Молоко>Латте|calm|Кофе + молоко = латте: молоко смягчает горечь.",
+"Латте+Лимонная кислота>Творог+Кофе|foam|Кислота створаживает молоко в латте: получился творог, а кофе остался отдельно.",
+"Молоко+Спирт>Творог|foam|Спирт отнимает воду у белков молока, они сворачиваются: получился творог.",
+"Яйцо+Спирт>Варёное яйцо|crystal|Спирт денатурирует белок: яйцо «сварилось» без огня.",
+"Газировка+Соль>Углекислый газ+Солевой раствор|foam|Кристаллики соли дают пузырькам точки опоры: газировка мгновенно вспенилась!",
+"Лимонад+Ментос>Гейзер|expand|Это физика, а не химия: поверхность конфеты помогает растворённому газу мгновенно выделиться. Лимонадный гейзер!",
+"Крахмал+Вода>Клейстер|calm|Крахмал в воде набухает: получился клейстер (им клеили обои и бумагу).",
+"Карамель+Вода>Сахарный раствор|calm|Карамель растворилась в воде: снова получился сахарный раствор.",
+"Карамель+Пищевая сода>Пористая карамель+Углекислый газ|expand|Сода в горячей карамели выделяет CO₂, пузырьки застывают: получилась пористая сотовая карамель!",
+"Карамель+Молоко>Ириска|calm|Карамель + молоко = ириска: тянучая молочная карамель.",
+"Молоко+Какао+Сахар>Горячий шоколад|glow|Какао + молоко + сахар = сладкий горячий шоколад.",
+/* --- холод --- */
+"Пар+Лёд>Вода|freeze|Пар встретил лёд и сконденсировался: получилась вода.",
+"Пар+Жидкий азот>Вода|freeze|Пар мгновенно сконденсировался на сверххолодной жидкости: получилась вода и облако тумана.",
+"Жидкий азот+Вода>Лёд|freeze|Вода мгновенно замёрзла в жидком азоте: получился лёд и облако холодного тумана.",
+"Жидкий азот+Молоко>Мороженое|freeze|Молоко мгновенно замёрзло в жидком азоте: получилось самое нежное мороженое с мелкими кристалликами льда!",
+/* --- радиация --- */
+"Ra+Сульфид цинка>Светящаяся жидкость|glow|Радиевая краска: сульфид цинка светится под излучением радия (так красили стрелки часов; очень опасно!)."
+];
+/* индикаторы: лакмус и капуста краснеют в кислоте и синеют/зеленеют в щёлочи, фенолфталеин малиновый только в щёлочи */
+(function(){
+  var A=["Серная кислота","Азотная кислота","Плавиковая кислота","Фосфорная кислота","Сернистая кислота","Царская водка","Лимонад","Газировка"],
+      B=["Едкое кали","Карбонат натрия","Известковая вода","Алюминат натрия","Щёлочь"];
+  A.forEach(function(a){var l=a.toLowerCase();
+    NEWRX.push("Лакмус+"+a+">Красный лакмус|color|Лакмус в кислой среде становится красным: значит, здесь кислота ("+l+").");
+    NEWRX.push("Красная капуста+"+a+">Розовый капустный сок|color|Красная капуста в кислой среде становится розовой: значит, здесь кислота ("+l+").")});
+  B.forEach(function(b){var l=b.toLowerCase();
+    NEWRX.push("Лакмус+"+b+">Синий лакмус|color|Лакмус в щелочной среде становится синим: значит, это основание ("+l+").");
+    NEWRX.push("Красная капуста+"+b+">Зелёный капустный сок|color|Красная капуста в щелочной среде становится зелёной: значит, это основание ("+l+").");
+    NEWRX.push("Фенолфталеин+"+b+">Малиновый раствор|color|Фенолфталеин в щелочной среде становится малиновым ("+l+"). В кислоте и воде он бесцветный.")});
+})();
+/* кипячение и нагрев. Формат: реагенты>продукты|мин.температура|секунды|эффект|текст|флаги (f вспышка, v пары горят)
+   Порядок = приоритет: сначала точные и сильные правила, потом общие. */
+var NEWHEAT=[
+/* --- горение и взрывы от нагрева --- */
+"Эфир>Углекислый газ+Вода|160|2|boom|Пары эфира самовоспламенились на горячей плите: ВЗРЫВ! (Эфир кипит уже при 35 °C, а вспыхивает от нагретой поверхности.)|f",
+"2H+O>Вода|150|1|boom|Водород с кислородом + нагрев: «гремучий газ» взорвался! 2H₂ + O₂ → 2H₂O.|f",
+"Метан+4O>Углекислый газ+Вода|150|1|boom|Метан с кислородом вспыхнул от нагрева: CH₄ + 2O₂ → CO₂ + 2H₂O. Бах!|f",
+"Спирт+3O>2Углекислый газ+3Вода|170|2|boom|Пары спирта смешались с кислородом и вспыхнули: C₂H₅OH + 3O₂ → 2CO₂ + 3H₂O. Хлопок!|f",
+"Mg+Марганцовка>Оксид магния+Оксид марганца|90|1|boom|Магний с марганцовкой от нагрева взорвался: окислитель и металл не терпят тепла!|f",
+"2Mg+Углекислый газ>2Оксид магния+C|150|2|boom|2Mg + CO₂ → 2MgO + C: раскалённый магний горит даже в углекислом газе, оставляя сажу.|f",
+"Сероводород+3O>Сернистый газ+Вода|150|2|glow|2H₂S + 3O₂ → 2SO₂ + 2H₂O (на одну молекулу): сероводород загорелся голубым пламенем.|f",
+"2Угарный газ+O>2Углекислый газ|150|2|glow|2CO + O₂ → 2CO₂: угарный газ сгорел синим пламенем.|f",
+"Mg+O>Оксид магния|120|2|glow|2Mg + O₂ → 2MgO: магний на нагретой плите вспыхнул ослепительно-белым светом!|f",
+"C+2O>Углекислый газ|150|3|glow|C + O₂ → CO₂: нагретый уголь горит в кислороде.|f",
+"S+2O>Сернистый газ|150|3|smoke|S + O₂ → SO₂: сера горит голубым пламенем, запах горелой спички.|f",
+"Zn+O>Оксид цинка|150|4|glow|2Zn + O₂ → 2ZnO: нагретый цинк покрылся белым налётом оксида.",
+"Cu+O>Оксид меди|150|4|color|2Cu + O₂ → 2CuO: нагретая медь покрылась чёрной окалиной.",
+"2Al+3O>Оксид алюминия|170|4|glow|4Al + 3O₂ → 2Al₂O₃: нагретый алюминий покрывается прочной белой плёнкой оксида.",
+"Ca+O>Негашёная известь|150|3|glow|2Ca + O₂ → 2CaO: кальций горит кирпично-красным пламенем и превращается в негашёную известь.|f",
+"2Fe+3O>Ржавчина|150|4|color|4Fe + 3O₂ → 2Fe₂O₃: раскалённое железо быстро покрывается окалиной и ржавчиной.",
+/* --- сплавы и соединения при нагреве --- */
+"Fe+S>Сульфид железа|110|3|glow|Fe + S → FeS: при нагреве железо с серой даёт чёрный сульфид железа.",
+"Zn+S>Сульфид цинка|110|3|glow|Zn + S → ZnS: цинк с серой при нагреве даёт сульфид цинка (из него делают светящиеся краски).",
+"2Cu+S>Сульфид меди|120|4|color|2Cu + S → Cu₂S: нагретая медь темнеет от серы.",
+"2Ag+S>Сульфид серебра|120|3|color|2Ag + S → Ag₂S: серебро чернеет от серы, так темнеют серебряные ложки.",
+"Pb+S>Сульфид свинца|110|3|color|Pb + S → PbS: чёрный сульфид свинца.",
+"Hg+S>Киноварь|60|3|color|Hg + S → HgS: ртуть с серой при лёгком нагреве даёт красную киноварь.",
+"Fe+C>Сталь|150|5|glow|Расплавленное железо впитывает углерод: получилась сталь.",
+"Cu+Zn>Латунь|150|4|color|Расплавили медь с цинком: получилась золотистая латунь.",
+"Cu+Sn>Бронза|150|4|color|Расплавили медь с оловом: получилась бронза.",
+"Sn+Pb>Припой|120|3|color|Олово и свинец плавятся при низкой температуре: получился припой.",
+"Cu+Ni>Мельхиор|160|4|color|Расплавили медь с никелем: получился мельхиор.",
+"Fe+Cr>Нержавеющая сталь|170|5|glow|Расплавили железо с хромом: получилась нержавеющая сталь.",
+"Ag+Cu>Стерлинговое серебро|160|4|color|Расплавили серебро с медью: получилось стерлинговое серебро.",
+"Au+Cu>Красное золото|180|5|color|Расплавили золото с медью: получилось красное золото.",
+"Au+Ag>Электрум|180|5|color|Расплавили золото с серебром: получился электрум.",
+/* --- восстановление металлов из оксидов --- */
+"Оксид меди+2H>Cu+Вода|120|3|color|CuO + H₂ → Cu + H₂O: горячий водород отнимает кислород у чёрного порошка, он краснеет, получилась медь.",
+"2Оксид меди+C>2Cu+Углекислый газ|180|4|glow|2CuO + C → 2Cu + CO₂↑: раскалённый уголь выплавляет медь из оксида.",
+"Ржавчина+3C>2Fe+3Угарный газ|200|5|glow|Fe₂O₃ + 3C → 2Fe + 3CO↑: так в доменной печи получают железо из руды.",
+"Оксид цинка+C>Zn+Угарный газ|200|5|glow|ZnO + C → Zn + CO↑: цинк выплавляют из оксида углём.",
+/* --- разложение при нагреве --- */
+"Нитрат меди>Оксид меди+2Бурый газ+O|150|4|smoke|2Cu(NO₃)₂ → 2CuO + 4NO₂↑ + O₂↑: голубая соль почернела, пошёл бурый газ.",
+"Нитрат цинка>Оксид цинка+2Бурый газ+O|150|4|smoke|2Zn(NO₃)₂ → 2ZnO + 4NO₂↑ + O₂↑: белая соль разложилась, идёт бурый газ.",
+"Нитрат магния>Оксид магния+2Бурый газ+O|180|4|smoke|2Mg(NO₃)₂ → 2MgO + 4NO₂↑ + O₂↑: при сильном нагреве соль разлагается, идёт бурый газ.",
+"Нитрат серебра>Ag+Бурый газ+O|180|4|smoke|2AgNO₃ → 2Ag + 2NO₂↑ + O₂↑: нитрат серебра разложился до чистого серебра.",
+"2Азотная кислота>2Бурый газ+Вода+O|90|3|smoke|4HNO₃ → 4NO₂↑ + O₂↑ + 2H₂O: азотная кислота при нагреве разлагается и выделяет бурый газ.",
+"Хлорид золота>Au+3Cl|180|4|smoke|2AuCl₃ → 2Au + 3Cl₂↑ (на одну формулу): соль золота при нагреве распадается на золото и хлор.",
+"Лимонная кислота>Углекислый газ+Вода|175|5|smoke|Лимонная кислота при ~175 °C разлагается: идёт газ и пар (упрощённо).",
+"Гидроксид меди>Оксид меди+Вода|80|4|color|Cu(OH)₂ → CuO + H₂O: голубой осадок чернеет при нагревании.",
+"Гидроксид железа>Ржавчина+Вода|120|4|color|2Fe(OH)₃ → Fe₂O₃ + 3H₂O (упрощённо): бурый осадок превращается в ржавчину.",
+"Гидроксид цинка>Оксид цинка+Вода|120|4|smoke|Zn(OH)₂ → ZnO + H₂O: белый осадок теряет воду.",
+"Гидроксид магния>Оксид магния+Вода|180|5|smoke|Mg(OH)₂ → MgO + H₂O: при сильном нагреве гидроксид магния теряет воду.",
+"Гидроксид алюминия>Оксид алюминия+Вода|180|5|smoke|2Al(OH)₃ → Al₂O₃ + 3H₂O (упрощённо): при сильном нагреве получается оксид алюминия.",
+"Гашёная известь>Негашёная известь+Вода|200|6|smoke|Ca(OH)₂ → CaO + H₂O: при сильном прокаливании гашёная известь теряет воду.",
+"Мел>Негашёная известь+Углекислый газ|200|8|glow|Обжиг известняка: CaCO₃ → CaO + CO₂↑ (в жизни нужно около 900 °C, в игре условно).",
+"Хлорид аммония>Аммиак+Соляная кислота|120|4|smoke|NH₄Cl → NH₃↑ + HCl↑: нашатырь при нагреве распадается на газы (на холоде они снова образуют белый дым).",
+"Марганцовка>Оксид марганца+O|150|4|foam|2KMnO₄ → K₂MnO₄ + MnO₂ + O₂↑ (упрощённо): марганцовка при нагреве выделяет кислород.",
+"2Пищевая сода>Карбонат натрия+Углекислый газ+Вода|100|5|foam|2NaHCO₃ → Na₂CO₃ + CO₂↑ + H₂O: сода при нагреве превращается в кальцинированную.",
+"Перекись>Вода+O|60|3|foam|Перекись при нагреве разлагается: 2H₂O₂ → 2H₂O + O₂↑, много пены.",
+"Газировка>Углекислый газ+Вода|40|3|foam|Тёплая газировка теряет газ: растворимость CO₂ падает с нагревом, остались сладкая вода и пузырьки.",
+"Сернистая кислота>Сернистый газ+Вода|60|3|smoke|H₂SO₃ → SO₂↑ + H₂O: слабая сернистая кислота при нагреве выпускает едкий газ.",
+"Нашатырный спирт>Аммиак+Вода|40|3|smoke|Аммиак улетучивается из раствора при нагреве: резкий запах!",
+"Йодная настойка>I+Пар|78|4|smoke|Спирт улетел паром, а иод остался: пары спирта горючи, держи подальше от огня!|v",
+"Масло+Едкий натр>Мыльный раствор|80|4|foam|Омыление жира идёт быстрее при нагреве: так варят мыло.",
+"Эмульсия>Масло+Вода|60|4|calm|При нагреве эмульсия расслоилась: масло снова отдельно от воды.",
+/* --- растворение и размягчение --- */
+"Сахар+Вода>Сахарный раствор|50|3|calm|В тёплой воде сахар растворяется быстрее: получился сахарный раствор.",
+"Соль+Вода>Солевой раствор|50|3|calm|В тёплой воде соль растворяется быстрее: получился солевой раствор.",
+"Крахмал+Вода>Клейстер|80|4|calm|Крахмал в горячей воде набухает и густеет: получился клейстер.",
+"Горячий лёд>Ацетат натрия+Вода|60|3|calm|Кристаллы «горячего льда» расплавились обратно в раствор.",
+"Мороженое>Молоко|15|3|calm|Мороженое растаяло и снова стало молоком.",
+"Замороженная жидкость>Вода|10|3|calm|Замороженная жидкость оттаяла и стала обычной водой.",
+"Лёд>Вода|10|3|calm|Лёд тает при нагреве: получилась вода.",
+"Сухой лёд>Углекислый газ|5|2|smoke|Сухой лёд возгоняется: сразу из твёрдого в газ, идёт густой холодный туман.",
+"Жидкий азот>N|5|2|smoke|Жидкий азот кипит при −196 °C: даже от слабого нагрева он мгновенно испаряется туманом.",
+/* --- сахар, карамель и еда --- */
+"Кипячёное молоко+Сахар>Ириска|115|5|glow|Молоко с сахаром уварилось и потемнело: получилась тянучая ириска.",
+"Молоко+Сахар>Ириска|115|5|glow|Молоко с сахаром уварилось и потемнело: получилась тянучая ириска.",
+"Сахарный раствор>Карамель+Пар|160|5|smoke|Вода выкипела, сахар расплавился и потемнел: так варят карамель (около 160 °C).",
+"Сахар>Карамель|160|5|glow|Сахар плавится при ~160 °C и темнеет: получилась карамель.",
+"Мёд>Карамель|140|6|smoke|Мёд при сильном нагреве карамелизуется: сахара в нём темнеют и густеют.",
+"Карамель>C+Пар|200|6|smoke|Карамель пригорела: сахар разложился до угля и горького дыма. Не перегревай!",
+"Ириска>C+Пар|200|6|smoke|Ириска пригорела: молочный сахар обуглился. Не перегревай!",
+"Крахмал>C+Пар|190|6|smoke|Сухой крахмал обугливается: остаётся чёрный уголь и дым.",
+"Сахарный раствор>Сахар+Пар|100|6|smoke|Вода выкипает, сахар остаётся: так сушат сироп до кристаллов. Подними температуру до 160 °C, и будет карамель.",
+"Молоко+Какао>Горячий шоколад|70|3|glow|Тёплое молоко с какао: получился горячий шоколад!",
+"Молоко>Кипячёное молоко|100|4|foam|Молоко вскипело и «убежало» пеной! Белки частично свернулись: молоко теперь кипячёное.",
+"Яйцо>Варёное яйцо|100|6|color|Белок свернулся от нагрева: яйцо сварилось вкрутую!",
+"Голое яйцо>Варёное яйцо|100|6|color|Голое яйцо сварилось: белок в мягкой плёнке свернулся, получилась упругая «резиновая» сфера.",
+/* --- выпаривание и кипение жидкостей --- */
+"Солевой раствор>Соль+Пар|100|5|crystal|Выпаривание: вода ушла паром, а соль осталась кристаллами!",
+"Известковая вода>Гашёная известь+Пар|100|5|smoke|Вода выпарилась, на дне остался белый налёт извести.",
+"Масло>Экстракт дыма|180|5|smoke|Масло перегрелось и задымило: достигнута точка дымления, пахнет горелым.",
+"Спирт>Пар|78|5|smoke|Спирт закипел при 78 °C. Его пары горючи: поднеси зажигалку и будет вспышка!|v",
+"Эфир>Пар|35|3|smoke|Эфир закипел уже при 35 °C. Пары очень горючи и взрывоопасны: держи подальше от огня!|v",
+"Уксус>Пар|118|6|smoke|Уксус кипит при 118 °C: идут едкие кислые пары (дышать ими вредно).",
+"Вода>Пар|100|6|smoke|Вода кипит при 100 °C и испаряется: получился пар. Верни воду льдом или жидким азотом (Пар + Лёд)."
+];
+/* температуры кипения (°C) для сообщения «закипело» */
+var BPN={"Вода":100,"Спирт":78,"Эфир":35,"Уксус":118,"Молоко":100,"Нашатырный спирт":38,"Перекись":150,"Масло":300,"Жидкий азот":-196,
+"Сахарный раствор":102,"Солевой раствор":102,"Газировка":100,"Соляная кислота":110,"Азотная кислота":83,"Серная кислота":337,"Этилацетат":77,
+"Глицерин":290,"Кофе":100,"Мыльный раствор":100,"Горячий шоколад":100,"Мёд":120,"Бром":59,"Ртуть":357,"Кипячёное молоко":100,
+"Латте":100,"Лимонад":100,"Клейстер":100,"Известковая вода":100,"Плавиковая кислота":20,"Фосфорная кислота":158,"Йодная настойка":80,"Эмульсия":100};
+var BP={};
+var NOBOIL=/порошок|^Мел$|сода$|^Соль$|известь$|^Ржавчина$|^Оксид|^Сульфид|^Хлорид|^Гидроксид|^Нитрат|^Карбонат|^Иодид|^Бромид|^Сульфат|^Алюминат|[Сс]таль$|Бронза|Латунь|Припой|Мельхиор|Амальгама|^Сахар$|^Крахмал$|^Дрожжи$|^Ментос$|яйцо$|^Яйцо$|[Лл]ёд$|^Кварц$|^Янтарь$|песок$|^Глина$|^Какао$|^Кристалл|[Кк]арамель$|^Ириска$|^Киноварь$|^Мороженое$|^Красное золото$|^Стерлинговое|^Электрум$|^Творог$|^Красная капуста$|^Лакмус$|^Фенолфталеин$|^Сталиниум$|^Пар$|^Лава$|^Пена$|^Гейзер$|^Дымные пузыри$/;
+var FLAMN=["Масло","Спирт","Метан","Водород","Эфир","Глицерин","Сероводород","Этилацетат"];
+var FLAM={};
+var FUELOUT={"Водород":["Вода"],"Метан":["Углекислый газ","Вода"],"Эфир":["Углекислый газ","Вода"],"Сероводород":["Сернистый газ","Вода"]};
+/* следы старых версий: игра когда-то добирала до 500 веществ «Тёмный раствор №5» и т.п. */
+var ADJ=["Тёмный","Светлый","Ледяной","Огненный","Кислотный","Сладкий","Горький","Вязкий","Искристый","Туманный","Пряный","Солёный","Мерцающий","Застывший","Бурлящий","Прозрачный","Мутный","Густой","Лёгкий","Тяжёлый"],
+    NOUN=["раствор","гель","порошок","настой","отвар","экстракт","сироп","концентрат","кристалл","туман","дым","настойка","эссенция","смола","паста","пена","жидкость","реагент","состав","элексир"];
+var GARB=new RegExp("("+ADJ.join("|")+") ("+NOUN.join("|")+") №\\d+");
+
+var HEAT=[],HEATOK=false,RXOK=false,RXGOOD=0,SUBOK=false;
+
+/* ================= РАЗБОР ПРАВИЛ ================= */
+function side(x){var o={};x.split("+").forEach(function(k){var m=/^(\d*)(.+)$/.exec(k),i=IX(m[2]);if(i<0||i===undefined)throw new Error("нет вещества «"+m[2]+"»");o[i]=(o[i]||0)+(m[1]?+m[1]:1)});return o}
+function total(o){var n=0;for(var k in o)n+=o[k];return n}
+function sideTxt(o){return Object.keys(o).map(function(k){var q=S[k],n=o[k];return(n>1?n+"×":"")+(q.el?q.e:q.n)}).join(" + ")}
+function addSubstances(){
+  NEWSUB.forEach(function(a){if(NI(a[0])<0)S.push({n:a[0],e:a[1],c:a[2],prod:a[3]?1:0,gas:0,real:1})});
+  SUBOK=true;
+}
+function parseRX(){
+  var out=[];
+  NEWRX.forEach(function(s){
+    try{var p=s.split("|"),a=p[0].split(">"),r={need:side(a[0]),out:side(a[1]),fx:p[1],msg:p[2],flash:p[3]=="1",x5:1};
+      if(total(r.need)>6)throw new Error("в колбе помещается максимум 6 веществ, а правилу нужно "+total(r.need));
+      out.push(r)}
+    catch(e){ERRS.push("реакция «"+s.split("|")[0]+"»: "+e.message)}
+  });
+  return out;
+}
+function addReactions(){
+  if(!window.RXS)return;
+  var have=0;window.RXS.forEach(function(r){if(r&&r.x5)have++});
+  if(have>0){RXOK=true;return}
+  if(!RXPARSED)RXPARSED=parseRX();
+  RXBASE=window.RXS.length;
+  RXPARSED.forEach(function(r){window.RXS.push(r)});
+  RXGOOD=RXPARSED.length;RXOK=true;
+}
+function addHeat(){
+  if(HEATOK)return;HEAT=[];
+  NEWHEAT.forEach(function(s,n){
+    try{var p=s.split("|"),a=p[0].split(">"),r={need:side(a[0]),out:side(a[1]),T:+p[1],s:+p[2],fx:p[3],msg:p[4],flash:/f/.test(p[5]||""),vapor:/v/.test(p[5]||""),id:n};
+      if(total(r.need)>6)throw new Error("слишком много реагентов");
+      r.label=sideTxt(r.need)+" → "+sideTxt(r.out);HEAT.push(r)}
+    catch(e){ERRS.push("нагрев «"+s.split("|")[0]+"»: "+e.message)}
+  });
+  HEATOK=true;
+}
+function cacheIds(){
+  Object.keys(BPN).forEach(function(n){var i=NI(n);if(i>=0)BP[i]=BPN[n]});
+  FLAMN.forEach(function(n){var i=NI(n);if(i>=0)FLAM[i]=n});
+  ["Кислород","Водород","Азот","Жидкий азот"].forEach(function(n){ID[n]=NI(n)});
+  ID.O=Z("O");ID.H=Z("H");ID.N=Z("N");ID.LN=NI("Жидкий азот");
+}
+
+/* ================= МИГРАЦИЯ СОХРАНЕНИЙ ================= */
+function migrate(){
+  if(D.v>=DATAV)return;
+  var lim=NI("Сахар");if(lim<0)lim=S.length;
+  var cut=function(o){if(!o)return;Object.keys(o).forEach(function(k){if(+k>=lim)delete o[k]})};
+  cut(D.disc);cut(D.seen);
+  if(Array.isArray(D.potions))D.potions=D.potions.filter(function(p){return !(p.ids||[]).some(function(i){return i>=lim})});
+  if(Array.isArray(D.mixes))D.mixes=D.mixes.filter(function(m){return !String(m[0]).split("-").some(function(i){return +i>=lim})});
+  if(Array.isArray(D.hist))D.hist=D.hist.filter(function(h){return !GARB.test(h)});
+  if(Array.isArray(D.mice))D.mice.forEach(function(m){if(Array.isArray(m.l))m.l=m.l.filter(function(h){return !GARB.test(h)})});
+  var base=window.RXS?window.RXS.filter(function(r){return !r.x5}).length:0;
+  if(base){
+    if(Array.isArray(D.rxl))D.rxl=D.rxl.filter(function(i){return i<base});
+    if(D.rx)Object.keys(D.rx).forEach(function(k){if(+k>=base)delete D.rx[k]});
+  }
+  D.hx={};
+  D.v=DATAV;try{save()}catch(e){}
+}
+
+/* ================= ВИЗУАЛ ================= */
+function burst(fx,fl){
+  try{var bx=W/2,by=H*.5;
+  if(fx=="smoke")spawn("smoke",25,bx,by,"#999");
+  else if(fx=="foam"){spawn("foam",30,bx,by,"#fff");snd.bub()}
+  else if(fx=="freeze"){spawn("fl",20,bx,by,"#cff")}
+  else if(fx=="boom"){spawn("boom",60,bx,by,"#f80");flash=12;shk=30;D.st.boom++;snd.boom()}
+  else if(fx=="crystal"){spawn("crystal",18,bx,by,"#e8b0ff");D.st.crystal++;snd.glow()}
+  else if(fx=="glow"){spawn("fl",20,bx,by,"#ffe");snd.glow()}
+  else if(fx=="color"||fx=="expand"||fx=="mutate"){snd.bub()}
+  if(fl)flash=12;
+  fxK=fx;fxT=40}catch(e){console.error(e)}
+}
+
+/* ================= НАГРЕВ ================= */
+function counts(){var c={};mix.forEach(function(i){c[i]=(c[i]||0)+1});return c}
+function canApply(r,c){for(var k in r.need)if((c[k]||0)<r.need[k])return false;return true}
+function findRule(T){var c=counts();for(var n=0;n<HEAT.length;n++){var r=HEAT[n];if(T>=r.T&&canApply(r,c))return r}return null}
+function liquid(i){var s=S[i];if(!s||s.gas)return false;if(s.el)return s.n==="Ртуть"||s.n==="Бром";return !NOBOIL.test(s.n)}
+function boilPoint(){var b=null,who=-1;mix.forEach(function(i){if(!liquid(i))return;var v=BP[i]!==undefined?BP[i]:100;if(b===null||v<b){b=v;who=i}});return b===null?null:{t:b,i:who}}
+function setInfo(t){var e=$("#heatInfo");if(e&&e.textContent!==t)e.textContent=t}
+function stopStoveBoil(){if(st.stoveBoil){st.stoveBoil=false;if(HEATK==="boil")HEATK=""}st.boiling=false}
+function applyHeat(r){
+  var c=counts(),k,n,left=[],out=[],fresh=[],g0=0;
+  for(k in r.need)c[k]-=r.need[k];
+  for(k in c)for(n=0;n<c[k];n++)left.push(+k);
+  for(k in r.out)for(n=0;n<r.out[k];n++)out.push(+k);
+  out.forEach(function(i){if(!S[i].el&&!D.disc[i]&&fresh.indexOf(i)<0){D.disc[i]=1;fresh.push(i);g0+=15}});
+  D.hx=D.hx||{};if(!D.hx[r.id]){D.hx[r.id]=1;g0+=8}
+  mix=out.concat(left).slice(0,cap());
+  if(mix.length)mixCol();
+  if(r.vapor)st.vapor=60;
+  burst(r.fx,r.flash);
+  var t=r.msg;if(fresh.length)t+=" Новое вещество: "+fresh.map(function(i){return S[i].e+" "+S[i].n}).join(", ")+".";
+  if(left.length)t+=" Осталось: "+left.map(function(i){return S[i].n}).join(", ")+".";
+  say(t);
+  try{D.hist.unshift("🔥 "+r.label);D.hist.length=Math.min(D.hist.length,40)}catch(e){}
+  if(g0)gain(g0);else save();
+  try{chk()}catch(e){}
+  inv();
+}
+function tick(){
+  var now=Date.now(),dt=Math.min(1,(now-st.last)/1000)*st.spd;st.last=now;st.beat=now;
+  try{
+    if(!ok()||!HEATOK)return;
+    if(st.vapor>0)st.vapor--;
+    var T=st.T;
+    if(!mix.length){st.prog=0;st.sig="";stopStoveBoil();setInfo(T>0?"Колба пуста: греть нечего.":"Плита выключена.");return}
+    if(T<=0){st.prog=0;st.sig="";stopStoveBoil();setInfo("Плита выключена.");return}
+    var bp=boilPoint(),txt="🌡 "+T+" °C";
+    if(bp&&T>=bp.t){
+      if(HEATK!=="burn"){HEATK="boil";HEATT=40;HEATBIG=T>=160?1:0;st.stoveBoil=true}
+      if(!st.boiling){st.boiling=true;say("🫧 Закипело: "+S[bp.i].n+" (кипит при "+bp.t+" °C).")}
+      txt+=" · кипит";
+    }else{stopStoveBoil()}
+    var r=findRule(T);
+    if(r){
+      var key=r.id+"|"+mix.slice().sort().join(",");
+      if(key!==st.sig){st.sig=key;st.prog=0}
+      st.prog+=dt*(1+Math.max(0,T-r.T)/100);
+      var pct=Math.min(100,Math.round(st.prog/r.s*100));
+      txt+=" · "+r.label+" "+pct+"%";
+      if(st.prog>=r.s){st.prog=0;st.sig="";applyHeat(r);st.boiling=false}
+    }else{st.prog=0;st.sig="";
+      var minT=Infinity,c=counts();HEAT.forEach(function(q){if(canApply(q,c)&&q.T<minT)minT=q.T});
+      if(minT<Infinity)txt+=" · для превращения нужно "+minT+" °C";
+      else if(!(bp&&T>=bp.t))txt+=" · при нагреве ничего не происходит";
+    }
+    setInfo(txt);
+  }catch(e){console.error(e)}
+}
+function setStove(v){
+  var s=$("#stove");v=Math.max(0,Math.min(200,+v||0));st.T=v;
+  if(s)s.value=v;var l=$("#stoveT");if(l)l.textContent=v;
+  try{ac&&ac()}catch(e){}
+}
+function ensureStove(){
+  var lab=$("#lab"),invEl=$("#inv");if(!lab||!invEl)return;
+  if(!$("#stoveRow")){
+    var row=document.createElement("div");row.className="row";row.id="stoveRow";
+    row.innerHTML='<span style="flex:0 0 auto;align-self:center">🔥 Плита: <b id="stoveT">'+st.T+'</b>°C</span>'+
+      '<input type="range" id="stove" min="0" max="200" value="'+st.T+'" step="5" style="flex:2">'+
+      '<button id="lighter" style="flex:0 0 auto">🔥 Зажигалка</button>';
+    lab.insertBefore(row,invEl);
+  }
+  if(!$("#heatInfo")){var d=document.createElement("div");d.id="heatInfo";d.className="mut";d.textContent="Плита выключена.";var r0=$("#stoveRow");r0.parentNode.insertBefore(d,r0.nextSibling)}
+  var s=$("#stove");if(s&&!s.__m5){s.__m5=1;s.oninput=function(){setStove(s.value)}}
+  var lb=$("#lighter");if(lb&&!lb.__m5){lb.__m5=1;lb.onclick=lighter}
+}
+function has(i){return i>=0&&mix.indexOf(i)>=0}
+function lighter(){
+  try{ac()}catch(e){}
+  if(!mix.length){say("Колба пуста: поджигать нечего.");return}
+  if(st.vapor>0){st.vapor=0;burst("boom",true);HEATK="burn";HEATT=900;HEATBIG=1;st.stoveBoil=false;say("Зажигалка подожгла пары: ХЛОП! Вспыхнули горючие пары, колба горит.");return}
+  if(has(ID.LN)||has(ID.N)){say("Зажигалка поднесена к азоту: реакции нет, азот инертен и не горит.");return}
+  var fuel=null;mix.forEach(function(i){if(fuel===null&&FLAM[i]&&FUELOUT[FLAM[i]])fuel=i});
+  var oxy=has(ID.O);
+  if(fuel!==null&&oxy){
+    var need=(FLAM[fuel]==="Водород")?2:1,cnt=mix.filter(function(i){return i===fuel}).length;
+    if(cnt>=need){
+      var left=mix.slice(),rm=function(i,n){for(var k=0;k<n;k++){var p=left.indexOf(i);if(p>=0)left.splice(p,1)}};
+      rm(fuel,need);rm(ID.O,1);
+      var outs=FUELOUT[FLAM[fuel]].map(NI).filter(function(i){return i>=0});
+      mix=outs.concat(left).slice(0,cap());mixCol();burst("boom",true);
+      outs.forEach(function(i){if(!S[i].el&&!D.disc[i]){D.disc[i]=1}});
+      say("Горючий газ смешан с кислородом: от зажигалки ВЗРЫВ! Получилось: "+outs.map(function(i){return S[i].n}).join(" + ")+".");
+      gain(5);inv();return;
+    }
+  }
+  var flam=mix.some(function(i){return FLAM[i]});
+  if(flam){HEATK="burn";HEATT=1200;HEATBIG=1;st.stoveBoil=false;say("Зажигалка подожгла жидкость: она горит!");try{beep(260,.3,"sawtooth",.35,80)}catch(e){}}
+  else say("Зажигалка гаснет: раствор не горючий.");
+}
+
+/* ================= ПОИСК ================= */
+function nz(x){return String(x||"").toLowerCase().replace(/ё/g,"е")}
+function match(i,q){
+  var s=S[i],n=nz(s.n);
+  if(n.indexOf(q)>=0)return true;
+  if(s.el&&nz(s.e)===q)return true;
+  var ws=q.split(/\s+/).filter(Boolean);
+  return ws.length>1&&ws.every(function(w){return n.indexOf(w)>=0});
+}
+function visible(i){var s=S[i];return !(((i>=40&&i<55)||s.prod)&&!D.disc[i])}
+function results(q,limit){
+  var r=[];for(var i=0;i<S.length;i++){if(match(i,q))r.push(i)}
+  r.sort(function(a,b){var A=nz(S[a].n).indexOf(q)===0?0:1,B=nz(S[b].n).indexOf(q)===0?0:1;return A-B||a-b});
+  return limit?r.slice(0,limit):r;
+}
+function cellFor(i){
+  var s=S[i],c=document.createElement("div"),good=avail(i);
+  c.className="cell"+(good?"":" lock");
+  var ic=good?(s.el?'<span style="font-size:20px;font-weight:700">'+esc(s.e)+'</span>':ico(s)):"🔒";
+  c.innerHTML="<b>"+ic+"</b>"+(good?esc(s.n):"???");
+  c.style.borderBottom="3px solid "+(good?s.c:"#222");
+  if(good)c.onclick=function(){add(i)};
+  return c;
+}
+function renderSearch(){
+  var el=$("#inv"),q=nz(SQ).trim(),info=$("#srchInfo");
+  if(!el)return;
+  if(!q){if(info)info.style.display="none";return}
+  var list=results(q).filter(visible);
+  el.innerHTML="";list.forEach(function(i){el.appendChild(cellFor(i))});
+  if(info){info.style.display="block";info.textContent=list.length?("Найдено: "+list.length):"Ничего не найдено. Скрытые вещества появляются после реакций."}
+}
+function wrapInv(){
+  if(typeof inv!=="function"||inv.__s5)return;
+  var o=inv;
+  var w=function(){var r=o.apply(this,arguments);try{renderSearch()}catch(e){console.error(e)}return r};
+  w.__s5=1;inv=w;
+}
+function ensureSearch(){
+  var invEl=$("#inv");if(!invEl)return;
+  if(!$("#invSearch")){
+    var row=document.createElement("div");row.className="row";row.id="srchRow";
+    row.innerHTML='<input id="invSearch" type="search" placeholder="🔍 Поиск вещества…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"><button id="srchClr" style="flex:0 0 auto" aria-label="Очистить поиск">✕</button>';
+    invEl.parentNode.insertBefore(row,invEl);
+    var inf=document.createElement("div");inf.id="srchInfo";inf.className="mut";inf.style.display="none";inf.style.fontSize="12px";
+    invEl.parentNode.insertBefore(inf,invEl);
+  }
+  var f=$("#invSearch");
+  if(f&&!f.__s5){f.__s5=1;
+    f.value=SQ;
+    f.oninput=function(){SQ=f.value;if(SQ.trim()&&$("#mS")&&!$("#mS").classList.contains("on"))$("#mS").click();try{inv()}catch(e){console.error(e)}};
+    f.onkeydown=function(e){if(e.key==="Enter")f.blur()};
+    $("#srchClr").onclick=function(){SQ="";f.value="";try{inv()}catch(e){console.error(e)}f.focus()};
+  }
+  wrapInv();
+}
+
+/* ================= КНИГА: правила нагрева ================= */
+function wrapEnc(){
+  if(typeof window.enc!=="function"||window.enc.__h5)return;
+  var o=window.enc;
+  var w=function(){o.apply(this,arguments);try{heatBook()}catch(e){console.error(e)}};
+  w.__h5=1;window.enc=w;
+}
+function heatBook(){
+  var el=$("#encl");if(!el||!HEAT.length)return;
+  var got=HEAT.filter(function(r){return D.hx&&D.hx[r.id]});
+  var h='<details class="card"><summary><b>🔥 Кипячение и нагрев: '+got.length+' / '+HEAT.length+'</b></summary>';
+  if(!got.length)h+='<div class="mut" style="margin-top:8px">Пока пусто. Налей вещества, подвинь ползунок плиты и подожди: сахар → карамель, молоко вскипит, лёд растает, соль выпарится.</div>';
+  got.forEach(function(r){h+='<div class="mut" style="margin:8px 0;padding-top:8px;border-top:1px solid var(--ln)"><b style="color:var(--tx)">'+esc(r.label)+' · от '+r.T+' °C</b><br>'+esc(r.msg)+'</div>'});
+  if(got.length<HEAT.length)h+='<div class="mut" style="margin-top:8px">🔒 Ещё '+(HEAT.length-got.length)+' превращений ждут открытия. Подсказки: сахар, молоко, яйцо, соль в растворе, лёд, жидкий азот, перекись, сода, металлы с серой и кислородом.</div>';
+  h+='</details>';
+  var d=document.createElement("div");d.innerHTML=h;
+  var cards=el.querySelectorAll(".card"),last=cards[cards.length-1];
+  if(last)el.insertBefore(d.firstChild,last);else el.appendChild(d.firstChild);
+}
+
+/* ================= ДИАГНОСТИКА И АДМИНКА ================= */
+var stCache={t:0,v:true};
+function storageOk(){
+  if(Date.now()-stCache.t<10000)return stCache.v;
+  var v=false;try{var k="madlab_t5";localStorage.setItem(k,"1");v=localStorage.getItem(k)==="1";localStorage.removeItem(k)}catch(e){}
+  stCache={t:Date.now(),v:v};return v;
+}
+function item(n,good,d,warn){return{n:n,ok:!!good,d:d,warn:!!warn}}
+function rxCount(){var c=0;if(window.RXS)window.RXS.forEach(function(r){if(r&&r.x5)c++});return c}
+/* ok=false: красный (критично). warn=true: жёлтый (не мешает игре).
+   Проверяем только то, что реально видно снаружи: глобальные функции и элементы страницы.
+   (Внутренние функции вроде objRes и popDeath спрятаны в замыканиях других модулей, по ним проверять нельзя.) */
+function diag(){
+  var hidden=document.hidden,a=[],e;
+  a.push(item("Ядро игры",ok()&&typeof shake==="function"&&typeof inv==="function"&&typeof say==="function","вещества, колба, сохранение"));
+  a.push(item("Химия",typeof window.chemReact==="function"&&!!window.RXS,(window.RXS?window.RXS.length:0)+" реакций всего"));
+  a.push(item("Новые реакции",RXOK&&rxCount()>0&&rxCount()===RXGOOD,rxCount()+" добавлено"));
+  a.push(item("Нагрев и кипячение",HEATOK&&HEAT.length>0&&(hidden||Date.now()-st.beat<3000),HEAT.length+" правил"));
+  a.push(item("Плита и зажигалка",!!(e=$("#stove"))&&!!$("#lighter")&&!!e.__m5&&!!$("#lighter").__m5,"ползунок, кнопка, табло"));
+  a.push(item("Поиск",!!$("#invSearch")&&typeof inv==="function"&&!!inv.__s5,"поле и фильтр"));
+  a.push(item("Предметы в колбе",!!$("#odrop")&&!!$("#osel")&&typeof OBJ!=="undefined","бросание предметов"));
+  a.push(item("Мыши",!!$("#test")&&!!$("#mlist")&&Array.isArray(D.mice)&&typeof mice==="function","эксперименты"));
+  a.push(item("Книга",typeof window.enc==="function"&&!!window.enc.__h5,"справочник"));
+  a.push(item("Сохранение",storageOk(),"память браузера (без неё прогресс не сохранится)",true));
+  a.push(item("Разбор правил",ERRS.length===0,ERRS.length?(ERRS.length+" с ошибками"):"без ошибок",true));
+  return a;
+}
+function allGood(){return diag().every(function(x){return x.ok||x.warn})}
+function updateDot(){return;var d=$("#admDot");if(!d)return;var g=allGood();d.style.background=g?"#39ff9c":"#ff4d4d";d.style.boxShadow="0 0 6px "+(g?"#39ff9c":"#ff4d4d");var b=$("#admBtn");if(b)b.title=g?"Админ-панель: всё подключено":"Админ-панель: есть разрыв соединения"}
+function connBody(){
+  var dg=diag();
+  return dg.map(function(x){return'<div class="ln"><span class="led '+(x.ok?"ok":(x.warn?"warn":"bad"))+'"></span>'+esc(x.n)+' <span class="mut">'+esc(x.d)+'</span></div>'}).join("")+
+    '<div class="b"><button data-a="reconnect" class="go">🔄 Переподключить всё</button></div>'+
+    '<div class="mut">Автоконтроль проверяет связь каждые 2 секунды и сам восстанавливает плиту, поиск, кнопки, правила и справочник. Красный = что-то отвалилось (нажми «Переподключить»), жёлтый = не мешает игре.</div>'+
+    (ERRS.length?'<div class="mut" style="margin-top:6px;color:#ff9a9a">Проблемы разбора: '+esc(ERRS.join("; "))+'</div>':"");
+}
+function refreshConn(){
+  var a=$("#adm");if(!a||!a.classList.contains("on"))return;
+  var c=$("#admConn");if(c)c.innerHTML=connBody();
+  var t=$("#admConnT");if(t)t.textContent="🔌 Соединение: "+(allGood()?"всё подключено":"есть разрыв");
+}
+
+var armed=null,armT=0;
+function danger(btn,msg,fn){
+  if(armed===btn.dataset.a&&Date.now()-armT<4000){armed=null;fn();return}
+  armed=btn.dataset.a;armT=Date.now();btn.textContent=msg;setTimeout(function(){if(armed===btn.dataset.a){armed=null;renderAdmin()}},4000);
+}
+function exportText(){try{return JSON.stringify(D)}catch(e){return"{}"}}
+function admList(q){
+  q=nz(q).trim();if(!q)return"";
+  var r=results(q,24);
+  return r.map(function(i){return'<button data-a="addsub" data-i="'+i+'">'+esc(S[i].e)+" "+esc(S[i].n)+'</button>'}).join("")||'<span class="mut">Ничего не найдено</span>';
+}
+var AQ="";
+var ADMPW="madlab";            /* ПАРОЛЬ АДМИН-ПАНЕЛИ: поменяй здесь */
+var unlocked=false;try{unlocked=sessionStorage.getItem("madlab_adm")==="1"}catch(e){}
+function renderAdmin(){
+  var b=$("#admBody");if(!b)return;
+  if(!unlocked){
+    b.innerHTML='<div class="mut" style="margin:6px 0">Введи пароль администратора.</div><input id="admPw" type="password" placeholder="Пароль" autocomplete="off"><div class="b"><button data-a="login" class="go">Войти</button></div><div id="admPwErr" class="mut" style="color:#ff9a9a"></div>';
+    return;
+  }
+  var cur={};b.querySelectorAll("details").forEach(function(d){cur[d.dataset.d]=d.open});
+  var det=function(id,title,html,def){var o=cur[id]!==undefined?cur[id]:def;return'<details data-d="'+id+'"'+(o?" open":"")+'><summary>'+title+'</summary>'+html+'</details>'};
+  var h="";
+  h+=det("conn",'<span id="admConnT">🔌 Соединение: '+(allGood()?"всё подключено":"есть разрыв")+'</span>','<div id="admConn">'+connBody()+'</div>',true);
+  h+=det("prog","⭐ Прогресс",
+    '<div class="mut">Уровень: '+lvl()+' · опыт: '+(Math.round(D.xp*100)/100)+' · колба вмещает '+cap()+'</div>'+
+    '<div class="b"><button data-a="xp" data-v="10">+10 XP</button><button data-a="xp" data-v="100">+100 XP</button><button data-a="xp" data-v="500">+500 XP</button>'+
+    '<button data-a="lvl4">Колба на 6 (ур. 4)</button>'+
+    '<button data-a="unlock">🔓 Открыть все вещества</button><button data-a="unlockrx">📖 Открыть все реакции</button>'+
+    '<button data-a="resetdisc" class="warn">Сбросить открытия</button><button data-a="resetall" class="warn">Стереть всё</button></div>',false);
+  h+=det("flask","🧪 Колба",
+    '<div class="b"><button data-a="shake">Встряхнуть</button><button data-a="clear">Слить</button></div>'+
+    '<input id="admAddQ" type="search" placeholder="Найти вещество и налить…" autocomplete="off" value="'+esc(AQ)+'">'+
+    '<div class="b" id="admAddRes">'+admList(AQ)+'</div>',false);
+  h+=det("heat","🔥 Нагрев",
+    '<div class="mut">Плита: '+st.T+' °C · ускорение ×'+st.spd+'</div>'+
+    '<div class="b"><button data-a="temp" data-v="0">Выкл</button><button data-a="temp" data-v="50">50°</button><button data-a="temp" data-v="100">100°</button><button data-a="temp" data-v="160">160°</button><button data-a="temp" data-v="200">200°</button></div>'+
+    '<div class="b"><button data-a="spd" data-v="1">×1</button><button data-a="spd" data-v="3">×3</button><button data-a="spd" data-v="10">×10</button><button data-a="coolfire">Погасить огонь</button></div>',false);
+  h+=det("mice","🐭 Мыши",
+    '<div class="b"><button data-a="revive">Оживить всех</button><button data-a="newmice">Новая поставка</button></div>',false);
+  h+=det("save","💾 Сохранение",
+    '<div class="b"><button data-a="export">Показать</button><button data-a="copy">Копировать</button><button data-a="download">Скачать файл</button></div>'+
+    '<textarea id="admSave" rows="4" placeholder="Здесь появится сохранение. Для импорта вставь JSON и нажми «Применить»." spellcheck="false"></textarea>'+
+    '<div class="b"><button data-a="import" class="warn">Применить (заменит прогресс)</button></div>',false);
+  var lg=window.__errlog||[];
+  h+=det("log","🪲 Журнал ошибок ("+lg.length+")",
+    '<div class="log">'+(lg.length?lg.slice(-30).reverse().map(function(x){return'<div>'+esc(x)+'</div>'}).join(""):'<span class="mut">Ошибок нет</span>')+'</div>'+
+    '<div class="b"><button data-a="clearlog">Очистить журнал</button></div>',false);
+  b.innerHTML=h;
+}
+function openAdmin(){var a=$("#adm");if(!a)return;renderAdmin();a.classList.add("on");var p=$("#admPw");if(p)setTimeout(function(){try{p.focus()}catch(e){}},50)}
+function closeAdmin(){var a=$("#adm");if(a)a.classList.remove("on");
+  if(location.hash.toLowerCase()==="#admin"){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){location.hash=""}}}
+function checkHash(){if(location.hash.toLowerCase()==="#admin")openAdmin();else{var a=$("#adm");if(a)a.classList.remove("on")}}
+function act(btn){
+  var a=btn.dataset.a,v=btn.dataset.v;
+  try{
+  switch(a){
+    case"login":var pw=$("#admPw");if(pw&&pw.value===ADMPW){unlocked=true;try{sessionStorage.setItem("madlab_adm","1")}catch(e){}renderAdmin()}else{var er=$("#admPwErr");if(er)er.textContent="Неверный пароль.";if(pw){pw.value="";pw.focus()}}break;
+    case"reconnect":ensureAll(true);renderAdmin();break;
+    case"xp":gain(+v);renderAdmin();break;
+    case"lvl4":if(D.xp<300){D.xp=300}hud();save();inv();say("Колба вмещает "+cap()+" веществ.");renderAdmin();break;
+    case"unlock":S.forEach(function(s,i){D.disc[i]=1});save();inv();say("Все вещества открыты.");break;
+    case"unlockrx":D.rx=D.rx||{};D.rxl=D.rxl||[];(window.RXS||[]).forEach(function(r,i){if(!D.rx[i]){D.rx[i]=1;D.rxl.push(i)}});D.hx=D.hx||{};HEAT.forEach(function(r){D.hx[r.id]=1});save();say("Все реакции и превращения записаны в Книгу.");break;
+    case"resetdisc":danger(btn,"Точно? Нажми ещё раз",function(){D.disc={};D.seen={};D.rx={};D.rxl=[];D.hx={};D.mixes=[];save();inv();say("Открытия сброшены.");renderAdmin()});break;
+    case"resetall":danger(btn,"Точно? Нажми ещё раз",function(){try{localStorage.removeItem("madlab1")}catch(e){}location.reload()});break;
+    case"shake":$("#shake").click();break;
+    case"clear":$("#pour").click();break;
+    case"addsub":add(+btn.dataset.i);break;
+    case"temp":setStove(+v);renderAdmin();break;
+    case"spd":st.spd=+v;renderAdmin();break;
+    case"coolfire":HEATK="";HEATT=0;st.stoveBoil=false;say("Огонь погашен.");break;
+    case"revive":D.mice.forEach(function(m){m.dead=0;m.t="Здорова";m.st=0});save();if(typeof mice==="function")mice();say("Все мыши живы.");break;
+    case"newmice":var dv=$("#deliv");if(dv)dv.click();break;
+    case"export":var t=$("#admSave");if(t){t.value=exportText();t.select()}break;
+    case"copy":var t2=$("#admSave");if(t2){if(!t2.value)t2.value=exportText();t2.select();try{navigator.clipboard&&navigator.clipboard.writeText(t2.value)}catch(e){}try{document.execCommand("copy")}catch(e){}btn.textContent="Скопировано";setTimeout(function(){btn.textContent="Копировать"},1500)}break;
+    case"download":try{var bl=new Blob([exportText()],{type:"application/json"}),u=URL.createObjectURL(bl),l=document.createElement("a");l.href=u;l.download="madlab-save.json";document.body.appendChild(l);l.click();setTimeout(function(){URL.revokeObjectURL(u);l.remove()},500)}catch(e){console.error(e)}break;
+    case"import":var t3=$("#admSave");danger(btn,"Точно? Нажми ещё раз",function(){try{var o=JSON.parse(t3.value);if(!o||typeof o!=="object")throw 0;localStorage.setItem("madlab1",JSON.stringify(o));location.reload()}catch(e){btn.textContent="Не похоже на сохранение";setTimeout(renderAdmin,1500)}});break;
+    case"clearlog":if(window.__errlog)window.__errlog.length=0;renderAdmin();break;
+  }}catch(e){console.error(e)}
+}
+function ensureAdmin(){
+  if(!$("#adm")){
+    var a=document.createElement("div");a.id="adm";a.setAttribute("role","dialog");
+    a.innerHTML='<div class="admbox"><div class="admhead"><b>🛠 Админ-панель</b><button id="admX" aria-label="Закрыть">✕</button></div><div id="admBody"></div></div>';
+    document.body.appendChild(a);
+    a.addEventListener("click",function(e){
+      if(e.target===a){closeAdmin();return}
+      var b=e.target.closest&&e.target.closest("button");if(!b)return;
+      if(b.id==="admX"){closeAdmin();return}
+      if(b.dataset.a)act(b);
+    });
+    a.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.id==="admPw"){var g=a.querySelector('[data-a="login"]');if(g)act(g)}});
+    a.addEventListener("input",function(e){if(e.target.id==="admAddQ"){AQ=e.target.value;var r=$("#admAddRes");if(r)r.innerHTML=admList(AQ)}});
+  }
+  var old=$("#admBtn");if(old)old.remove();
+}
+
+/* ================= ЖУРНАЛ ОШИБОК ================= */
+function hookErrors(){
+  if(!window.__errlog)window.__errlog=[];
+  if(window.__errHooked)return;window.__errHooked=1;
+  var push=function(s){var l=window.__errlog;l.push(new Date().toLocaleTimeString()+" · "+s);if(l.length>100)l.shift()};
+  try{var ce=console.error;console.error=function(){try{push(Array.prototype.map.call(arguments,function(x){return x&&x.message?x.message:String(x)}).join(" "))}catch(e){}return ce.apply(console,arguments)}}catch(e){}
+}
+
+/* ================= ПОДКЛЮЧЕНИЕ ================= */
+function ensureAll(force){
+  if(!ok())return false;
+  var steps=[
+    function(){if(force||!SUBOK)addSubstances()},
+    function(){cacheIds()},
+    function(){migrate()},
+    function(){addReactions()},
+    function(){addHeat()},
+    function(){ensureStove()},
+    function(){ensureSearch()},
+    function(){wrapEnc()},
+    function(){ensureAdmin()},
+    function(){updateDot();refreshConn()}
+  ];
+  steps.forEach(function(f){try{f()}catch(e){console.error("MAD LAB v5:",e)}});
+  return true;
+}
+var started=false;
+function start(){
+  if(started)return;started=true;
+  hookErrors();
+  var tries=0;
+  (function boot(){
+    var ready=ok()&&!!window.RXS&&!!$("#flsel");
+    if(ready||tries>40){ensureAll(true);try{inv()}catch(e){}checkHash()}
+    else{tries++;setTimeout(boot,150);return}
+  })();
+  setInterval(tick,200);
+  setInterval(function(){ensureAll(false)},2000);
+  document.addEventListener("visibilitychange",function(){if(!document.hidden){st.last=Date.now();st.beat=Date.now();ensureAll(false)}});
+  addEventListener("hashchange",checkHash);
+  addEventListener("pageshow",function(){ensureAll(false)});
+  window.MADLAB5={ver:DATAV,state:st,diag:diag,ensure:ensureAll,heat:function(){return HEAT},errors:ERRS,open:openAdmin};
+}
+if(document.readyState==="complete")start();else addEventListener("load",start);
+})();
+</script>
 </body></html>
