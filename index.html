@@ -934,15 +934,46 @@ if(document.readyState==="complete")v4();else addEventListener("load",v4);
 })();
 </script>
 <style id="madlab-live-css">
-И полный скрипт дай, и еще сделай так, чтобы я мог, вот, допустим, компьютер-сессия, да, чтобы я мог переименовать этот компьютер, как мне надо, то есть, вот, да, компьютер-сессия. Я знал, мне там для чего-то нужно, типа, переименовать их компьютер-1, компьютер-2, а мне надо по очереди, чтобы кто заходил. И я, типа, сам буду это делать, просто сделай, чтобы я мог их не компьютер там 1X, 1.2X, 6, 8, а чтобы я смог сам их записывать.
+#adm{position:fixed;top:0;right:0;bottom:0;left:0;background:#000d;display:none;align-items:flex-start;justify-content:center;padding:10px;overflow:auto;z-index:60}
+#adm.on{display:flex}
+.admbox{background:var(--pn);border:2px solid var(--n3);box-shadow:0 0 24px #3dd5ff44;border-radius:16px;width:100%;max-width:560px;padding:12px;margin:auto 0}
+.admhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.admhead button{min-height:36px;padding:4px 12px}
+#adm input[type=text],#adm input[type=password],#adm textarea,#adm input[type=url]{background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:10px;font:inherit;padding:10px;width:100%;min-width:0;min-height:44px}
+#adm .b{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+#adm .b button{flex:1 1 auto;min-height:40px;padding:8px}
+#adm button.warn{border-color:#ff4d4d;color:#ff9a9a}
+#adm .led{display:inline-block;width:11px;height:11px;border-radius:50%;background:#888;vertical-align:middle}
+#adm .led.ok{background:#39ff9c;box-shadow:0 0 6px #39ff9c}
+#adm .led.bad{background:#ff4d4d;box-shadow:0 0 6px #ff4d4d}
+#lvList button{display:block;width:100%;text-align:left;margin:4px 0;line-height:1.3}
+#lvList button.on{border-color:var(--n1);box-shadow:0 0 10px #39ff9c66}
+#lvList small{color:var(--dim)}
+#lvDet{background:#0d0a18;border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px}
+#lvDet h4{margin:10px 0 4px;font-size:14px}
+#lvInfo{font-size:13px;line-height:1.5}
+#lvInfo b{color:var(--n3)}
+#lvEv{font:11px/1.4 monospace;color:var(--dim);max-height:80px;overflow:auto}
+.lvchips button{flex:0 0 auto!important}
+.lvchips button.on{background:#ff4d4d33;border-color:#ff4d4d;color:#ffb0b0}
+[data-lvb]{opacity:.35!important;filter:grayscale(1)!important}
+#liveov{position:fixed;top:0;right:0;bottom:0;left:0;background:#000;z-index:120;display:none;align-items:center;justify-content:center;flex-direction:column}
+#liveov.on{display:flex}
+#liveov video,#liveov iframe{width:100%;height:100%;border:0;background:#000;flex:1;min-height:0}
+#liveov img{max-width:100%;max-height:100%;object-fit:contain;flex:1;min-height:0}
+#liveov .x{position:absolute;top:calc(env(safe-area-inset-top,0px) + 8px);right:8px;z-index:2;min-height:40px;background:#000a}
+#livemsg{position:fixed;top:0;right:0;bottom:0;left:0;background:#000b;z-index:130;display:none;align-items:center;justify-content:center;padding:16px}
+#livemsg.on{display:flex}
+#livemsg .bx{background:var(--pn);border:2px solid var(--n2);box-shadow:0 0 24px #ff3df055;border-radius:16px;max-width:420px;width:100%;padding:16px}
+#livemsg .bx p{margin:8px 0 14px;font-size:17px;white-space:pre-wrap;overflow-wrap:anywhere}
+#livemsg .bx .bb{display:flex;gap:8px;flex-wrap:wrap}
+#livemsg .bx .bb button{flex:1 1 120px;width:auto}
+</style>
 <script id="madlab-live">
-/* MAD LAB: живая админ-панель.
-   Игроки (все, кто открыл сайт) раз в 10 секунд сообщают о себе через публичный MQTT-брокер.
-   Админ (ссылка с #admin, пароль) видит, кто онлайн, и по нажатию на игрока может:
-   написать сообщение, заблокировать кнопки, включить видео (mp4-ссылка или YouTube). */
+/* MAD LAB: живая админ-панель. */
 (function(){
 var ADMPW="3365";
-var ROOT="madlab-k7Qx2mVd9RpL4wTe";                 /* секретный адрес канала: у каждого проекта свой */
+var ROOT="madlab-k7Qx2mVd9RpL4wTe";
 var BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt","wss://test.mosquitto.org:8081/"];
 var LIBS=["https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js","https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"];
 var T_HB=ROOT+"/hb",T_EV=ROOT+"/ev",T_CMD=ROOT+"/cmd";
@@ -1033,8 +1064,9 @@ function onCmd(c){
   if(c.cid){if(seenCmd[c.cid])return;seenCmd[c.cid]=1}
   switch(c.k){
     case"block":setBlk(c.g||[]);break;
-    case"msg":showMsg(String(c.text||""));break;
+    case"msg":showMsg(String(c.text||""),c.b);break;
     case"video":playVideo(String(c.src||""),!!c.lock);break;
+    case"img":showImg(String(c.src||""),!!c.lock);break;
     case"stop":stopVideo();break;
     case"ping":beat();break;
   }
@@ -1051,7 +1083,7 @@ function setBlk(g){
   g=g.filter(function(x){return SEL[x]});
   var same=g.join(",")===BLK.join(",");
   BLK=g;lsSet("madlab_blk",JSON.stringify(BLK));applyBlk();
-  if(!same){beat();if(BLK.length)toast("🔒 Админ заблокировал часть кнопок.");else toast("🔓 Кнопки разблокированы.")}
+  if(!same)beat();
 }
 function applyBlk(){
   var m=document.querySelectorAll("[data-lvb]");
@@ -1066,19 +1098,20 @@ function stopEv(e){if(blocked(e.target)){e.preventDefault();e.stopPropagation();
 ["click","mousedown","pointerdown","touchstart","touchend","dblclick","input","change"].forEach(function(n){document.addEventListener(n,stopEv,{capture:true,passive:false})});
 document.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&blocked(e.target))stopEv(e)},true);
 
-/* --- сообщение и видео --- */
-var toastT=0;
-function toast(s){
-  var m=$("#livemsg");if(!m)return;
-  var d=$("#livetoast");if(!d){d=document.createElement("div");d.id="livetoast";d.style.cssText="position:fixed;left:50%;top:12px;transform:translateX(-50%);max-width:92vw;background:var(--pn);border:1px solid var(--n3);border-radius:12px;padding:8px 14px;z-index:140;font-size:14px;display:none";document.body.appendChild(d)}
-  d.textContent=s;d.style.display="block";clearTimeout(toastT);toastT=setTimeout(function(){d.style.display="none"},3500);
-}
+/* --- сообщение, картинка и видео --- */
 function ensureOv(){
   if(!$("#liveov")){var v=document.createElement("div");v.id="liveov";document.body.appendChild(v)}
-  if(!$("#livemsg")){var m=document.createElement("div");m.id="livemsg";m.innerHTML='<div class="bx"><b>📢 Сообщение от админа</b><p id="livemsgt"></p><button class="go" id="livemsgok">Понятно</button></div>';document.body.appendChild(m);
-    $("#livemsgok").onclick=function(){m.classList.remove("on");ev("прочитал сообщение")}}
+  if(!$("#livemsg")){var m=document.createElement("div");m.id="livemsg";m.innerHTML='<div class="bx"><p id="livemsgt"></p><div class="bb" id="livemsgb"></div></div>';document.body.appendChild(m)}
 }
-function showMsg(t){ensureOv();$("#livemsgt").textContent=t;$("#livemsg").classList.add("on");ev("получил сообщение");try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}}
+function showMsg(t,b){
+  ensureOv();$("#livemsgt").textContent=t;
+  var bb=$("#livemsgb");bb.innerHTML="";
+  b=(Array.isArray(b)?b:[]).map(function(x){return String(x||"").trim().slice(0,40)}).filter(Boolean).slice(0,2);
+  if(!b.length)b=["Понятно"];
+  b.forEach(function(x,i){var e=document.createElement("button");e.textContent=x;if(i===0)e.className="go";
+    e.onclick=function(){$("#livemsg").classList.remove("on");ev("нажал «"+x+"»")};bb.appendChild(e)});
+  $("#livemsg").classList.add("on");ev("получил сообщение");try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}
+}
 function ytId(u){
   var m=/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/|v\/))([A-Za-z0-9_-]{11})/.exec(u);
   return m?m[1]:null;
@@ -1101,6 +1134,18 @@ function playVideo(src,lock){
   }
   ev("смотрит видео");beat();
 }
+function showImg(src,lock){
+  ensureOv();
+  if(!/^https?:\/\//i.test(src))return;
+  stopVideo(true);
+  var o=$("#liveov");
+  o.innerHTML=(lock?"":'<button class="x" id="liveovx">✕ Закрыть</button>')+'<img id="liveimg" referrerpolicy="no-referrer" alt="" src="'+esc(src)+'">';
+  o.classList.add("on");vidOn=true;
+  var x=$("#liveovx");if(x)x.onclick=function(){stopVideo();ev("закрыл картинку")};
+  var im=$("#liveimg");
+  im.onerror=function(){ev("картинка не открылась (ссылка не прямая?)");stopVideo(true)};
+  ev("смотрит картинку");beat();
+}
 function stopVideo(silent){
   var o=$("#liveov");if(!o)return;
   o.classList.remove("on");o.innerHTML="";
@@ -1108,17 +1153,22 @@ function stopVideo(silent){
 }
 
 /* ================= админ ================= */
-var unlocked=false;try{unlocked=sessionStorage.getItem("madlab_adm")==="1"}catch(e){}
+var unlocked=false;
 var users={},evs=[],selId=null,all=false,desired={},lastPush={},nextCid=0;
 try{desired=JSON.parse(lsGet("madlab_desired")||"{}")}catch(e){desired={}}
 function saveDesired(){lsSet("madlab_desired",JSON.stringify(desired))}
+/* свои имена игроков (хранятся на твоём устройстве) */
+var names={};try{names=JSON.parse(lsGet("madlab_names")||"{}")}catch(e){names={}}
+if(!names||typeof names!=="object")names={};
+function saveNames(){lsSet("madlab_names",JSON.stringify(names))}
+function dn(id,fb){return names[id]||fb||id}
+
 function admHb(o){
   if(!o||!o.id||o.id===PID)return;
   if(o.bye){if(users[o.id])users[o.id].seen=0;return}
   var u=users[o.id]||(users[o.id]={first:now()});
   u.d=o;u.seen=now();
   if(desired[o.id]===undefined&&desired["*"]&&desired["*"].length){desired[o.id]=desired["*"].slice();saveDesired()}
-  /* админ главный: если у игрока не такое состояние блокировки, как задумано, отправляем заново */
   var want=(desired[o.id]||[]).join(",");
   if(String(o.blk||"")!==want&&now()-(lastPush[o.id]||0)>15000){lastPush[o.id]=now();send(o.id,{k:"block",g:desired[o.id]||[]},true)}
 }
@@ -1146,7 +1196,7 @@ function paintList(){
   var on=online(),n=$("#lvCount");if(n)n.textContent=on.length;
   var h='<button data-u="*" class="'+(all?"on":"")+'">📣 <b>Все, кто онлайн</b> <small>('+on.length+')</small></button>';
   on.forEach(function(u){var d=u.d||{},b=(desired[d.id]||[]);
-    h+='<button data-u="'+esc(d.id)+'" class="'+(!all&&selId===d.id?"on":"")+'">'+esc(d.dev||"")+' <b>'+esc(d.name)+'</b> · ур. '+(d.lvl||"?")+' <small>· '+esc(d.tab||"")+' · '+ago(now()-(d.t0||u.first))+(d.vid?" · ▶ видео":"")+(b.length?" · 🔒":"")+'</small></button>'});
+    h+='<button data-u="'+esc(d.id)+'" class="'+(!all&&selId===d.id?"on":"")+'">'+esc(d.dev||"")+' <b>'+esc(dn(d.id,d.name))+'</b> · ур. '+(d.lvl||"?")+' <small>· '+esc(d.tab||"")+' · '+ago(now()-(d.t0||u.first))+(d.vid?" · ▶ видео":"")+(b.length?" · 🔒":"")+'</small></button>'});
   if(!on.length)h+='<div class="mut" style="margin:8px 0">Сейчас на сайте никого, кроме тебя. Список обновляется сам.</div>';
   if(h!==lastList){var l=$("#lvList");if(l){l.innerHTML=h;lastList=h}}
   paintInfo();
@@ -1158,15 +1208,15 @@ function paintInfo(){
   if(!d){el.innerHTML='<span class="mut">Выбери игрока из списка.</span>';return}
   var isOn=u.seen&&now()-u.seen<ONLINE_MS;
   el.innerHTML=(isOn?'🟢 онлайн':'⚪ вышел (был '+ago(now()-(u.seen||u.first))+' назад)')+'<br>'+
-   '<b>'+esc(d.name)+'</b> · '+esc(d.dev)+' · экран '+d.w+'×'+d.h+' · '+esc(d.lang||"")+'<br>'+
+   '<b>'+esc(dn(d.id,d.name))+'</b> · '+esc(d.dev)+' · экран '+d.w+'×'+d.h+' · '+esc(d.lang||"")+'<br>'+
    'Дверь №'+(d.lvl||"?")+' · опыт '+(d.xp||0)+' · веществ открыто '+(d.disc||0)+' · опытов '+(d.tests||0)+' · взрывов '+(d.boom||0)+' · погибших мышей '+(d.dead||0)+'<br>'+
    'Сейчас: вкладка «'+esc(d.tab||"—")+'»'+(d.mix?' · в колбе: '+esc(d.mix):'')+'<br>'+
-   'На сайте: '+ago(now()-(d.t0||u.first))+' · блокировка: '+esc(grpTxt(desired[d.id]))+(d.vid?' · ▶ смотрит видео':'');
+   'На сайте: '+ago(now()-(d.t0||u.first))+' · блокировка: '+esc(grpTxt(desired[d.id]))+(d.vid?' · ▶ смотрит видео/картинку':'');
 }
 function paintEv(){
   var e=$("#lvEv");if(!e)return;
   var l=evs.filter(function(x){return all||!selId||x.id===selId}).slice(0,12);
-  e.innerHTML=l.length?l.map(function(x){return esc(new Date(x.ts).toLocaleTimeString())+" · "+esc(x.name)+": "+esc(x.txt)}).join("<br>"):"Пока тихо";
+  e.innerHTML=l.length?l.map(function(x){return esc(new Date(x.ts).toLocaleTimeString())+" · "+esc(dn(x.id,x.name))+": "+esc(x.txt)}).join("<br>"):"Пока тихо";
 }
 function targets(){return all?online().map(function(u){return u.d.id}):(selId?[selId]:[])}
 function pushBlk(ids,g){ids.forEach(function(id){desired[id]=g.slice();send(id,{k:"block",g:g},true)});saveDesired();flash(ids.length?"Блокировка обновлена":"Выбери игрока")}
@@ -1174,7 +1224,10 @@ function renderDet(){
   var d=$("#lvDet");if(!d)return;
   var cur=all?(desired["*"]||[]):(desired[selId]||[]);
   d.innerHTML='<div id="lvInfo"></div>'+
+   '<h4>✏️ Имя игрока</h4><div class="b"><input id="lvName" type="text" placeholder="Например: Компьютер 1" maxlength="30" autocomplete="off" style="flex:2 1 160px"><button class="go" data-a="rename">Переименовать</button></div>'+
    '<h4>💬 Сообщение</h4><textarea id="lvText" rows="2" placeholder="Текст, который появится у игрока на экране"></textarea>'+
+   '<div class="b"><input id="lvB1" type="text" placeholder="Кнопка 1 (например: Да)" maxlength="40" autocomplete="off" style="flex:1 1 140px"><input id="lvB2" type="text" placeholder="Кнопка 2 (например: Нет)" maxlength="40" autocomplete="off" style="flex:1 1 140px"></div>'+
+   '<div class="mut" style="font-size:12px">Если обе кнопки пустые, будет одна кнопка «Понятно». Что нажал игрок, видно в «Что делают игроки».</div>'+
    '<div class="b"><button class="go" data-a="msg">Отправить</button></div>'+
    '<h4>🔒 Блокировка кнопок (нажми, чтобы включить или выключить)</h4><div class="b lvchips">'+
    GROUPS.map(function(g){return'<button data-g="'+g[0]+'" class="'+(cur.indexOf(g[0])>=0?"on":"")+'">'+esc(g[1])+'</button>'}).join("")+
@@ -1183,7 +1236,11 @@ function renderDet(){
    '<label class="mut" style="display:block;margin:6px 0"><input type="checkbox" id="lvLock"> игрок не сможет закрыть видео сам</label>'+
    '<div class="b"><button class="go" data-a="play">Включить видео</button><button data-a="stop" class="warn">⏹ Остановить</button></div>'+
    '<div class="mut" style="font-size:12px">mp4: прямая ссылка на файл (https://…/video.mp4). Файл с телефона не передать, сначала загрузи его в интернет.</div>'+
+   '<h4>🖼 Картинка / мем</h4><input id="lvImg" type="url" placeholder="Прямая ссылка на картинку (jpg, png, gif, webp)" autocomplete="off">'+
+   '<label class="mut" style="display:block;margin:6px 0"><input type="checkbox" id="lvImgLock"> игрок не сможет закрыть картинку сам</label>'+
+   '<div class="b"><button class="go" data-a="img">Показать картинку</button><button data-a="stop" class="warn">⏹ Убрать</button></div>'+
    '<h4>📋 Что делают игроки</h4><div id="lvEv"></div>';
+  var nm=$("#lvName");if(nm&&!all&&selId)nm.value=names[selId]||"";
   paintInfo();paintEv();
 }
 function renderAdmin(){
@@ -1204,6 +1261,7 @@ function openAdmin(){
   var p=$("#admPw");if(p)setTimeout(function(){try{p.focus()}catch(e){}},50);
 }
 function closeAdmin(){
+  unlocked=false;
   var a=$("#adm");if(a)a.classList.remove("on");
   if(isAdminHash()){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){location.hash=""}}
 }
@@ -1224,18 +1282,27 @@ function act(btn){
   }
   switch(a){
     case"login":var pw=$("#admPw");
-      if(pw&&pw.value===ADMPW){unlocked=true;try{sessionStorage.setItem("madlab_adm","1")}catch(e){}renderAdmin();startAdmin()}
+      if(pw&&pw.value===ADMPW){unlocked=true;renderAdmin();startAdmin()}
       else{var er=$("#admPwErr");if(er)er.textContent="Неверный пароль.";if(pw){pw.value="";pw.focus()}}break;
+    case"rename":
+      if(all||!selId){flash("Сначала выбери одного игрока");return}
+      var nv=($("#lvName").value||"").trim().slice(0,30);
+      if(nv)names[selId]=nv;else delete names[selId];
+      saveNames();lastList="";paintList();paintEv();flash(nv?"Имя сохранено: "+nv:"Имя сброшено");break;
     case"msg":var t=($("#lvText").value||"").trim();if(!t){flash("Напиши текст");return}
       var ids=targets();if(!ids.length){flash("Выбери игрока");return}
-      ids.forEach(function(id){send(id,{k:"msg",text:t},true)});flash("Сообщение отправлено: "+ids.length);$("#lvText").value="";break;
+      ids.forEach(function(id){send(id,{k:"msg",text:t,b:[($("#lvB1").value||"").trim(),($("#lvB2").value||"").trim()]},true)});flash("Сообщение отправлено: "+ids.length);$("#lvText").value="";break;
     case"unblock":var ids2=targets();if(!ids2.length){flash("Выбери игрока");return}
       if(all)desired["*"]=[];pushBlk(ids2,[]);renderDet();break;
     case"play":var u=($("#lvUrl").value||"").trim();
       if(!/^https?:\/\//i.test(u)){flash("Нужна ссылка, начинающаяся с https://");return}
       var ids3=targets();if(!ids3.length){flash("Выбери игрока");return}
       ids3.forEach(function(id){send(id,{k:"video",src:u,lock:$("#lvLock").checked},true)});flash("Видео запущено у: "+ids3.length);break;
-    case"stop":var ids4=targets();ids4.forEach(function(id){send(id,{k:"stop"},true)});flash("Видео остановлено");break;
+    case"img":var iu=($("#lvImg").value||"").trim();
+      if(!/^https?:\/\//i.test(iu)){flash("Нужна прямая ссылка на картинку (https://…)");return}
+      var ids5=targets();if(!ids5.length){flash("Выбери игрока");return}
+      ids5.forEach(function(id){send(id,{k:"img",src:iu,lock:$("#lvImgLock").checked},true)});flash("Картинка отправлена: "+ids5.length);break;
+    case"stop":var ids4=targets();ids4.forEach(function(id){send(id,{k:"stop"},true)});flash("Остановлено");break;
   }
 }
 function ensureAdmin(){
@@ -1251,10 +1318,11 @@ function ensureAdmin(){
   });
   a.addEventListener("keydown",function(e){
     if(e.key==="Enter"&&e.target.id==="admPw"){var g=a.querySelector('[data-a="login"]');if(g)act(g)}
+    if(e.key==="Enter"&&e.target.id==="lvName"){var r=a.querySelector('[data-a="rename"]');if(r)act(r)}
     if(e.key==="Escape")closeAdmin();
   });
 }
-function checkHash(){if(isAdminHash())openAdmin();else{var a=$("#adm");if(a)a.classList.remove("on")}}
+function checkHash(){if(isAdminHash())openAdmin();else{unlocked=false;var a=$("#adm");if(a)a.classList.remove("on")}}
 
 /* ================= запуск ================= */
 var libStarted=false;
@@ -1270,7 +1338,6 @@ function start(){
   setInterval(beat,HB_MS);
   setInterval(function(){applyBlk();if(isOpen())paintList()},2000);
   setInterval(function(){if(isOpen()){paintEv()}},3000);
-  /* связь жива? если брокер молчит дольше минуты (даже своих сообщений нет), переподключаемся */
   setInterval(function(){if(connected&&cli&&now()-lastRx>60000&&now()-lastRx<1e12&&lastRx>0&&!document.hidden){lastRx=now();link()}},20000);
   document.addEventListener("visibilitychange",function(){if(!document.hidden){if(!connected&&mqttReady)link();beat()}});
   addEventListener("online",function(){if(mqttReady)link()});
